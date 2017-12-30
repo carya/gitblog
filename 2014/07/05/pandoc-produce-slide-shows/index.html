@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>pandoc将markdown转换输出HTML slide - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="概览 幻灯片的结构化 增量式列表 插入停顿 定义幻灯片样式 转化HTML slide shows常用参数  概览 本文记录的是如何使用pandoc将markdown格式文本转换输出为HTML slide shows。你能够使用Pandoc将markdown转换输出HTML+javascript的幻灯片，这样就可通过we">
+<meta name="keywords" content="pandoc,markdown,html slide shows">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="pandoc将markdown转换输出HTML slide">
+<meta property="og:url" content="http://liumh.com/2014/07/05/pandoc-produce-slide-shows/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="概览 幻灯片的结构化 增量式列表 插入停顿 定义幻灯片样式 转化HTML slide shows常用参数  概览 本文记录的是如何使用pandoc将markdown格式文本转换输出为HTML slide shows。你能够使用Pandoc将markdown转换输出HTML+javascript的幻灯片，这样就可通过web浏览器浏览。可以通过S5,DZSlides,Slidy,Slideous或者">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-12-02T03:09:26.667Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pandoc将markdown转换输出HTML slide">
+<meta name="twitter:description" content="概览 幻灯片的结构化 增量式列表 插入停顿 定义幻灯片样式 转化HTML slide shows常用参数  概览 本文记录的是如何使用pandoc将markdown格式文本转换输出为HTML slide shows。你能够使用Pandoc将markdown转换输出HTML+javascript的幻灯片，这样就可通过web浏览器浏览。可以通过S5,DZSlides,Slidy,Slideous或者">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/ ">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/ "
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            pandoc将markdown转换输出HTML slide
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Sat Jul 05 2014 20:54:30 GMT+0800">
+	
+		    Jul 05, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/工具使用/">工具使用</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <ol type="1">
+<li><a href="#overview">概览</a></li>
+<li><a href="#structure-slide-show">幻灯片的结构化</a></li>
+<li><a href="#incremental-lists">增量式列表</a></li>
+<li><a href="#insert-pauses">插入停顿</a></li>
+<li><a href="#styling-slides">定义幻灯片样式</a></li>
+<li><a href="#html-convert-params">转化HTML slide shows常用参数</a></li>
+</ol>
+<h2 id="overview">概览</h2>
+<p>本文记录的是如何使用pandoc将markdown格式文本转换输出为HTML slide shows。你能够使用Pandoc将markdown转换输出HTML+javascript的幻灯片，这样就可通过web浏览器浏览。可以通过<a href="http://meyerweb.com/eric/tools/s5/" target="_blank" rel="noopener">S5</a>,<a href="http://paulrouget.com/dzslides/" target="_blank" rel="noopener">DZSlides</a>,<a href="http://www.w3.org/Talks/Tools/Slidy2/Overview.html" target="_blank" rel="noopener">Slidy</a>,<a href="http://goessner.net/articles/slideous/" target="_blank" rel="noopener">Slideous</a>或者<a href="http://lab.hakim.se/reveal-js/#/" target="_blank" rel="noopener">reveal.js</a>引擎转换输出HTML幻灯片，也可以使用LaTeX <a href="http://www.tex.ac.uk/CTAN/macros/latex/contrib/beamer/" target="_blank" rel="noopener">beamer</a>转换输出PDF的幻灯片。</p>
+<p>下面是官网文档中的markdown源码文件，稍作修改，habits.md:</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">% Habits</span><br><span class="line">% John Doe</span><br><span class="line">% March 22, 2005</span><br><span class="line"></span><br><span class="line"># In the morning</span><br><span class="line"></span><br><span class="line">## Getting up</span><br><span class="line"></span><br><span class="line">- Turn off alarm</span><br><span class="line">- Get out of bed</span><br><span class="line"></span><br><span class="line">## Breakfast</span><br><span class="line"></span><br><span class="line">- Eat eggs</span><br><span class="line">- Drink coffee</span><br><span class="line"></span><br><span class="line"># In the evening</span><br><span class="line"></span><br><span class="line">## Dinner</span><br><span class="line"></span><br><span class="line">- Eat spaghetti</span><br><span class="line">- Drink wine</span><br><span class="line"></span><br><span class="line">------------------</span><br><span class="line"></span><br><span class="line">![UML attribute text](http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png)</span><br><span class="line"></span><br><span class="line">## Going to sleep</span><br><span class="line"></span><br><span class="line">- Get in bed</span><br><span class="line">- Count sheep</span><br></pre></td></tr></table></figure>
+<p>可使用如下命令转换输出HTML/javascript的幻灯片，然后使用浏览器打开habits.html文件。</p>
+<p><code>pandoc -t FORMAT -s habits.txt -o habits.html</code></p>
+<p>其中FORMAT可以是s5,slidy,slideous,dzslides或者revealjs.</p>
+<p>对于Slidy, Slideous, reveal.js和S5, pandoc通过-s/–standalone选项转换输出的文件指向javascripts和CSS文件的链接，这些文件通常可在相对路径s5/default(S5),slideous(Slideous),reveal.js(reveal.js)或者w3.org上的Slidy网址(Slidy)找到，当然这些路径可以通过设置参数变量slidy-url, slideous-url, revealjs-url或者s5-url改变，参考pandoc的–variable选项.</p>
+<p>对于所有的HTML幻灯片，选项–self-contained选项能够将所有依赖的文件(linked scripts,stylesheets, images, and videos)都包含进同一个文件中，这样要是分享给其他人时就只需要传递单一文件。</p>
+<p>转换输出PDF幻灯片格式的文件，可以只用beamer，如下:</p>
+<p><code>pandoc -t beamer habits.md -o habits.pdf</code></p>
+<p>但是我尝试了中文的markdown文件，会出现乱码的问题，目前没有找到解决方案.</p>
+<h2 id="structure-slide-show">幻灯片的结构化</h2>
+<p>slide level: 默认情况下，slide level由文章的组织结构中，以紧接着文章内容(而不是另一个标题)的最高的header等级决定。在上面的例子中，一级标题总是紧跟着二级标题，二级标题后会跟着实际内容，因此slide level是2。这由文章组织结构内容决定的slide level可由pandoc 的 –slide-level选项覆盖。</p>
+<p>文章内容根据以下规则划分为不同的幻灯片页:</p>
+<ul>
+<li><p>一条水平线总会开启一页新幻灯片。</p></li>
+<li><p>header等级等于slide level总会开启一页新的幻灯片。</p></li>
+<li><p>组织结构中在slide level以下的headers会在同一幻灯片页中创建headers。例如上述例子slide level等于2，那么如果有H3或者H4等级的headers，那么它们会显示在由其他规则创建的幻灯片页中。</p></li>
+<li><p>组织结构中在slide level以上的headers会创建“title slides”，它只包含了该section的标题，从而将整个幻灯片的内容划分为不同的sections。</p></li>
+<li><p>pandoc会自动根据文中的<a href="http://johnmacfarlane.net/pandoc/README.html#title-block" target="_blank" rel="noopener">title block</a>创建出一页title page。当然，必须得存在title block。</p></li>
+</ul>
+<p>如果你不是很在意将幻灯片划分为多个sections和subsections的话，那么你可以在所有的幻灯片页中只使用一级标题(这样的话，slide level等于1)，当然你也可以像上述示例一样将其划分为不同的sections。</p>
+<p>Note: 在reveal.js类型的幻灯片中，如果slide level等于2，那么产生的幻灯片会是一个二维的布局，一级标题会产生水平控制阅读的幻灯片，二级标题会产生垂直方向控制的幻灯片。另外，不建议使用reveal.js写slide level大于2的幻灯片内容。</p>
+<h2 id="incremental-lists">增量式列表</h2>
+<p>默认情况下，pandoc转换输出的列表都是一次性显示出来。你可以在转换输出幻灯片时使用-i选项使列表一次只显示一个列表项。如果你想让某一个特定的列表显示与默认的不一样，也就是: 没有使用-i选项的时候使某一列表增量显示，或者，使用-i选项的时候使某一列表一次性显示出来，你可以将该特定列表放置于<a href="http://johnmacfarlane.net/pandoc/README.html#block-quotations" target="_blank" rel="noopener">block quote</a>中, 如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; - Eat spaghetti</span><br><span class="line">&gt; - Drink wine</span><br></pre></td></tr></table></figure>
+<h2 id="insert-pauses">插入停顿</h2>
+<p>你可以在幻灯片页中添加停顿，该功能通过在幻灯片页中插入包含3个点的段落实现，且该三个点间以空格隔开，如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Slide with a pause</span><br><span class="line"></span><br><span class="line">content before the pause</span><br><span class="line"></span><br><span class="line">. . .</span><br><span class="line"></span><br><span class="line">content after the pause</span><br></pre></td></tr></table></figure>
+<h2 id="styling-slides">定义幻灯片样式</h2>
+<p>你可以通过将自定义CSS文件放置于用户数据目录<code>$DATADIR</code>下来改变HTML的样式，对于S5而言，该目录是<code>$DATADIR/s5/default; Slidy: $DATADIR/slidy;Slideous:$DATADIR/slideous;</code> <code>$DATADIR</code>指的是数据目录，参考–data-dir选项说明。</p>
+<p>对于reveal.js，幻灯片主题可通过设置theme变量指定，如下所示:</p>
+<p><code>-V theme=moon</code></p>
+<p>或者可以通过–css选项指定自定义的CSS样式表.</p>
+<p>定义beamer幻灯片的样式时，可使用-V选项，指定其“theme”或者“colortheme”:</p>
+<p><code>pandoc -t beamer habits.md -V theme:Warsaw -o habits.pdf</code></p>
+Note: pandoc在转换输出为HTML格式的幻灯片时,header的属性值会变为幻灯片页的属性(在
+<div>
+或者
+<section>
+<p>标签中)，这样就可以通过css自定义单一的幻灯片页的样式了。如下:</p>
+<p><code># References {.allowframebreaks}</code></p>
+<h2 id="html-convert-params">转化HTML slide shows常用参数</h2>
+<ul>
+<li><p>-s, –standalone</p>
+<p>转换输出文档时会自动加上合适的header和footer(例如standalone HTML, LaTeX, RTF).该选择在转换输出pdf，epub，epub3，fb2，docx，odt格式文件时会被自动设置，因此如果转换输出上述格式文件，则不用显示指定该选项。如上所述，使用该选项后，能够将所有依赖的文件(linked scripts,stylesheets, images, and videos)都转换输出到同一个文件中。</p></li>
+<li><p>–slide-level=NUMBER</p>
+<p>指定能够创建新幻灯片页的headers等级(对beamer, s5, slidy, slideous, dzslides而言)。在设定的level以上的header将幻灯片划分为不同的sections，在level以下的headers在同一页幻灯片中创建子标题.默认情况下根据文档内容自动确定，见<a href="#structure-slide-show">幻灯片的结构化</a>.</p></li>
+<li><p>-i, –incremental</p>
+<p>使幻灯片中的列表选项增量式显示(one by one)。默认情况下，列表内容会一次性显示出来。</p></li>
+<li><p>-c URL, –css=URL</p>
+<p>链接到CSS样式表。该选项能够使用多次来引入多个文件，所指定的文件能够以指定的顺序依次引入。</p></li>
+<li><p>–data-dir=DIRECTORY</p>
+<p>指定用户数据目录，设定之后会在该目录下搜索pandoc数据文件。如果没有指定该选项，则会使用默认的用户数据目录:</p>
+<p><code>$HOME/.pandoc</code></p>
+<p>可通过<code>pandoc --version</code>命令查看。</p></li>
+<li><p>–base-header-level=NUMBER</p>
+<p>指定headers的基准level，默认是1.</p></li>
+<li><p>–section-divs</p>
+将sections包裹进
+<div>
+标签(在HTML5中包裹进
+<section>
+标签)，并且将header的identifiers附属到
+<div>
+或者
+<section>
+<p>标签中。详见<a href="http://johnmacfarlane.net/pandoc/README.html#header-identifiers-in-html-latex-and-context" target="_blank" rel="noopener">Section identifiers</a>.</p></section></div></section></div></li>
+</ul>
+<p>参考:</p>
+<p><a href="http://johnmacfarlane.net/pandoc/README.html#producing-slide-shows-with-pandoc" target="_blank" rel="noopener">Producing slide shows with Pandoc</a></p>
+<hr>
+<p>我的博客: <a href="http://liumh.com" class="uri">http://liumh.com</a></p>
+</section></div>
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/markdown/">markdown</a> <a class="tag tag--primary tag--small t-link" href="/tags/pandoc/">pandoc</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/08/pandoc-markdown-named-anchors/"  data-tooltip="Pandoc&#39;s markdown命名锚">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/06/23/java-close-chained-stream/" data-tooltip="Java中Close Stream的问题">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-pandoc-produce-slide-shows" data-title="pandoc将markdown转换输出HTML slide" data-url="http://liumh.com/2014/07/05/pandoc-produce-slide-shows/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2017 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/08/pandoc-markdown-named-anchors/"  data-tooltip="Pandoc&#39;s markdown命名锚">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/06/23/java-close-chained-stream/" data-tooltip="Java中Close Stream的问题">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/05/pandoc-produce-slide-shows/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+<script src="/assets/js/script.min.js"></script>
+<!--SCRIPTS END-->
+
+
+
+</html>

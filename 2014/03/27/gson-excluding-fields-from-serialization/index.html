@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>Gson序列化和反序列化实体中部分属性 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用transient和使用注解@Expose. 默认情况下，如果使用transient标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为static类型，那么该属性也会被屏蔽. 如下示例所示: Student对象: 123">
+<meta name="keywords" content="gson,excluding fields from serialization,excluding fields from deserialization,transient,GsonBuilder,exposed">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Gson序列化和反序列化实体中部分属性">
+<meta property="og:url" content="http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用transient和使用注解@Expose. 默认情况下，如果使用transient标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为static类型，那么该属性也会被屏蔽. 如下示例所示: Student对象: 1234567public class Student &amp;#123;    priva">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2014-06-25T09:17:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gson序列化和反序列化实体中部分属性">
+<meta name="twitter:description" content="本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用transient和使用注解@Expose. 默认情况下，如果使用transient标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为static类型，那么该属性也会被屏蔽. 如下示例所示: Student对象: 1234567public class Student &amp;#123;    priva">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/ ">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/ "
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            Gson序列化和反序列化实体中部分属性
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Thu Mar 27 2014 21:06:53 GMT+0800">
+	
+		    Mar 27, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/编程语言/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用<code>transient</code>和使用注解<code>@Expose</code>.</p>
+<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽. 如下示例所示:</p>
+<p>Student对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private transient int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    </span><br><span class="line">    //......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>序列化代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new Gson();</span><br><span class="line">List&lt;Student&gt; students = new ArrayList&lt;Student&gt;();</span><br><span class="line">        </span><br><span class="line">Student student1 = new Student(1, 1, &quot;cici&quot;);</span><br><span class="line">Student student2 = new Student(2, 1, &quot;didi&quot;);</span><br><span class="line">students.add(student1);</span><br><span class="line">students.add(student2);</span><br><span class="line">String listStr = gson.toJson(students);</span><br><span class="line">System.out.println(&quot;json_string: &quot; + listStr);</span><br></pre></td></tr></table></figure>
+<p>控制台属性log如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">json_string: [&#123;&quot;stuNo&quot;:1,&quot;name&quot;:&quot;cici&quot;&#125;,&#123;&quot;stuNo&quot;:2,&quot;name&quot;:&quot;didi&quot;&#125;]</span><br></pre></td></tr></table></figure>
+<p>正如所期望的不包含<code>Student</code>实例中<code>sex</code>属性.</p>
+<p>现在，假定有这么个需求，需要将实体中的<code>transient</code>属性序列化，而不需要将<code>static</code>属性序列化，这该怎么办呢？看下面的示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private int sex;</span><br><span class="line">    private transient String name;</span><br><span class="line">    private static Long schoolId = 20L;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用如下方法序列化将会屏蔽<code>static</code>属性，而<code>transient</code>属性则会正常序列化:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC).create();</span><br></pre></td></tr></table></figure>
+<p>如果你想屏蔽<code>static</code>和<code>transient</code>属性，可采取如下方式或者使用Gson的默认创建方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT).create();</span><br></pre></td></tr></table></figure>
+<p>你可添加任意多个 <code>Modifier</code> 常量到 <code>excludeFieldsWithModifiers</code>方法中.</p>
+<p>使用<code>@Expose</code>注解可以将那些不需要序列化和反序列化的属性屏蔽，这样的话必须使用<code>new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()</code>创建Gson实例，该实例将会屏蔽实体中所有没有使用<code>@Expose</code>注解的属性，也就是说，只有使用了<code>@Expose</code>注解的属性才会被序列化和反序列化. 示例如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private int sex;</span><br><span class="line">    @Expose</span><br><span class="line">    private String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>序列化Student对象的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();</span><br><span class="line">List&lt;Student&gt; students = new ArrayList&lt;Student&gt;();</span><br><span class="line">        </span><br><span class="line">Student student1 = new Student(1, 1, &quot;cici&quot;);</span><br><span class="line">Student student2 = new Student(2, 1, &quot;didi&quot;);</span><br><span class="line">students.add(student1);</span><br><span class="line">students.add(student2);</span><br><span class="line">String listStr = gson.toJson(students);</span><br><span class="line">System.out.println(&quot;json_string: &quot; + listStr);</span><br></pre></td></tr></table></figure>
+<p>正如所期望的，控制台输出的序列化字符串中只包含<code>Student</code>实例中的<code>name</code>属性如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">json_string: [&#123;&quot;name&quot;:&quot;cici&quot;&#125;,&#123;&quot;name&quot;:&quot;didi&quot;&#125;]</span><br></pre></td></tr></table></figure>
+<p>参考:</p>
+<p><a href="https://sites.google.com/site/gson/gson-user-guide" target="_blank" rel="noopener">Gson User Guide</a></p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/Gson/">Gson</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/27/gson-collection-with-arbitrary-types/"  data-tooltip="Gson处理包含不同类型对象的集合">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/25/gson-to-deal-with-list/" data-tooltip="Gson处理List对象">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-gson-excluding-fields-from-serialization" data-title="Gson序列化和反序列化实体中部分属性" data-url="http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2017 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/27/gson-collection-with-arbitrary-types/"  data-tooltip="Gson处理包含不同类型对象的集合">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/25/gson-to-deal-with-list/" data-tooltip="Gson处理List对象">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/03/27/gson-excluding-fields-from-serialization/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+<script src="/assets/js/script.min.js"></script>
+<!--SCRIPTS END-->
+
+
+
+</html>

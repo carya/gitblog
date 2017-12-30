@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>iOS应用内监听wifi的变化 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="iOS应用内监听wifi的变化">
+<meta property="og:url" content="http://liumh.com/2015/08/04/ios-monitor-wifichange/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
+<meta property="og:updated_time" content="2015-10-20T14:20:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS应用内监听wifi的变化">
+<meta name="twitter:description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
+<meta name="twitter:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/ ">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/ "
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            iOS应用内监听wifi的变化
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Tue Aug 04 2015 23:13:01 GMT+0800">
+	
+		    Aug 04, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/编程语言/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 <code>Darwin Notify Center</code> 中注册监听 <code>kNotifySCNetworkChange</code> 通知，如下:</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">static void onNotifyCallback(CFNotificationCenterRef center,</span><br><span class="line">                             void *observer,</span><br><span class="line">                             CFStringRef name,</span><br><span class="line">                             const void *object,</span><br><span class="line">                             CFDictionaryRef userInfo) &#123;</span><br><span class="line">    if (CFStringCompare(name, CFSTR(kNotifySCNetworkChange), kCFCompareCaseInsensitive) == kCFCompareEqualTo) &#123;</span><br><span class="line">        //TODO when wifi changed</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (void)startMonitorWifiChange &#123;</span><br><span class="line">    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),</span><br><span class="line">                                    NULL,</span><br><span class="line">                                    &amp;onNotifyCallback,</span><br><span class="line">                                    CFSTR(kNotifySCNetworkChange),</span><br><span class="line">                                    NULL,</span><br><span class="line">                                    CFNotificationSuspensionBehaviorDeliverImmediately);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (void)stopMonitorWifiChange &#123;</span><br><span class="line">    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(),</span><br><span class="line">                                       NULL,</span><br><span class="line">                                       CFSTR(kNotifySCNetworkChange),</span><br><span class="line">                                       NULL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;/usr/include/notify_keys.h&quot;</span><br></pre></td></tr></table></figure>
+<p>上述代码中 <code>kNotifySCNetworkChange</code> 在该头文件中定义，跳至该头文件还可看到:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * File System notifications</span><br><span class="line"> * These advise clients of various filesystem events.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyVFSMount &quot;com.apple.system.kernel.mount&quot;</span><br><span class="line">#define kNotifyVFSUnmount &quot;com.apple.system.kernel.unmount&quot;</span><br><span class="line">#define kNotifyVFSUpdate &quot;com.apple.system.kernel.mountupdate&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpace &quot;com.apple.system.lowdiskspace&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpaceRootFS &quot;com.apple.system.lowdiskspace.system&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpaceOtherFS &quot;com.apple.system.lowdiskspace.user&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * System Configuration notifications</span><br><span class="line"> * These advise clients of changes in the system configuration</span><br><span class="line"> * managed by the system configuration server (configd).</span><br><span class="line"> * Note that a much richer set of notifications are available to</span><br><span class="line"> * clients using the SCDynamicStore API.</span><br><span class="line"> */</span><br><span class="line">#define kNotifySCHostNameChange &quot;com.apple.system.hostname&quot;</span><br><span class="line">#define kNotifySCNetworkChange &quot;com.apple.system.config.network_change&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * Time Zone change notification</span><br><span class="line"> * Sent by notifyd when the system&apos;s timezone changes.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyTimeZoneChange &quot;com.apple.system.timezone&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * System clock change notification</span><br><span class="line"> * Sent when a process modifies the system clock using the settimeofday system call.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyClockSet &quot;com.apple.system.clock_set&quot;</span><br></pre></td></tr></table></figure>
+<p>由此可猜测在 <code>Darwin Notify Center</code> 中还可监听系统时区改变，系统时间改变，系统 <code>hostname</code> 改变的通知，未验证。</p>
+<p>在 <a href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter" target="_blank" rel="noopener">CFNotificationCenter Reference</a> 中有关于 <code>CFNotificationCenterGetDarwinNotifyCenter</code> 的描述如下:</p>
+<blockquote>
+<p>This notification center is used to cover the &lt;notify.h&gt; Core OS notification mechanism (see /usr/include/notify.h). An application has only one Darwin notification center, so this function returns the same value each time it is called.</p>
+<p>The Darwin Notify Center has no notion of per-user sessions, all notifications are system-wide. As with distributed notifications, the main thread’s run loop must be running in one of the common modes (usually kCFRunLoopDefaultMode) for Darwin-style notifications to be delivered.</p>
+</blockquote>
+<p>由此可见， <code>Darwin Notify Center</code> 是系统级别，每次使用接口 <code>CFNotificationCenterGetDarwinNotifyCenter</code> 返回的都是同一个 <code>Darwin Notify Center</code> 实例。</p>
+<p>关于 <code>Darwin Notify Center</code> 的更多信息可以参考:</p>
+<ul>
+<li><a href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter" target="_blank" rel="noopener">CFNotificationCenter Reference</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Darwin/Conceptual/MacOSXNotifcationOv/DarwinNotificationConcepts/DarwinNotificationConcepts.html" target="_blank" rel="noopener">Darwin Notification Concepts</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/DarwinNotify/index.html#//apple_ref/c/func/notify_post" target="_blank" rel="noopener">Darwin Notification API Reference</a></li>
+</ul>
+<p>本文参考:</p>
+<p><a href="http://www.cocoachina.com/bbs/read.php?tid=182299" target="_blank" rel="noopener">如何捕获连接某个无线网络的通知</a></p>
+<hr>
+<p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
+<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/iOS/">iOS</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/09/ios-get-current-network-info/"  data-tooltip="iOS获取当前SSID">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/04/ios-init-window-rootviewcontroller/" data-tooltip="iOS代码初始化window的rootViewController">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-ios-monitor-wifichange" data-title="iOS应用内监听wifi的变化" data-url="http://liumh.com/2015/08/04/ios-monitor-wifichange/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2017 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/09/ios-get-current-network-info/"  data-tooltip="iOS获取当前SSID">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/04/ios-init-window-rootviewcontroller/" data-tooltip="iOS代码初始化window的rootViewController">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/04/ios-monitor-wifichange/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+<script src="/assets/js/script.min.js"></script>
+<!--SCRIPTS END-->
+
+
+
+</html>

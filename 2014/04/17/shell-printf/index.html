@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>shell之printf - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文记录的是shell之printf格式化输出. 首先看看其 man page 内容: 1234567891011121314151617181920NAME     printf -- formatted outputSYNOPSIS     printf format [arguments ...]DESCRIPT">
+<meta name="keywords" content="shell,printf，格式化输出">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="shell之printf">
+<meta property="og:url" content="http://liumh.com/2014/04/17/shell-printf/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文记录的是shell之printf格式化输出. 首先看看其 man page 内容: 1234567891011121314151617181920NAME     printf -- formatted outputSYNOPSIS     printf format [arguments ...]DESCRIPTION     The printf utility formats and p">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2014-06-24T10:18:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shell之printf">
+<meta name="twitter:description" content="本文记录的是shell之printf格式化输出. 首先看看其 man page 内容: 1234567891011121314151617181920NAME     printf -- formatted outputSYNOPSIS     printf format [arguments ...]DESCRIPTION     The printf utility formats and p">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/ ">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/ "
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            shell之printf
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Thu Apr 17 2014 21:46:37 GMT+0800">
+	
+		    Apr 17, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/系统运维/">系统运维</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文记录的是shell之printf格式化输出.</p>
+<p>首先看看其 man page 内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     printf -- formatted output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     printf format [arguments ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The printf utility formats and prints its arguments, after   </span><br><span class="line">the first, under control of the format.  The format is a character  string which contains three types of objects: plain characters,   </span><br><span class="line">which are simply copied to standard output, character escape   </span><br><span class="line">sequences which are converted and copied to the standard   </span><br><span class="line">output, and format specifications, each of which causes printing   </span><br><span class="line">of the next successive argument.</span><br><span class="line"></span><br><span class="line">     The arguments after the first are treated as strings if the   </span><br><span class="line">corresponding format is either c, b or s;otherwise it is evaluated   </span><br><span class="line">as a C constant, with the following extensions:</span><br><span class="line"></span><br><span class="line">o   A leading plus or minus sign is allowed.</span><br><span class="line">o   If the leading character is a single or double quote, the value is the ASCII code of the next character.</span><br></pre></td></tr></table></figure>
+<p>从上述 man page 内容可以看出:</p>
+<ol type="1">
+<li><code>printf</code>通过<code>format</code>字符串格式化输出其后的<code>arguments</code>；</li>
+<li><code>format</code>字符串包含三种类型对象: 普通字符串，该对象输出时会直接拷贝到标准输出<code>STDOUT</code>;字符转义序列，通过字符转义之后输出到标准输出;格式说明符，每一个格式说明符对应输出相应的<code>argument</code>；</li>
+<li>如果对应的格式指示符是<code>%c</code>/<code>%b</code>/<code>%s</code>时，相对应的参数都视为字符串，否则它们会被解释为C语言的数字常量: 在其开头可使用正负号标识;如果字符串开头是单引号<code>'</code>或者双引号<code>&quot;</code>,那么打印输出的值是紧跟着单引号或者双引号后的那个字符的<code>ASCII</code>值</li>
+</ol>
+<a id="more"></a>
+<p>关于<code>%c</code>/<code>%b</code>/<code>%s</code>，其 man page的说明如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">c: The first character of argument is printed.</span><br><span class="line"></span><br><span class="line">s: Characters from the string argument are printed until  </span><br><span class="line">the end is reached or until the number of characters indicated by   </span><br><span class="line">the precision specification is reached; however if the precision   </span><br><span class="line">is 0 or missing, all characters in the string are printed.</span><br><span class="line"></span><br><span class="line">b: As for s, but interpret character escapes in backslash  </span><br><span class="line">notation in the string argument.</span><br></pre></td></tr></table></figure>
+<p>从上面的文档可以看出:</p>
+<ol type="1">
+<li>若使用<code>%c</code>指示符，则指打印输出参数中的第一个字符，会忽略其它字符；</li>
+<li>若使用<code>%s</code>指示符，则打印整个字符串参数，或者打印控制精度控制的字符个数，如果精度值是0或者没有控制精度值，则打印所有的字符值。</li>
+<li>使用<code>%s</code>时，在格式指示符中的转义字符能够被解析，而参数列表中的转义字符则不会被解析，但是若使用<code>%b</code>指示符，printf会解析格式指示符和参数列表中的转义字符,其后的参数列表需要用双引号</li>
+</ol>
+<p>对于以上说明，举以下几个例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello world\n&quot;</span><br><span class="line">hello world</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中输出了普通字符串+转义字符，可以看出，printf不同于echo会默认输出<code>\n</code>,使用printf输出新的一行必须在末尾加上<code>\n</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello %c, %s\n&quot; &quot;China&quot; &quot;World&quot;</span><br><span class="line">hello C, World</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中使用了<code>%c</code>格式指示符，只打印出来对应参数的第一个字符，忽略了该参数的其他字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello\tworld, welcome to%s\n&quot; &quot;\tChina&quot;</span><br><span class="line">hello	world, welcome to\tChina</span><br><span class="line">$ printf &quot;hello\tworld, welcome to%b\n&quot; &quot;\tChina&quot;</span><br><span class="line">hello	world, welcome to	China</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中第一种情况，只解析了<code>format</code>字符串中的转义字符，而未解析使用<code>%s</code>格式指示符控制的参数中的转义字符，而使用<code>%b</code>控制时，能够解析参数中的转义字符.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello %b see u\n&quot; hjkl\taa</span><br><span class="line">hello hjkltaa see u</span><br><span class="line">$ printf &quot;hello %b see u\n&quot; &quot;hjkl\taa&quot;</span><br><span class="line">hello hjkl	aa see u</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例是使用<code>%b</code>指示符解析参数中的转义字符时，参数未用双引号包含和使用双引号包含的情况对比。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello u are %s\n&quot; &quot;&apos;a&quot;</span><br><span class="line">hello u are &apos;a</span><br><span class="line">$ printf &quot;hello u are %d\n&quot; &quot;&apos;a&quot;</span><br><span class="line">hello u are 97</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例是 参数字符串开头是单引号<code>'</code>或者双引号<code>&quot;</code>时,那么打印输出的值是紧跟着单引号或者双引号后的那个字符的<code>ASCII</code>值 的实例</p>
+<p>关于格式方面的几个转义字符:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">\a      警告声音输出.</span><br><span class="line">\b      退格键&lt;backspace&gt;.</span><br><span class="line">\c      忽略该字符串中后面的任何字符(包括普通字符、转义字符以及参数)以及格式字符串中的字符，该规则只有在`%b`格式指示符控制下参数字符串中有效</span><br><span class="line">\f      换页&lt;form-feed&gt;.</span><br><span class="line">\n      输出新的一行.</span><br><span class="line">\r      Enter键，&lt;carriage return&gt; character.</span><br><span class="line">\t      水平制表符[tab].</span><br><span class="line">\v      垂直制表符.</span><br><span class="line">\&apos;      单引号.</span><br><span class="line">\\      反斜线.</span><br></pre></td></tr></table></figure>
+<p>下面说说上述转义字符中的<code>\c</code>与<code>\f</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;ab%sc%bdef%s&quot; &quot;AAA\n&quot; &quot;JQK\cioio&quot; &quot;China&quot;</span><br><span class="line">abAAA\ncJQK$</span><br></pre></td></tr></table></figure>
+<p><code>\c</code>需要与<code>%b</code>配合使用，若使用的是<code>%s</code>，则会原样输出，如上例的<code>AAA\n</code>参数；注意上例中的<code>%b</code>和参数<code>JQK\cioio</code>，遇到<code>\c</code>后，忽略了该参数后的字符<code>ioio</code>，也忽略了<code>%b</code>指示符后所有格式说明，包括普通字符<code>def</code>以及格式占位符<code>%s</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello a\fbbbbbkkdkkdk\flodldidkcmmjjd\n&quot;</span><br><span class="line">hello a</span><br><span class="line">       bbbbbkkdkkdk</span><br><span class="line">                   lodldidkcmmjjd</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上述是<code>\f</code>转义字符的示例，我也不知道该做何解释，领悟吧.</p>
+<p>每一个格式占位符都是以<code>%</code>引出，接下来的格式说明符可以按以下顺序包括:</p>
+<ol type="1">
+<li>0个或者多个标志位，这里暂且称为位置标识，稍后解释。</li>
+<li>Field Width, 字段宽度。</li>
+<li>精度控制</li>
+<li>参数格式类型</li>
+</ol>
+<p>其中，上述位置标识包括:</p>
+<ul>
+<li><code>#</code>: 该字符指示参数应该进行格式转换。对于<code>%c</code>/<code>%d</code>/<code>%s</code>格式类型，该选项不产生影响；对于<code>%o</code>强制其精度值增加，使其输出字符串的第一个字符为<code>0</code>；对于<code>%x</code>/<code>%X</code>,会有<code>0x</code>(<code>0X</code>)加在参数开头; 对于<code>%e</code>/<code>%E</code>/<code>%f</code>/<code>%g</code>/<code>%G</code>,在输出结果中总会包含有小数点，即使小数点后没有任何数字.</li>
+<li><code>-</code>: 该字符指定对应的参数字段使用左对齐方式.</li>
+<li><code>+</code>: 该字符指定，在输出有符号形式的数字时，在数字前总应该有相应符号.</li>
+<li>` <code>: 空格符，该符号指示在输出有符号形式的数字时，如果该数字是正数，则在该正数前应该有一空格，如果是负数，则在空格位置是</code>-<code>；如果使用了</code>+`位置标识，则该位置标识不起作用.</li>
+<li><code>0</code>: 该指示符表示，应该使用<code>0</code>填充代替空格填充，如果使用<code>-</code>位置标识，则该位置标识不起作用.</li>
+</ul>
+<p>位置标识的示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;hello %#s\n&quot; &quot;world, hey&quot;</span><br><span class="line">hello world, hey</span><br><span class="line">$ printf &quot;hello %s\n&quot; &quot;world, hey&quot;</span><br><span class="line">hello world, hey</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出<code>#</code>对<code>%s</code>格式类型无影响</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;this is octonary number: %o\n&quot; &quot;123&quot;</span><br><span class="line">this is octonary number: 173</span><br><span class="line">$ printf &quot;this is octonary number: %#o\n&quot; &quot;123&quot;</span><br><span class="line">this is octonary number: 0173</span><br><span class="line">$ printf &quot;this is octonary number: %x\n&quot; &quot;123&quot;</span><br><span class="line">this is octonary number: 7b</span><br><span class="line">$ printf &quot;this is octonary number: %#x\n&quot; &quot;123&quot;</span><br><span class="line">this is octonary number: 0x7b</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出，对于八进制和十六进制数字，使用<code>#</code>后会在参数前添加<code>0</code>或者<code>0x</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;Field width: |%10s|\t|%-10s|\n&quot; &quot;hello&quot; &quot;world&quot;</span><br><span class="line">Field width: |     hello|	|world     |</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出，使用<code>-</code>指示符之后，参数实行左对齐</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;signed number: %+d\n&quot; 3456</span><br><span class="line">signed number: +3456</span><br><span class="line">$ printf &quot;signed number: %+d\n&quot; -3456</span><br><span class="line">signed number: -3456</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出，使用<code>+</code>指示符之后，输出有符号数字时会在数字前加上<code>+</code>/<code>-</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;padding number:% d\n&quot; 3456</span><br><span class="line">padding number: 3456</span><br><span class="line">$ printf &quot;padding number:% d\n&quot; -3456</span><br><span class="line">padding number:-3456</span><br><span class="line">$ printf &quot;padding number:%+ d\n&quot; -3456</span><br><span class="line">padding number:-3456</span><br><span class="line">$ printf &quot;padding number:%+ d\n&quot; 3456</span><br><span class="line">padding number:+3456</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出使用空格指示符之后，输出正数时，会在正数前添加一个空格，输出负数时，会使用<code>-</code>填补空格处，如果同时使用了<code>+</code>指示符，则空格指示符不起作用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;padding number:|%5d|\n&quot; 23</span><br><span class="line">padding number:|   23|</span><br><span class="line">$ printf &quot;padding number:|%05d|\n&quot; 23</span><br><span class="line">padding number:|00023|</span><br><span class="line">$ printf &quot;padding number:|%-05d|\n&quot; 23</span><br><span class="line">padding number:|23   |</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中看出使用<code>0</code>指示符之后，输出的数字会在左边补0，如果同时使用了左对齐<code>-</code>指示符，那么<code>0</code>指示符不起作用</p>
+<p>接下来说说字段宽度控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;padding number:|%5d|\n&quot; -2345678</span><br><span class="line">padding number:|-2345678|</span><br><span class="line">$ printf &quot;padding number:|%5d|\n&quot; -23</span><br><span class="line">padding number:|  -23|</span><br><span class="line">$ printf &quot;padding number:|%-5d|\n&quot; -23</span><br><span class="line">padding number:|-23  |</span><br></pre></td></tr></table></figure>
+<p>如上例所示，使输出的整数5个字符宽度，如果数字宽度大于5，那么使用实际宽度(不进行截断), 如果数字宽度小于5，那个左边使用空格占位补齐，如果使用的左对齐方式，那么右边使用空格占位补齐</p>
+<p>接下来说说输出的精度控制。精度控制使用一个小数点加上紧接着的数字(精度值)表示.对于<code>%e</code>和<code>%f</code>格式类型，精度控制指定的是小数点后可保留的小数点位数；对于字符串参数则表示可输出的最大字符个数；如果小数点后的精度值没有，那么则是将精度值视为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;padding number:|%.2f|\n&quot; -23.9876543</span><br><span class="line">padding number:|-23.99|</span><br><span class="line">$ printf &quot;padding number:|%.f|\n&quot; -23.9876543</span><br><span class="line">padding number:|-24|</span><br><span class="line">$ printf &quot;padding number:|%.2s|\n&quot; &quot;hello&quot;</span><br><span class="line">padding number:|he|</span><br><span class="line">$ printf &quot;padding number:|%.s|\n&quot; &quot;hello&quot;</span><br><span class="line">padding number:||</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上例中第一种情形，保留2位小数，第二种情形，没有精度控制值，只有<code>.</code>，表示不保留小数部分，第三和第四种情形是针对字符的输出控制。</p>
+<p>最后说明，参数格式类型使用单一字符标识(one of <code>diouxXfFeEgGaAcsb</code>).从之前的例子中已经看到部分类型的使用。</p>
+<p>对于字段宽度控制和精度控制中，可能会使用<code>*</code>代替数字，这种情况下，由参数控制字段的宽度和输出精度。</p>
+<p>对于参数格式类型控制字符<code>diouxXfFeEgGaAcsb</code>说明如下:</p>
+<p><code>diouXx</code>: 指示参数会以带有符号的十进制数输出(<code>d</code>或者<code>i</code>), 无符号八进制(<code>o</code>), 无符号十进制(<code>u</code>),以及无符号十六进制(<code>x</code>或<code>X</code>)</p>
+<p><code>fF</code>: 指示参数会以<code>[-]ddd.ddd</code>的格式输出，其中小数点后的<code>d</code>个数等同于参数的精度控制，如果没有精度控制值，则使用默认值6；如果精度值是0，那么不会输出小数点及任何小数部分. The values infinity and NaN are printed as <code>inf</code> and <code>nan</code>, respectively.</p>
+<p><code>eE</code>: 指示参数以[-<u>d.ddd</u>+-<u>dd</u>]的格式输出，在小数点前面会有一位数字，小数点后的数字位数由精度值控制，如果没有精度控制值，则使用默认值6；The values infinity and NaN are printed as <code>inf</code> and <code>nan</code>, respectively.</p>
+<p><code>gG</code>: The argument is printed in style f (F) or in style e (E) whichever gives full precision in minimum space.</p>
+<p><code>aA</code>: The argument is printed in style [-<u>h.hhh</u>+-p<u>d</u>] where there is one digit before the hexadecimal point and the number after is equal to the precision specification for the<br>
+argument; when the precision is missing, enough digits are<br>
+produced to convey the argument’s exact double-precision floating-point representation. The values infinity and NaN are printed as <code>inf</code> and <code>nan</code>, respectively.</p>
+<p><code>%</code>: Print a <code>%</code>; no argument is used.</p>
+<p>In no case does a non-existent or small field width cause truncation of a field; padding takes place only if the specified<br>
+field width exceeds the actual width.</p>
+<p>下面看几个例子来理解。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;float number: %f\n&quot; 1342.78654329</span><br><span class="line">float number: 1342.786543</span><br><span class="line">$ printf &quot;float number: |%.4f|\n&quot; -1342.78654329</span><br><span class="line">float number: |-1342.7865|</span><br><span class="line">$ printf &quot;float number: |%.f|\n&quot; -1342.78654329</span><br><span class="line">float number: |-1343|</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上面的例子中第一种情形展示的精度控制默认值(小数点后6位)；第二种情形表示保留小数点后4位；第三种情形表示没有精度控制值时忽略小数点及小数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;float number: |%.e|\n&quot; -1342.78654329</span><br><span class="line">float number: |-1e+03|</span><br><span class="line">$ printf &quot;float number: |%e|\n&quot; -1342.78654329</span><br><span class="line">float number: |-1.342787e+03|</span><br><span class="line">$ printf &quot;float number: |%.3e|\n&quot; -1342.78654329</span><br><span class="line">float number: |-1.343e+03|</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<p>上面是<code>eE</code>的例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;significant digit control: %.4G\n&quot; 123456.3456256789</span><br><span class="line">significant digit control: 1.235E+05</span><br><span class="line">$ printf &quot;significant digit control: %.4G\n&quot; 56.3456256789</span><br><span class="line">significant digit control: 56.35</span><br></pre></td></tr></table></figure>
+<p>最后再次说明一种格式:</p>
+<p><code>%N.nf</code>: 其中N表示浮点数所占有的总的宽度，包括小数点，n表示小数点的个数，如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ printf &quot;|%6.2f|\n&quot;  567.98765442</span><br><span class="line">|567.99|</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/shell/">shell</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/01/hexo-named-anchors/"  data-tooltip="markdown中命名锚">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/04/16/shell-about-echo/" data-tooltip="shell之echo知多少">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-shell-printf" data-title="shell之printf" data-url="http://liumh.com/2014/04/17/shell-printf/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2017 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/01/hexo-named-anchors/"  data-tooltip="markdown中命名锚">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/04/16/shell-about-echo/" data-tooltip="shell之echo知多少">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/04/17/shell-printf/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+<script src="/assets/js/script.min.js"></script>
+<!--SCRIPTS END-->
+
+
+
+</html>
