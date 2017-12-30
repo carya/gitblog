@@ -202,6 +202,49 @@
                 <div class="postShorten-header">
                     <h1 class="postShorten-title" itemprop="headline">
                         
+                                <a class="link-unstyled" href="/2015/08/09/ios-get-current-network-info/">iOS获取当前SSID</a>
+                        
+                    </h1>
+                    <div class="postShorten-meta">
+    <time itemprop="datePublished" content="Sun Aug 09 2015 22:44:11 GMT+0800">
+	
+		    Aug 09, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/编程语言/">编程语言</a>
+
+
+    
+</div>
+                </div>
+                <div class="postShorten-excerpt" itemprop="articleBody">
+                    
+                        <p>iOS 中可获取当前网络接口的 <code>SSID</code> 和 <code>BSSID</code> 信息，如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">NSString *ssid = @&quot;&quot;;</span><br><span class="line">NSString *bssid = @&quot;&quot;;</span><br><span class="line">NSArray *ifs = (__bridge_transfer id)CNCopySupportedInterfaces();</span><br><span class="line">NSDictionary *info;</span><br><span class="line">if ([ifs count] &gt; 0) &#123;</span><br><span class="line">    for (NSString *ifname in ifs) &#123;</span><br><span class="line">        info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifname);</span><br><span class="line">        </span><br><span class="line">        NSString *ssidKey =  (__bridge_transfer NSString *)kCNNetworkInfoKeySSID;</span><br><span class="line">        NSString *bssidKey = (__bridge_transfer NSString *)kCNNetworkInfoKeyBSSID;</span><br><span class="line">        if (info) &#123;</span><br><span class="line">            ssid = info[ssidKey];</span><br><span class="line">            bssid = info[bssidKey];</span><br><span class="line">            NSLog(@&quot;ssid: %@&quot;, ssid);</span><br><span class="line">            NSLog(@&quot;bssid: %@&quot;, bssid);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                    
+                    
+                        
+                            <a href="/2015/08/09/ios-get-current-network-info/" class="postShorten-excerpt_link link ">Continue reading</a>
+                            
+                        
+                    
+                    
+                </div>
+            </div>
+            
+        </article>
+    
+        
+        
+                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
+        
+            <div class="postShorten-wrap">
+                <div class="postShorten-header">
+                    <h1 class="postShorten-title" itemprop="headline">
+                        
                                 <a class="link-unstyled" href="/2015/08/04/ios-monitor-wifichange/">iOS应用内监听wifi的变化</a>
                         
                     </h1>
@@ -576,52 +619,6 @@
                     
                         
                             <a href="/2015/06/14/ios-create-gradient-backgroundcolor/" class="postShorten-excerpt_link link ">Continue reading</a>
-                            
-                        
-                    
-                    
-                </div>
-            </div>
-            
-        </article>
-    
-        
-        
-                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
-        
-            <div class="postShorten-wrap">
-                <div class="postShorten-header">
-                    <h1 class="postShorten-title" itemprop="headline">
-                        
-                                <a class="link-unstyled" href="/2015/06/13/ios-uicolor-util/">iOS从十六进制创建UIColor</a>
-                        
-                    </h1>
-                    <div class="postShorten-meta">
-    <time itemprop="datePublished" content="Sat Jun 13 2015 21:02:44 GMT+0800">
-	
-		    Jun 13, 2015
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/编程语言/">编程语言</a>
-
-
-    
-</div>
-                </div>
-                <div class="postShorten-excerpt" itemprop="articleBody">
-                    
-                        <p>iOS UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为 <code>R:60 G:180 B:174</code> 的UIColor，使用UIColor的api可以使用如下的方式:</p>
-<p><code>[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
-<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>, 使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>, 那么可以使用如下方式创建UIColor:</p>
-<p><code>[UIColor colorWithHex:0xFF3CB4AE]</code></p>
-<p>实现方式如下:</p>
-                    
-                    
-                        
-                            <a href="/2015/06/13/ios-uicolor-util/" class="postShorten-excerpt_link link ">Continue reading</a>
                             
                         
                     
