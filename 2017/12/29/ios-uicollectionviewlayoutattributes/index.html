@@ -12,19 +12,19 @@
     
         <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <meta name="description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。">
+    <meta name="description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应">
 <meta name="keywords" content="iOS,UICollectionViewLayoutAttributes,UICollectionView">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="UICollectionViewLayoutAttributes初探">
 <meta property="og:url" content="http://liumh.com/2017/12/29/ios-uicollectionviewlayoutattributes/index.html">
 <meta property="og:site_name" content="刘茂华的博客">
-<meta property="og:description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。">
+<meta property="og:description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应用。">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://readus-org.qiniudn.com/wechat_appreciate_qrcode.jpg">
-<meta property="og:updated_time" content="2017-12-30T14:51:11.115Z">
+<meta property="og:updated_time" content="2017-12-31T01:28:52.115Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UICollectionViewLayoutAttributes初探">
-<meta name="twitter:description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。">
+<meta name="twitter:description" content="UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应用。">
 <meta name="twitter:image" content="http://readus-org.qiniudn.com/wechat_appreciate_qrcode.jpg">
     
     
@@ -222,7 +222,7 @@
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <p>UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。</p>
+            <p>UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应用。</p>
 <a id="more"></a>
 <h1 id="uicollectionviewlayoutattributes概览">UICollectionViewLayoutAttributes概览</h1>
 <p>UICollectionViewLayoutAttributes的官方解释：</p>
@@ -262,7 +262,7 @@
 <p>This method belongs to UICollectionReusableView because layout attributes are applicable to cells, supplementary views, and decoration views. First, you must call super’s implementation. Next, it checks to ensure that the layout attributes are an instance of our custom subclass before casting the pointer.</p>
 </blockquote>
 <p>注意：该方法声明在UICollectionReusableView类中，适用于cells、supplementary view、decoration views。首先你必须调用父类的实现，然后检查layoutAttributes是否自定义类的实例，来决定是否进行指针的强制转换。</p>
-<h1 id="自定义uicollectionview各个-section的背景色">自定义UICollectionView各个 Section的背景色</h1>
+<h1 id="自定义uicollectionview各个section的背景色">自定义UICollectionView各个Section的背景色</h1>
 <p>前面讲解了UICollectionViewLayoutAttributes的基本使用，使用的示例代码是为了能够达到自定义UICollectionView的各个Section的背景色。你可能对这个需求有疑惑，在UICollectionView中，每个Section中可以定义sectionInset、minimumLineSpacing、minimumInteritemSpacing属性值，而这些属性值定义的空白区域的背景色是与UICollectionView的背景色保持一致，当我们的需求中需要定义与UICollectionView的背景色不一致时，或者各个Section定义的背景色也各有区别时，</p>
 <p>为了达到此目的，方案是在各个section中添加decoration view，然后设置decoration view的颜色就是各个section的背景色，具体的代码见 <a href="https://github.com/carya/SectionBackgroundColor" target="_blank" rel="noopener">github</a>中下载,如有错误之处，欢迎指正。</p>
 <p>需要重点提出的是，如果你想在删除cell或者section的时候动态添加或者删除decoration view，你可能需要花点功夫来使cell的添加或者删除动画与decoration view的添加与删除动画保持同步。</p>
