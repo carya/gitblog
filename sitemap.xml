@@ -2,9 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://liumh.com/2018/09/18/design-pattern-strategy/</loc>
+    
+    <lastmod>2018-09-20T06:32:46.316Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://liumh.com/2018/08/18/ios-attribute-section/</loc>
+    
+    <lastmod>2018-08-19T11:15:30.058Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://liumh.com/2013/10/29/uml-class-diagram/</loc>
+    
+    <lastmod>2018-05-26T09:20:53.653Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://liumh.com/2017/12/29/ios-uicollectionviewlayoutattributes/</loc>
     
-    <lastmod>2017-12-31T01:28:52.115Z</lastmod>
+    <lastmod>2017-12-31T02:01:21.035Z</lastmod>
     
   </url>
   
@@ -366,13 +387,6 @@
   </url>
   
   <url>
-    <loc>http://liumh.com/2013/10/29/uml-class-diagram/</loc>
-    
-    <lastmod>2014-07-01T06:17:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://liumh.com/2014/03/14/snmp-vacm-mask/</loc>
     
     <lastmod>2014-07-01T05:52:44.000Z</lastmod>
@@ -492,14 +506,14 @@
   </url>
   
   <url>
-    <loc>http://liumh.com/2013/10/19/delete-certain-file/</loc>
+    <loc>http://liumh.com/2013/10/18/about-me/</loc>
     
     <lastmod>2014-06-24T09:03:33.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://liumh.com/2013/10/18/about-me/</loc>
+    <loc>http://liumh.com/2013/10/19/delete-certain-file/</loc>
     
     <lastmod>2014-06-24T09:03:33.000Z</lastmod>
     
