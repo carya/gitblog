@@ -201,6 +201,64 @@
                 <div class="postShorten-header">
                     <h1 class="postShorten-title" itemprop="headline">
                         
+                                <a class="link-unstyled" href="/2014/07/18/pandoc-convert-chinese-pdf/">pandoc转换中文pdf攻略</a>
+                        
+                    </h1>
+                    <div class="postShorten-meta">
+    <time itemprop="datePublished" content="Fri Jul 18 2014 15:33:46 GMT+0800">
+	
+		    Jul 18, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/工具使用/">工具使用</a>
+
+
+    
+</div>
+                </div>
+                <div class="postShorten-excerpt" itemprop="articleBody">
+                    
+                        <p>本文记录的在Mac下pandoc转换markdown输出含中文的文本，包含一些依赖的安装以及命令使用，最后的参考文档给了我很大帮助。</p>
+<ol type="1">
+<li><p><a href="#pandoc-install">pandoc的安装</a></p></li>
+<li><p><a href="#pdf-convert-params">转换pdf常用参数</a></p></li>
+</ol>
+<h3 id="pandoc-install">pandoc的安装</h3>
+<p>简要记录安装步骤如下:</p>
+<ol type="1">
+<li><p>按照<a href="http://johnmacfarlane.net/pandoc/installing.html" target="_blank" rel="noopener">pandoc官方网站</a>说明, 下载安装pandoc</p></li>
+<li><p>按照<a href="http://johnmacfarlane.net/pandoc/installing.html" target="_blank" rel="noopener">pandoc官方网站</a>说明，转换输出PDF时，需要LaTeX，下载安装MacTex-Additions和BasicTex</p></li>
+<li><p>在tzengyuxio的开源项目中下载<a href="https://github.com/tzengyuxio/pages/blob/gh-pages/pandoc/pm-template.latex" target="_blank" rel="noopener">pm-template.latex</a> pdf中文模板，将该模板中setCJKmainfont字段值LiHei Pro修改为电脑上带有的中文字体，我的自己安装了微软雅黑字体，于是修改成了<code>Microsoft YaHei</code></p></li>
+<li><p>使用tlmgr工具安装依赖titling和lastpage</p></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$sudo tlmgr install titling</span><br><span class="line">$sudo tlmgr install lastpage</span><br></pre></td></tr></table></figure>
+<ol start="5" type="1">
+<li>使用命令<code>pandoc --latex-engine=xelatex --template=pm-template markdown_strict.md -o markdown.pdf</code>转换输出pdf, 可将pm-template.latex文件放置任意处，只是需要使用–template参数指定其路径.</li>
+</ol>
+                    
+                    
+                        
+                            <a href="/2014/07/18/pandoc-convert-chinese-pdf/" class="postShorten-excerpt_link link ">Continue reading</a>
+                            
+                        
+                    
+                    
+                </div>
+            </div>
+            
+        </article>
+    
+        
+        
+                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
+        
+            <div class="postShorten-wrap">
+                <div class="postShorten-header">
+                    <h1 class="postShorten-title" itemprop="headline">
+                        
                                 <a class="link-unstyled" href="/2014/07/08/pandoc-markdown-named-anchors/">Pandoc&#39;s markdown命名锚</a>
                         
                     </h1>
@@ -603,51 +661,6 @@
                     
                         
                             <a href="/2014/03/27/gson-collection-with-arbitrary-types/" class="postShorten-excerpt_link link ">Continue reading</a>
-                            
-                        
-                    
-                    
-                </div>
-            </div>
-            
-        </article>
-    
-        
-        
-                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
-        
-            <div class="postShorten-wrap">
-                <div class="postShorten-header">
-                    <h1 class="postShorten-title" itemprop="headline">
-                        
-                                <a class="link-unstyled" href="/2014/03/27/gson-excluding-fields-from-serialization/">Gson序列化和反序列化实体中部分属性</a>
-                        
-                    </h1>
-                    <div class="postShorten-meta">
-    <time itemprop="datePublished" content="Thu Mar 27 2014 21:06:53 GMT+0800">
-	
-		    Mar 27, 2014
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/编程语言/">编程语言</a>
-
-
-    
-</div>
-                </div>
-                <div class="postShorten-excerpt" itemprop="articleBody">
-                    
-                        <p>本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用<code>transient</code>和使用注解<code>@Expose</code>.</p>
-<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽. 如下示例所示:</p>
-<p>Student对象:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private transient int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    </span><br><span class="line">    //......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-                    
-                    
-                        
-                            <a href="/2014/03/27/gson-excluding-fields-from-serialization/" class="postShorten-excerpt_link link ">Continue reading</a>
                             
                         
                     

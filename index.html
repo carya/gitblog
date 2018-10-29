@@ -201,6 +201,53 @@
                 <div class="postShorten-header">
                     <h1 class="postShorten-title" itemprop="headline">
                         
+                                <a class="link-unstyled" href="/2018/10/11/beehive-analysis/">阿里组件化框架BeeHive解析</a>
+                        
+                    </h1>
+                    <div class="postShorten-meta">
+    <time itemprop="datePublished" content="Thu Oct 11 2018 11:14:46 GMT+0800">
+	
+		    Oct 11, 2018
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/设计模式/">设计模式</a>
+
+
+    
+</div>
+                </div>
+                <div class="postShorten-excerpt" itemprop="articleBody">
+                    
+                        <p>BeeHive核心思想涉及两个部分：</p>
+<ol type="1">
+<li>各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。</li>
+<li>App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。</li>
+</ol>
+<p>Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。</p>
+                    
+                    
+                        
+                            <a href="/2018/10/11/beehive-analysis/" class="postShorten-excerpt_link link ">Continue reading</a>
+                            
+                        
+                    
+                    
+                </div>
+            </div>
+            
+        </article>
+    
+        
+        
+                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
+        
+            <div class="postShorten-wrap">
+                <div class="postShorten-header">
+                    <h1 class="postShorten-title" itemprop="headline">
+                        
                                 <a class="link-unstyled" href="/2018/09/18/design-pattern-strategy/">iOS策略设计模式实践</a>
                         
                     </h1>
@@ -243,7 +290,7 @@
                 <div class="postShorten-header">
                     <h1 class="postShorten-title" itemprop="headline">
                         
-                                <a class="link-unstyled" href="/2018/08/18/ios-attribute-section/">ios-attribute-section</a>
+                                <a class="link-unstyled" href="/2018/08/18/ios-attribute-section/">__attribute__</a>
                         
                     </h1>
                     <div class="postShorten-meta">
@@ -257,10 +304,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            __attribute语法 used,section修饰符作用介绍 Mach-O文件格式
-我们的程序想要跑起来，肯定它的可执行文件格式要被操作系统所理解，比如 ELF 是 Linux下可执行文件的格式，PE32／PE32+是windows的可执行文件的格式，那么对于OS X和iOS 来说 Mach-O 是其可执行文件的格式。
-我们平时了解到的可执行文件、库文件、Dsym文件、动态库、动态连接器都是<br>
+                        <p><code>__attribute__</code>是在C, C++, Objective-C语言中使用的编译指令，一般以<code>__attribute__(xxx)</code>的形式出现在代码中，方便开发者向编译器表达某种要求，参与控制如Static Analyzer、Name Mangling、Code Generation等过程。</p>
                     
                     
                         
@@ -268,8 +312,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -570,49 +612,6 @@ Popup_Window动画
                     
                         
                             <a href="/2015/12/12/ios-understand-copy/" class="postShorten-excerpt_link link ">Continue reading</a>
-                            
-                        
-                    
-                    
-                </div>
-            </div>
-            
-        </article>
-    
-        
-        
-                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
-        
-            <div class="postShorten-wrap">
-                <div class="postShorten-header">
-                    <h1 class="postShorten-title" itemprop="headline">
-                        
-                                <a class="link-unstyled" href="/2015/12/08/ios-change-readonly-property/">iOS修改声明为readonly的属性值</a>
-                        
-                    </h1>
-                    <div class="postShorten-meta">
-    <time itemprop="datePublished" content="Tue Dec 08 2015 22:03:24 GMT+0800">
-	
-		    Dec 08, 2015
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/编程语言/">编程语言</a>
-
-
-    
-</div>
-                </div>
-                <div class="postShorten-excerpt" itemprop="articleBody">
-                    
-                        <p>本文讨论的是，对于类中声明为 readonly 的属性值，我们就不可以修改其值了么？如何可以，那么如何修改呢？</p>
-<p>为了便于说明，定义一个 <code>ACLStudent</code> 的类:</p>
-                    
-                    
-                        
-                            <a href="/2015/12/08/ios-change-readonly-property/" class="postShorten-excerpt_link link ">Continue reading</a>
                             
                         
                     
