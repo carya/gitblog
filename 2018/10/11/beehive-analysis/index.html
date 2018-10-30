@@ -28,8 +28,9 @@
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-create-service.png">
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-system-event.png">
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-event-extension.png">
+<meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-class.png">
 <meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
-<meta property="og:updated_time" content="2018-10-30T01:29:06.564Z">
+<meta property="og:updated_time" content="2018-10-30T10:12:08.139Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="阿里组件化框架BeeHive解析">
 <meta name="twitter:description" content="BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。">
@@ -478,6 +479,9 @@
 <li>缓存的service</li>
 <li>3D-Touch, OpenURL moduel, Remote Or Local Notifications, User Activity Model等</li>
 </ul>
+<p>最后，附一张BeeHive主要类的的类图关系。</p>
+<!--![BeeHive类图](/img/beehive-analysis/beehive-class.png)-->
+<div class="figure center"><img class="fig-img" src="/img/beehive-analysis/beehive-class.png" width="" height="" alt="BeeHive类图"><span class="caption">BeeHive类图</span></div>
 <hr>
 <p>如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
 <div class="figure " style="width:117;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" width="117" height="174" alt=""></div>
