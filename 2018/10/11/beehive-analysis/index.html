@@ -12,13 +12,13 @@
     
         <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <meta name="description" content="BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于">
+    <meta name="description" content="本文是基于BeeHive版本1.6.0进行分析。 BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分">
 <meta name="keywords" content="设计模式,组件化">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="阿里组件化框架BeeHive解析">
 <meta property="og:url" content="http://liumh.com/2018/10/11/beehive-analysis/index.html">
 <meta property="og:site_name" content="刘茂华的博客">
-<meta property="og:description" content="BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。">
+<meta property="og:description" content="本文是基于BeeHive版本1.6.0进行分析。 BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-arch.png">
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-register-module.png">
@@ -30,10 +30,10 @@
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-event-extension.png">
 <meta property="og:image" content="http://liumh.com/img/beehive-analysis/beehive-class.png">
 <meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
-<meta property="og:updated_time" content="2018-10-30T10:12:08.139Z">
+<meta property="og:updated_time" content="2018-10-31T01:32:38.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="阿里组件化框架BeeHive解析">
-<meta name="twitter:description" content="BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。">
+<meta name="twitter:description" content="本文是基于BeeHive版本1.6.0进行分析。 BeeHive核心思想涉及两个部分：  各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。 App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。  Core+Plugin的形式可以让一个应用主流程部分得到集中管理，不同模块以plugin形式存在，便于横向的扩展和移植。">
 <meta name="twitter:image" content="http://liumh.com/img/beehive-analysis/beehive-arch.png">
     
     
@@ -231,7 +231,8 @@
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <p>BeeHive核心思想涉及两个部分：</p>
+            <p>本文是基于BeeHive版本1.6.0进行分析。</p>
+<p>BeeHive核心思想涉及两个部分：</p>
 <ol type="1">
 <li>各个模块间从直接调用对应模块，变成以Service的形式，避免了直接依赖。</li>
 <li>App生命周期的分发，将耦合在AppDelegate中的逻辑拆分，每个模块以微应用的形式独立存在。</li>
