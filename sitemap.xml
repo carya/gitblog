@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/</loc>
+    
+    <lastmod>2018-11-20T08:22:03.147Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/</loc>
     
-    <lastmod>2018-11-20T08:02:18.996Z</lastmod>
+    <lastmod>2018-11-20T08:03:59.633Z</lastmod>
     
   </url>
   
@@ -138,13 +145,6 @@
     <loc>http://liumh.com/2015/11/25/ios-auto-archive-ipa/</loc>
     
     <lastmod>2016-12-28T03:34:18.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/</loc>
-    
-    <lastmod>2016-05-30T12:58:02.000Z</lastmod>
     
   </url>
   
@@ -513,14 +513,14 @@
   </url>
   
   <url>
-    <loc>http://liumh.com/2013/10/18/about-me/</loc>
+    <loc>http://liumh.com/2013/10/19/delete-certain-file/</loc>
     
     <lastmod>2014-06-24T09:03:33.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://liumh.com/2013/10/19/delete-certain-file/</loc>
+    <loc>http://liumh.com/2013/10/18/about-me/</loc>
     
     <lastmod>2014-06-24T09:03:33.000Z</lastmod>
     
