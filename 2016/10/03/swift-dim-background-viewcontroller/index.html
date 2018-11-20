@@ -20,13 +20,13 @@
 <meta property="og:site_name" content="刘茂华的博客">
 <meta property="og:description" content="iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。 Popup_Window动画 这里有3种实现方案, 根据情况可选择合适的方案:  添加视图到ViewController.view.window上 使用系统提供的模态转场 切换window  添加视图到ViewController">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/ios-modal-popup-window.gif">
-<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_nolimit.png">
-<meta property="og:updated_time" content="2016-11-19T01:21:09.000Z">
+<meta property="og:image" content="http://liumh.com/img/modal-popup/modal-popup-window.gif">
+<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
+<meta property="og:updated_time" content="2018-11-20T07:58:59.655Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="创建模态视图">
 <meta name="twitter:description" content="iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。 Popup_Window动画 这里有3种实现方案, 根据情况可选择合适的方案:  添加视图到ViewController.view.window上 使用系统提供的模态转场 切换window  添加视图到ViewController">
-<meta name="twitter:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/ios-modal-popup-window.gif">
+<meta name="twitter:image" content="http://liumh.com/img/modal-popup/modal-popup-window.gif">
     
     
         
@@ -224,7 +224,7 @@
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
             <p>iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。</p>
-<div class="figure left" style="width:;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/ios-modal-popup-window.gif" width="" height="" alt="Popup_Window动画"><span class="caption">Popup_Window动画</span></div><div style="clear:both;"></div>
+<div class="figure left" style="width:;"><img class="fig-img" src="/img/modal-popup/modal-popup-window.gif" width="" height="" alt="Popup_Window动画"><span class="caption">Popup_Window动画</span></div><div style="clear:both;"></div>
 <p>这里有3种实现方案, 根据情况可选择合适的方案:</p>
 <ol type="1">
 <li>添加视图到<code>ViewController.view.window</code>上</li>
@@ -244,9 +244,10 @@
 <h4 id="切换window">切换window</h4>
 <p>这种实现方式的好处是将弹出的用户关心的视图封装到一个新的视图控制器中，与当前的视图控制器分离，从而使业务分离，避免当前的试图控制器臃肿。显示模态视图的代码如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@IBAction func showPopupViewController(_ sender: AnyObject) &#123;</span><br><span class="line">    checkoutNewWindow()</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">func checkoutNewWindow() &#123;</span><br><span class="line">    </span><br><span class="line">    var frame = UIScreen.main.bounds</span><br><span class="line">    frame.origin.x += frame.size.width</span><br><span class="line">    popWindow = UIWindow.init(frame: frame)</span><br><span class="line">    </span><br><span class="line">    let storyboard = UIStoryboard.init(name: &quot;Main&quot;, bundle: nil)</span><br><span class="line">    let popupViewController = storyboard.instantiateViewController(withIdentifier: &quot;PopupViewController&quot;)</span><br><span class="line">    popWindow.rootViewController = popupViewController</span><br><span class="line">    popWindow.makeKeyAndVisible()</span><br><span class="line">    </span><br><span class="line">    UIView.animate(withDuration: 0.5, animations: &#123;</span><br><span class="line">        let rect = UIScreen.main.bounds</span><br><span class="line">        self.popWindow.frame = rect</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本工程所有代码见<a href="https://github.com/carya/PopupWindow" target="_blank" rel="noopener">github</a> ___</p>
+<p>本工程所有代码见<a href="https://github.com/carya/PopupWindow" target="_blank" rel="noopener">github</a></p>
+<hr>
 <p>如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_nolimit.png" width="117" height="174" alt=""></div>
+<div class="figure " style="width:117;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" width="117" height="174" alt=""></div>
 
             
                 
