@@ -20,18 +20,17 @@
 <meta property="og:site_name" content="刘茂华的博客">
 <meta property="og:description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://developer.apple.com/library/ios/recipes/xcode_help-project_editor/Art/target_dependencies_2x.png">
 <meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
 <meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configfile.png">
 <meta property="og:image" content="http://liumh.com/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png">
 <meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_linkto_configfile.png">
 <meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_valid_configuration_default.png">
 <meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
-<meta property="og:updated_time" content="2018-11-20T08:27:36.879Z">
+<meta property="og:updated_time" content="2018-11-20T08:31:48.149Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Xcode使用xcconfig文件配置环境">
 <meta name="twitter:description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
-<meta name="twitter:image" content="https://developer.apple.com/library/ios/recipes/xcode_help-project_editor/Art/target_dependencies_2x.png">
+<meta name="twitter:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
     
     
         
@@ -247,10 +246,7 @@
 <p>A target and the product it creates can be related to another target. If a target requires the output of another target in order to build, the first target is said to depend upon the second. If both targets are in the same workspace, Xcode can discover the dependency, in which case it builds the products in the required order. Such a relationship is referred to as an implicit dependency. You can also specify explicit target dependencies in your build settings, and you can specify that two targets that Xcode might expect to have an implicit dependency are actually not dependent. For example, you might build both a library and an application that links against that library in the same workspace. Xcode can discover this relationship and automatically build the library first. However, if you actually want to link against a version of the library other than the one built in the workspace, you can create an explicit dependency in your build settings, which overrides this implicit dependency.</p>
 </blockquote>
 <p>target 和其生成的 product 可与另一个 target 有关，如果一个 target 的 build 依赖于另一个 target 的输出，那么我们就说前一个 target 依赖于后一个 target .如果这些 target 在同一个 workspace 中，那么 Xcode 能够发现这种依赖关系，从而使其以我们期望的顺序生成 products.这种关系被称为隐式依赖关系。同时，你可以显示指定 targets 之间的依赖关系，并且这种依赖关系会覆盖 Xcode 推测出的隐式依赖关系。</p>
-<p>指定 targets 之间的依赖关系的地方在 Project Editor-&gt;TRAGETS-&gt;Build Phases-&gt;Target Dependencies 处设置。如下图所示:</p>
-<figure>
-<img src="https://developer.apple.com/library/ios/recipes/xcode_help-project_editor/Art/target_dependencies_2x.png" alt="添加targets间的依赖关系"><figcaption>添加targets间的依赖关系</figcaption>
-</figure>
+<p>指定 targets 之间的依赖关系的地方在 Project Editor-&gt;TRAGETS-&gt;Build Phases-&gt;Target Dependencies 处设置。</p>
 <h3 id="xcode-project">Xcode Project</h3>
 <p>官方文档的解释如下:</p>
 <blockquote>
