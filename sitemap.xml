@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://liumh.com/2021/04/17/about-me/</loc>
+    <loc>http://liumh.com/2021/04/17/app-support/</loc>
     
     <lastmod>2021-04-18</lastmod>
     
@@ -550,6 +550,13 @@
   </url>
   
   <url>
+    <loc>http://liumh.com/tags/iOS/</loc>
+    <lastmod>2021-04-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://liumh.com/tags/shell/</loc>
     <lastmod>2021-04-18</lastmod>
     <changefreq>daily</changefreq>
@@ -558,13 +565,6 @@
   
   <url>
     <loc>http://liumh.com/tags/linux/</loc>
-    <lastmod>2021-04-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://liumh.com/tags/iOS/</loc>
     <lastmod>2021-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
