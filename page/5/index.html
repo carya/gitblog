@@ -224,6 +224,59 @@
                     
                         <a
                             class="link-unstyled"
+                            href="/2014/07/23/gson-null-object-support/"
+                            aria-label=": Gson输出null值"
+                        >
+                            Gson输出null值
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2014-07-23T21:37:25+08:00">
+	
+		    Jul 23, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <p>使用Gson序列化对象时，默认情况下，对象值为&quot;null&quot;的字段在输出值会被忽略(NOTE:collections和arrays中的null对象会被保留)。如果要使Gson序列化对象输出所有的null值，可使用如下方法进行配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Gson gson &#x3D; new GsonBuilder().serializeNulls().create();</span><br></pre></td></tr></table></figure>
+<p>NOTE: 当使用Gson序列化null值时，它会添加JsonNull元素到JsonElement结构中。</p>
+                    
+                        <a
+                            href="/2014/07/23/gson-null-object-support/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": Gson输出null值"
+                        >
+                            Continue reading
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
                             href="/2014/07/21/gson-pretty-printing/"
                             aria-label=": Gson格式化输出JSON字符串"
                         >
@@ -719,66 +772,6 @@
                             href="/2014/04/17/shell-printf/"
                             class="postShorten-excerpt_link link"
                             aria-label=": shell之printf"
-                        >
-                            Continue reading
-                        </a>
-                        
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-right">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2014/04/16/shell-about-echo/"
-                            aria-label=": shell之echo知多少"
-                        >
-                            shell之echo知多少
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2014-04-16T21:39:21+08:00">
-	
-		    Apr 16, 2014
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-excerpt">
-                    <p>本文记录的是关于shell之echo的知识。</p>
-<p>echo是linux中常用的终端命令(command line)，其包括:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure>
-<p>首先看看echo的 man page:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#39; &#39;) characters and followed</span><br><span class="line">     by a newline (&#96;\n&#39;) character, to the standard output.</span><br></pre></td></tr></table></figure>
-<p>从帮助文档可以看出:</p>
-<ol type="1">
-<li>echo是将其后的arguments输出到(STDOUT),通常就是bash界面.</li>
-<li>echo是将所有的操作对象，以单一的空格` `分开的字符串，最后紧跟着换行符('')，输出到bash</li>
-</ol>
-                    
-                        <a
-                            href="/2014/04/16/shell-about-echo/"
-                            class="postShorten-excerpt_link link"
-                            aria-label=": shell之echo知多少"
                         >
                             Continue reading
                         </a>
