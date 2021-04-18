@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>Windows上安装Net-SNMP5.7 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装  VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3  &lt;!-- more --&gt; 安装步骤如下:   停止Windows7系统自带的Windows SNMP Service，">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Windows上安装Net-SNMP5.7">
+<meta property="og:url" content="http://liumh.com/2014/02/25/install-snmp-on-windows/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装  VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3  &lt;!-- more --&gt; 安装步骤如下:   停止Windows7系统自带的Windows SNMP Service，">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2014-02-25T12:16:45.000Z">
+<meta property="article:modified_time" content="2014-07-03T07:00:39.000Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="snmp">
+<meta property="article:tag" content="snmpd">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            Windows上安装Net-SNMP5.7
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Tue Feb 25 2014 20:16:45 GMT+0800">
+	
+		    Feb 25, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
+<p>安装net-snmp 5.7.1之前需要先安装</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://xoyozo.me/blog/vs2010.html">VS2010</a></li>
+<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32 OpenSSL v1.0.1f</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl 5.16.3</a></li>
+</ol>
+<p>&lt;!-- more --&gt;</p>
+<p>安装步骤如下:</p>
+<ol>
+<li>
+<p>停止Windows7系统自带的Windows SNMP Service，在 <code>我的电脑</code>-&gt; <code>管理</code> -&gt; <code>服务</code>中可以找到 SNMP Service。</p>
+</li>
+<li>
+<p>打开命令行终端cmd,或者PowerCMD，any other you like</p>
+</li>
+<li>
+<p>如果build OpenSSL，设置INCLUDE和LIB，使其指向合适OpenSSL安装目录，如下面所示:</p>
+</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;set INCLUDE&#x3D;C:\OpenSSL-Win32\include</span><br><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;set LIB&#x3D;C:\OpenSSL-Win32\lib\VC\static</span><br></pre></td></tr></table></figure></p>
+<ol start="4">
+<li>运行<code>vcvarsall.bat</code>初始化 Visual Studio build environment, 该脚本可在Visual Studio的安装目录中找到:</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;&quot;C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat&quot;</span><br></pre></td></tr></table></figure></p>
+<ol start="5">
+<li>运行源码包中的<code>win32\build.bat</code>:</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;build.bat</span><br></pre></td></tr></table></figure></p>
+<p>预期会在屏幕上出现设置向导，最终结果如下，需要注意的是要 enable winExtDLL agent，否则会有一些常用MIB无法获取:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Net-SNMP build and install options</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">1.  OpenSSL support:                enabled</span><br><span class="line">2.  Platform SDK support:           enabled</span><br><span class="line"></span><br><span class="line">3.  Install path:                   c:&#x2F;usr</span><br><span class="line">4.  Install after build:            enabled</span><br><span class="line"></span><br><span class="line">5.  Perl modules:                   enabled</span><br><span class="line">6.  Install perl modules:           enabled</span><br><span class="line"></span><br><span class="line">7.  Quiet build (logged):           enabled</span><br><span class="line">8.  Debug mode:                     disabled</span><br><span class="line"></span><br><span class="line">9.  IPv6 transports (requires SDK): disabled</span><br><span class="line">10. winExtDLL agent (requires SDK): enabled</span><br><span class="line"></span><br><span class="line">11. Link type:                      static</span><br><span class="line"></span><br><span class="line">12. Install development files       disabled</span><br><span class="line"></span><br><span class="line">F.  Finished - start build</span><br><span class="line">Q.  Quit - abort build</span><br></pre></td></tr></table></figure></p>
+<ol start="6">
+<li>build结束后会出现一个运行脚本的提示，按照提示运行，然后运行源代码包中的<code>install-net-snmp.bat</code>脚本。</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;install-net-snmp.bat</span><br></pre></td></tr></table></figure></p>
+<ol start="7">
+<li>
+<p>在PATH环境变量中加入net-snmp的bin目录，使其可以直接在终端运行snmp命令。</p>
+</li>
+<li>
+<p>检测net-snmp的版本:</p>
+</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -v</span><br><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpwalk --version</span><br></pre></td></tr></table></figure></p>
+<ol start="9">
+<li>将net-snmp注册为Windows服务:</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -register </span><br></pre></td></tr></table></figure>
+un-register the service:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -unregister</span><br></pre></td></tr></table></figure></p>
+<ol start="10">
+<li>启动net-snmp:</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;net start &quot;Net-SNMP Agent&quot;</span><br></pre></td></tr></table></figure>
+停止net-snmp可用如下命令:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;net stop &quot;Net-SNMP Agent&quot;</span><br></pre></td></tr></table></figure></p>
+<p>上述操作参考net-snmp源代码包中README.win32文档，如有疑问可直接查看此文档。</p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/snmp/" rel="tag">snmp</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/snmpd/" rel="tag">snmpd</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/14/snmp-vacm-mask/"  data-tooltip="对Net-SNMP访问权限控制VACM中mask的理解">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/13/calculate-size-of-linux-disk/" data-tooltip="利用64bit的mibs计算Linux设备的存储大小">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-install-snmp-on-windows" data-title="Windows上安装Net-SNMP5.7" data-url="http://liumh.com/2014/02/25/install-snmp-on-windows/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/03/14/snmp-vacm-mask/"  data-tooltip="对Net-SNMP访问权限控制VACM中mask的理解">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/13/calculate-size-of-linux-disk/" data-tooltip="利用64bit的mibs计算Linux设备的存储大小">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/25/install-snmp-on-windows/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

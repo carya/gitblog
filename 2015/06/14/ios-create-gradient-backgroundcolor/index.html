@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>iOS代码设置渐变背景色 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用Xcode xcassets的Slicing功能或者 api - resizableImageWithCapInsets: 完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api + (UIColo">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="iOS代码设置渐变背景色">
+<meta property="og:url" content="http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用Xcode xcassets的Slicing功能或者 api - resizableImageWithCapInsets: 完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api + (UIColo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
+<meta property="article:published_time" content="2015-06-14T05:02:55.000Z">
+<meta property="article:modified_time" content="2015-10-20T14:20:26.000Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            iOS代码设置渐变背景色
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Sun Jun 14 2015 13:02:55 GMT+0800">
+	
+		    Jun 14, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用<code>Xcode xcassets</code>的Slicing功能或者 api</p>
+<p><code>- resizableImageWithCapInsets:</code></p>
+<p>完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api</p>
+<p><code>+ (UIColor *)colorWithPatternImage:(UIImage *)image</code></p>
+<p>来设置背景色。</p>
+<p>&lt;!-- more --&gt;</p>
+<p>首先定义了渐变的类型，如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSUInteger, GradientType) &#123;</span><br><span class="line">    GradientTypeTopToBottom &#x3D; 0,&#x2F;&#x2F;从上到小</span><br><span class="line">    GradientTypeLeftToRight &#x3D; 1,&#x2F;&#x2F;从左到右</span><br><span class="line">    GradientTypeUpleftToLowright &#x3D; 2,&#x2F;&#x2F;左上到右下</span><br><span class="line">    GradientTypeUprightToLowleft &#x3D; 3,&#x2F;&#x2F;右上到左下</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>定义接口:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@interface UIImage (GradientColor)</span><br><span class="line"></span><br><span class="line">+ (UIImage *)gradientColorImageFromColors:(NSArray*)colors gradientType:(GradientType)gradientType imgSize:(CGSize)imgSize;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+<p>其实现如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">+ (UIImage *)gradientColorImageFromColors:(NSArray*)colors gradientType:(GradientType)gradientType imgSize:(CGSize)imgSize &#123;</span><br><span class="line">    NSMutableArray *ar &#x3D; [NSMutableArray array];</span><br><span class="line">    for(UIColor *c in colors) &#123;</span><br><span class="line">        [ar addObject:(id)c.CGColor];</span><br><span class="line">    &#125;</span><br><span class="line">    UIGraphicsBeginImageContextWithOptions(imgSize, YES, 1);</span><br><span class="line">    CGContextRef context &#x3D; UIGraphicsGetCurrentContext();</span><br><span class="line">    CGContextSaveGState(context);</span><br><span class="line">    CGColorSpaceRef colorSpace &#x3D; CGColorGetColorSpace([[colors lastObject] CGColor]);</span><br><span class="line">    CGGradientRef gradient &#x3D; CGGradientCreateWithColors(colorSpace, (CFArrayRef)ar, NULL);</span><br><span class="line">    CGPoint start;</span><br><span class="line">    CGPoint end;</span><br><span class="line">    switch (gradientType) &#123;</span><br><span class="line">        case GradientTypeTopToBottom:</span><br><span class="line">            start &#x3D; CGPointMake(0.0, 0.0);</span><br><span class="line">            end &#x3D; CGPointMake(0.0, imgSize.height);</span><br><span class="line">            break;</span><br><span class="line">        case GradientTypeLeftToRight:</span><br><span class="line">            start &#x3D; CGPointMake(0.0, 0.0);</span><br><span class="line">            end &#x3D; CGPointMake(imgSize.width, 0.0);</span><br><span class="line">            break;</span><br><span class="line">        case GradientTypeUpleftToLowright:</span><br><span class="line">            start &#x3D; CGPointMake(0.0, 0.0);</span><br><span class="line">            end &#x3D; CGPointMake(imgSize.width, imgSize.height);</span><br><span class="line">            break;</span><br><span class="line">        case GradientTypeUprightToLowleft:</span><br><span class="line">            start &#x3D; CGPointMake(imgSize.width, 0.0);</span><br><span class="line">            end &#x3D; CGPointMake(0.0, imgSize.height);</span><br><span class="line">            break;</span><br><span class="line">        default:</span><br><span class="line">            break;</span><br><span class="line">    &#125;</span><br><span class="line">    CGContextDrawLinearGradient(context, gradient, start, end, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);</span><br><span class="line">    UIImage *image &#x3D; UIGraphicsGetImageFromCurrentImageContext();</span><br><span class="line">    CGGradientRelease(gradient);</span><br><span class="line">    CGContextRestoreGState(context);</span><br><span class="line">    CGColorSpaceRelease(colorSpace);</span><br><span class="line">    UIGraphicsEndImageContext();</span><br><span class="line">    return image;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用方法如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UIColor *topleftColor &#x3D; [UIColor colorWithRed:48&#x2F;255.0f green:127&#x2F;255.0f blue:202&#x2F;255.0f alpha:1.0f];</span><br><span class="line">UIColor *bottomrightColor &#x3D; [UIColor colorWithRed:35&#x2F;255.0f green:195&#x2F;255.0f blue:95&#x2F;255.0f alpha:1.0f];</span><br><span class="line">UIImage *bgImg &#x3D; [UIImage gradientColorImageFromColors:@[topleftColor, bottomrightColor] gradientType:GradientTypeUpleftToLowright imgSize:SCREEN_SIZE];</span><br><span class="line">self.view.backgroundColor &#x3D; [UIColor colorWithPatternImage:bgImg];</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
+<p><div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div></p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/iOS/" rel="tag">iOS</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/11/ios-animate-change-uiimageview-image/"  data-tooltip="iOS改变UIImageView的image时添加渐变">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/06/13/ios-uicolor-util/" data-tooltip="iOS从十六进制创建UIColor">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-ios-create-gradient-backgroundcolor" data-title="iOS代码设置渐变背景色" data-url="http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/11/ios-animate-change-uiimageview-image/"  data-tooltip="iOS改变UIImageView的image时添加渐变">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/06/13/ios-uicolor-util/" data-tooltip="iOS从十六进制创建UIColor">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/06/14/ios-create-gradient-backgroundcolor/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

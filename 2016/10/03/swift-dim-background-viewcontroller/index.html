@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>创建模态视图 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。 Popup_Window动画 这里有3种实现方案, 根据情况可选择合适的方案:  添加视图到ViewController.view.window上 使用系统提供的模态转场 切换window  添加视图到ViewController">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="创建模态视图">
+<meta property="og:url" content="http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。 Popup_Window动画 这里有3种实现方案, 根据情况可选择合适的方案:  添加视图到ViewController.view.window上 使用系统提供的模态转场 切换window  添加视图到ViewController">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://liumh.com/img/modal-popup/modal-popup-window.gif">
+<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
+<meta property="article:published_time" content="2016-10-03T01:48:56.000Z">
+<meta property="article:modified_time" content="2018-11-20T08:03:59.633Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="swift">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://liumh.com/img/modal-popup/modal-popup-window.gif">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            创建模态视图
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Mon Oct 03 2016 09:48:56 GMT+0800">
+	
+		    Oct 03, 2016
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>iOS 的开发过程中，会遇到弹出模态视图进行交互的情况，用户实际操作区域只占屏幕的一部分，其余区域使用半透明黑色遮罩进行覆盖。下面就记录一下实现如下所示模态视图的方案。</p>
+<p><div class="figure left" style="width:162;"><img class="fig-img" src="/img/modal-popup/modal-popup-window.gif" width="162" height="322" alt="Popup_Window动画"><span class="caption">Popup_Window动画</span></div><div style="clear:both;"></div></p>
+<p>这里有3种实现方案, 根据情况可选择合适的方案:</p>
+<ol>
+<li>添加视图到<code>ViewController.view.window</code>上</li>
+<li>使用系统提供的模态转场</li>
+<li>切换window</li>
+</ol>
+<h4>添加视图到<code>ViewController.view.window</code>上</h4>
+<p>相信大多数人都对这种实现方式很熟悉。该方式是在当前视图的最上层添加一层自定义的黑色遮罩，然后在黑色遮罩上添加真正需要显示的视图，主要代码如下所示:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">@IBAction func showPopupView() &#123;</span><br><span class="line">    &#x2F;&#x2F;1.创建黑色遮罩    </span><br><span class="line">    let screenRect &#x3D; UIScreen.main.bounds;</span><br><span class="line">    var startFrame &#x3D; screenRect;</span><br><span class="line">    startFrame.origin.x &#x3D; screenRect.width;</span><br><span class="line">    dimmingView &#x3D; UIView.init(frame: startFrame)</span><br><span class="line">    dimmingView.backgroundColor &#x3D; UIColor.black.withAlphaComponent(0.6)</span><br><span class="line">    </span><br><span class="line">    let tapGesture &#x3D; UITapGestureRecognizer.init(target: self, action: #selector(hiddenPopupView))</span><br><span class="line">    dimmingView.addGestureRecognizer(tapGesture)</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;2.创建用户真正关心的视图</span><br><span class="line">    var focusViewRect &#x3D; screenRect</span><br><span class="line">    focusViewRect.size.width &#x3D; 0.8 * screenRect.width</span><br><span class="line">    focusViewRect.origin.x &#x3D; 0.2 * screenRect.width</span><br><span class="line">    let focusView &#x3D; UIView.init(frame: focusViewRect)</span><br><span class="line">    focusView.backgroundColor &#x3D; UIColor.init(red: 137.0&#x2F;255.0, green: 1.0, blue: 152.0&#x2F;255.0, alpha: 1)</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;3.添加视图到window上</span><br><span class="line">    dimmingView.addSubview(focusView)</span><br><span class="line">    self.view.window?.addSubview(dimmingView);</span><br><span class="line">    </span><br><span class="line">    UIView.animate(withDuration: 0.25, animations: &#123;</span><br><span class="line">        self.dimmingView.frame &#x3D; screenRect</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">func hiddenPopupView(_ sender: UITapGestureRecognizer) &#123;</span><br><span class="line">        </span><br><span class="line">    let screenRect &#x3D; UIScreen.main.bounds;</span><br><span class="line">    var finalFrame &#x3D; screenRect;</span><br><span class="line">    finalFrame.origin.x &#x3D; screenRect.width;</span><br><span class="line">    </span><br><span class="line">    UIView.animate(withDuration: 0.25, animations: &#123;</span><br><span class="line">        self.dimmingView.frame &#x3D; finalFrame</span><br><span class="line">        &#125;, completion: &#123; finished in</span><br><span class="line">        self.dimmingView.removeFromSuperview()</span><br><span class="line">        &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用这种方案时要注意，你若在模态视图中 <code>IQKeyboardManager</code> 第三方库不会起作用。</p>
+<h4>使用系统提供的模态转场</h4>
+<p>按道理，这应该是代码量最小的实现方式，但是如果要实现本文开始所示动画(系统默认的是从屏幕底部往上推出视图)，则需要自定义动画。另外，由于能够透视遮罩下的视图，需要将弹出的ViewController的<code>modalPresentationStyle</code>设置成<code>UIModalPresentationOverFullScreen</code>, 而该枚举值是iOS 8.0以上才支持。</p>
+<p>自定义转场动画的代码如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">class SlideSegue: UIStoryboardSegue &#123;</span><br><span class="line"></span><br><span class="line">    override func perform() &#123;</span><br><span class="line">        </span><br><span class="line">        destination.transitioningDelegate &#x3D; self</span><br><span class="line">        super.perform()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension SlideSegue: UIViewControllerTransitioningDelegate &#123;</span><br><span class="line">    </span><br><span class="line">    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">        </span><br><span class="line">        return SlideInAnimator()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animationController(forDismissed dismissed: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">        </span><br><span class="line">        return SlideOutAnimator()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; MARK - Animator</span><br><span class="line"></span><br><span class="line">class SlideInAnimator: NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -&gt; TimeInterval &#123;</span><br><span class="line">        </span><br><span class="line">        return 0.5</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        </span><br><span class="line">        let toViewController &#x3D; transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!</span><br><span class="line">        let toView &#x3D; transitionContext.view(forKey: UITransitionContextViewKey.to)</span><br><span class="line">        </span><br><span class="line">        if let toView &#x3D; toView &#123;</span><br><span class="line">            transitionContext.containerView.addSubview(toView)</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        let finalFrame &#x3D; transitionContext.finalFrame(for: toViewController)</span><br><span class="line">        var startFrame &#x3D; finalFrame</span><br><span class="line">        startFrame.origin.x &#x3D; finalFrame.width</span><br><span class="line">    </span><br><span class="line">        toView?.frame &#x3D; startFrame</span><br><span class="line">&#x2F;&#x2F;        toView?.layoutIfNeeded()</span><br><span class="line">        </span><br><span class="line">        let duration &#x3D; transitionDuration(using: transitionContext)</span><br><span class="line">        </span><br><span class="line">        UIView.animate(withDuration: duration, animations: &#123; </span><br><span class="line">            if let toView &#x3D; toView &#123;</span><br><span class="line">                toView.frame &#x3D; finalFrame</span><br><span class="line">            &#125;</span><br><span class="line">            &#125;, completion: &#123; finished in</span><br><span class="line">                transitionContext.completeTransition(true)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SlideOutAnimator:NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -&gt; TimeInterval &#123;</span><br><span class="line">        </span><br><span class="line">        return 0.5</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">     </span><br><span class="line">        let fromViewController &#x3D; transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!</span><br><span class="line">        let toView &#x3D; transitionContext.view(forKey: UITransitionContextViewKey.to)</span><br><span class="line">        let fromView &#x3D; transitionContext.view(forKey: UITransitionContextViewKey.from)</span><br><span class="line">        </span><br><span class="line">        if let toView &#x3D; toView &#123;</span><br><span class="line">            if let fromView &#x3D; fromView &#123;</span><br><span class="line">                transitionContext.containerView.insertSubview(toView, belowSubview: fromView)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        var finialFrame &#x3D; transitionContext.finalFrame(for: fromViewController)</span><br><span class="line">        finialFrame.origin.x +&#x3D; finialFrame.width</span><br><span class="line">        </span><br><span class="line">        let duration &#x3D; transitionDuration(using: transitionContext)</span><br><span class="line">        UIView.animate(withDuration: duration, animations: &#123; </span><br><span class="line">            if let fromView &#x3D; fromView &#123;</span><br><span class="line">                fromView.frame &#x3D; finialFrame</span><br><span class="line">&#x2F;&#x2F;                fromView.layoutIfNeeded()</span><br><span class="line">            &#125;</span><br><span class="line">            &#125;, completion: &#123; finished in</span><br><span class="line">                transitionContext.completeTransition(true)</span><br><span class="line">            &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其余部分的 Storyboard 设置参考 <a target="_blank" rel="noopener" href="https://github.com/carya/PopupWindow">github上本工程代码</a>。</p>
+<p>关于视图控制器的自定义转场，以后会单独写一篇来记录。</p>
+<h4>切换window</h4>
+<p>这种实现方式的好处是将弹出的用户关心的视图封装到一个新的视图控制器中，与当前的视图控制器分离，从而使业务分离，避免当前的试图控制器臃肿。显示模态视图的代码如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@IBAction func showPopupViewController(_ sender: AnyObject) &#123;</span><br><span class="line">    checkoutNewWindow()</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">func checkoutNewWindow() &#123;</span><br><span class="line">    </span><br><span class="line">    var frame &#x3D; UIScreen.main.bounds</span><br><span class="line">    frame.origin.x +&#x3D; frame.size.width</span><br><span class="line">    popWindow &#x3D; UIWindow.init(frame: frame)</span><br><span class="line">    </span><br><span class="line">    let storyboard &#x3D; UIStoryboard.init(name: &quot;Main&quot;, bundle: nil)</span><br><span class="line">    let popupViewController &#x3D; storyboard.instantiateViewController(withIdentifier: &quot;PopupViewController&quot;)</span><br><span class="line">    popWindow.rootViewController &#x3D; popupViewController</span><br><span class="line">    popWindow.makeKeyAndVisible()</span><br><span class="line">    </span><br><span class="line">    UIView.animate(withDuration: 0.5, animations: &#123;</span><br><span class="line">        let rect &#x3D; UIScreen.main.bounds</span><br><span class="line">        self.popWindow.frame &#x3D; rect</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>本工程所有代码见<a target="_blank" rel="noopener" href="https://github.com/carya/PopupWindow">github</a></p>
+<hr>
+<p>如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
+<p><div class="figure " style="width:117;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" width="117" height="174" alt=""></div></p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/iOS/" rel="tag">iOS</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/swift/" rel="tag">swift</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/11/09/ios-system-presentation/"  data-tooltip="iOS中的系统转场">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/05/22/use-xcconfig-config-specific-variable/" data-tooltip="Xcode使用xcconfig文件配置环境">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-swift-dim-background-viewcontroller" data-title="创建模态视图" data-url="http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/11/09/ios-system-presentation/"  data-tooltip="iOS中的系统转场">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/05/22/use-xcconfig-config-specific-variable/" data-tooltip="Xcode使用xcconfig文件配置环境">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/10/03/swift-dim-background-viewcontroller/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

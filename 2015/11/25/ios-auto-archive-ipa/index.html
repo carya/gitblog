@@ -1,0 +1,628 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>iOS自动打包并发布脚本 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="iOS自动打包并发布脚本">
+<meta property="og:url" content="http://liumh.com/2015/11/25/ios-auto-archive-ipa/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
+<meta property="article:published_time" content="2015-11-25T13:38:11.000Z">
+<meta property="article:modified_time" content="2018-11-20T09:31:03.444Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            iOS自动打包并发布脚本
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Wed Nov 25 2015 21:38:11 GMT+0800">
+	
+		    Nov 25, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。</p>
+<span id="more"></span>
+<ol type="1">
+<li><a href="#overview-about-xcodebuild">xcodebuild 简介</a></li>
+<li><a href="#build-and-sign-ipa">使用xcodebuild和xcrun打包签名</a></li>
+<li><a href="#script-build">将打包过程脚本化</a></li>
+</ol>
+<h2 id="overview-about-xcodebuild">xcodebuild 简介</h2>
+<p><code>xcodebuild</code> 是苹果提供的打包项目或者工程的命令，了解该命令最好的方式就是使用 <code>man xcodebuild</code> 查看其 man page. 尽管是英文，一定要老老实实的读一遍就好了。</p>
+<blockquote>
+<p>DESCRIPTION</p>
+<p>xcodebuild builds one or more targets contained in an Xcode project, or builds a scheme contained in an Xcode workspace or Xcode project.</p>
+<p>Usage</p>
+<p>To build an Xcode project, run xcodebuild from the directory containing your project (i.e. the directory containing the name.xcodeproj package). If you have multiple projects in the this directory you will need to use -project to indicate which project should be built. By default, xcodebuild builds the first target listed in the project, with the default build configuration. The order of the targets is a property of the project and is the same for all users of the project.</p>
+<p>To build an Xcode workspace, you must pass both the -workspace and -scheme options to define the build. The parameters of the scheme will control which targets are built and how they are built, although you may pass other options to xcodebuild to override some parameters of the scheme.</p>
+<p>There are also several options that display info about the installed version of Xcode or about projects or workspaces in the local directory, but which do not initiate an action. These include -list, -showBuildSettings, -showsdks, -usage, and -version.</p>
+</blockquote>
+<p>总结一下:</p>
+<ol type="1">
+<li>需要在包含 name.xcodeproj 的目录下执行 <code>xcodebuild</code> 命令，且如果该目录下有多个 projects，那么需要使用 <code>-project</code> 指定需要 build 的项目。</li>
+<li>在不指定 build 的 target 的时候，默认情况下会 build project 下的第一个 target</li>
+<li>当 build workspace 时，需要同时指定 <code>-workspace</code> 和 <code>-scheme</code> 参数，scheme 参数控制了哪些 targets 会被 build 以及以怎样的方式 build。</li>
+<li>有一些诸如 <code>-list</code>, <code>-showBuildSettings</code>, <code>-showsdks</code> 的参数可以查看项目或者工程的信息，不会对 build action 造成任何影响，放心使用。</li>
+</ol>
+<p>那么，<code>xcodebuild</code> 究竟如何使用呢？ 继续看文档:</p>
+<blockquote>
+<p>NAME</p>
+<p>xcodebuild -- build Xcode projects and workspaces</p>
+<p>SYNOPSIS</p>
+<ol type="1">
+<li><p>xcodebuild [-project name.xcodeproj] [[-target targetname] ... | -alltargets] [-configuration configurationname] [-sdk [sdkfullpath | sdkname]] [action ...] [buildsetting=value ...] [-userdefault=value ...]</p></li>
+<li><p>xcodebuild [-project name.xcodeproj] -scheme schemename [[-destination destinationspecifier] ...] [-destination-timeout value] [-configuration configurationname] [-sdk [sdkfullpath | sdkname]] [action ...] [buildsetting=value ...] [-userdefault=value ...]</p></li>
+<li><p>xcodebuild -workspace name.xcworkspace -scheme schemename [[-destination destinationspecifier] ...] [-destination-timeout value] [-configuration configurationname] [-sdk [sdkfullpath | sdkname]] [action ...] [buildsetting=value ...] [-userdefault=value ...]</p></li>
+<li><p>xcodebuild -version [-sdk [sdkfullpath | sdkname]] [infoitem]</p></li>
+<li><p>xcodebuild -showsdks</p></li>
+<li><p>xcodebuild -showBuildSettings [-project name.xcodeproj | [-workspace name.xcworkspace -scheme schemename]]</p></li>
+<li><p>xcodebuild -list [-project name.xcodeproj | -workspace name.xcworkspace]</p></li>
+<li><p>xcodebuild -exportArchive -archivePath xcarchivepath -exportPath destinationpath -exportOptionsPlist path</p></li>
+<li><p>xcodebuild -exportLocalizations -project name.xcodeproj -localizationPath path [[-exportLanguage language] ...]</p></li>
+<li><p>xcodebuild -importLocalizations -project name.xcodeproj -localizationPath path</p></li>
+</ol>
+</blockquote>
+<p>挑几个我常用的形式介绍一下，较长的使用方式以序列号代替:</p>
+<ul>
+<li><p><code>xcodebuild -showsdks</code>: 列出 Xcode 所有可用的 SDKs</p></li>
+<li><p><code>xcodebuild -showBuildSettings</code>: 上述序号6的使用方式，查看当前工程 build setting 的配置参数，Xcode 详细的 build setting 参数参考官方文档 <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/">Xcode Build Setting Reference</a>， 已有的配置参数可以在终端中以 <code>buildsetting=value</code> 的形式进行覆盖重新设置.</p></li>
+<li><p><code>xcodebuild -list</code>: 上述序号7的使用方式，查看 project 中的 targets 和 configurations，或者 workspace 中 schemes, 输出如下:</p></li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Information about project &quot;NavTabBar&quot;:</span><br><span class="line">    Targets:</span><br><span class="line">        NavTabBar</span><br><span class="line">        NavTabBarTests</span><br><span class="line">        NavTabBarUITests</span><br><span class="line"></span><br><span class="line">    Build Configurations:</span><br><span class="line">        Debug</span><br><span class="line">        Release</span><br><span class="line">        Ad-hoc</span><br><span class="line"></span><br><span class="line">    If no build configuration is specified and -scheme is not passed then &quot;Release&quot; is used.</span><br><span class="line"></span><br><span class="line">    Schemes:</span><br><span class="line">        NavTabBar</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>xcodebuild [-project name.xcodeproj] [[-target targetname] ... | -alltargets] build</code>: 上述序号1的使用方式，会 build 指定 project，其中 <code>-target</code> 和 <code>-configuration</code> 参数可以使用 <code>xcodebuild -list</code> 获得，<code>-sdk</code> 参数可由 <code>xcodebuild -showsdks</code> 获得，<code>[buildsetting=value ...]</code> 用来覆盖工程中已有的配置。可覆盖的参数参考官方文档 <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/">Xcode Build Setting Reference</a>, <code>action...</code> 的可用选项如下, 打包的话当然用 build，这也是默认选项。</p>
+<ul>
+<li><p>build<br />
+Build the target in the build root (SYMROOT). This is the default action, and is used if no action is given.</p></li>
+<li><p>analyze<br />
+Build and analyze a target or scheme from the build root (SYMROOT). This requires specifying a scheme.</p></li>
+<li><p>archive<br />
+Archive a scheme from the build root (SYMROOT). This requires specifying a scheme.</p></li>
+<li><p>test<br />
+Test a scheme from the build root (SYMROOT). This requires specifying a scheme and optionally a destination.</p></li>
+<li><p>installsrc<br />
+Copy the source of the project to the source root (SRCROOT).</p></li>
+<li><p>install<br />
+Build the target and install it into the target's installation directory in the distribution root (DSTROOT).</p></li>
+<li><p>clean<br />
+Remove build products and intermediate files from the build root (SYMROOT).</p></li>
+</ul></li>
+<li><p><code>xcodebuild -workspace name.xcworkspace -scheme schemename build</code>: 上述序号3的使用方式，build 指定 workspace，当我们使用 CocoaPods 来管理第三方库时，会生成 xcworkspace 文件，这样就会用到这种打包方式.</p></li>
+</ul>
+<h2 id="build-and-sign-ipa">使用xcodebuild和xcrun打包签名</h2>
+<p>开始之前，可以新建一个测试工程 TestImg 来练习打包，在使用终端命令打包之前，请确认该工程也可以直接使用 Xcode 真机调试成功。</p>
+<p>然后，打开终端，进入包含 TestImg.xcodeproj 的目录下，运行以下命令:</p>
+<p><code>xcodebuild -project TestImg.xcodeproj -target TestImg -configuration Release</code></p>
+<p>如果 build 成功，会看到 <code>** BUILD SUCCEEDED **</code> 字样，且在终端会打印出这次 build 的签名信息，如下:</p>
+<blockquote>
+<p>Signing Identity: &quot;iPhone Developer: xxx(59xxxxxx)&quot;<br />
+Provisioning Profile: &quot;iOS Team Provisioning Profile: *&quot;</p>
+</blockquote>
+<p>且在该目录下会多出一个 <code>build</code> 目录，该目录下有 <code>Release-iphoneos</code> 和 <code>TestImg.build</code> 文件，根据我们 build <code>-configuration</code> 配置的参数不同，<code>Release-iphoneos</code> 的文件名会不同。</p>
+<p>在 <code>Release-iphoneos</code> 文件夹下，有我们需要的<code>TestImg.app</code>文件，但是要安装到真机上，我们需要将该文件导出为ipa文件，这里使用 xcrun 命令。</p>
+<p><code>xcrun -sdk iphoneos -v PackageApplication ./build/Release-iphoneos/TestImg.app -o ~/Desktop/TestImg.ipa</code></p>
+<p>这里又冒出一个 <code>PackageApplication</code>, 我刚开始也不知道这是个什么玩意儿，万能的google告诉我，这是 Xcode 包里自带的工具，使用 <code>xcrun -sdk iphoneos -v PackageApplication -help</code> 查看帮助信息.</p>
+<blockquote>
+<p>Usage:<br />
+PackageApplication [-s signature] application [-o output_directory] [-verbose] [-plugin plugin] || -man || -help</p>
+<p>Options:</p>
+<p><code>[-s signature]</code>: certificate name to resign application before packaging<br />
+<code>[-o output_directory]</code>: specify output filename<br />
+<code>[-plugin plugin]</code>: specify an optional plugin<br />
+<code>-help</code>: brief help message<br />
+<code>-man</code>: full documentation<br />
+<code>-v[erbose]</code>: provide details during operation</p>
+</blockquote>
+<p>如果执行成功，则会在你的桌面生成 TestImg.ipa 文件，这样就可以发布测试了。如果你遇到以下警告信息:</p>
+<blockquote>
+<p>Warning: --resource-rules has been deprecated in Mac OS X &gt;= 10.10! ResourceRules.plist: cannot read resources</p>
+</blockquote>
+<p>请参考 stackoverflow <a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/32504355/error-itms-90339-this-bundle-is-invalid-the-info-plist-contains-an-invalid-ke/32762413#32762413">这个回答</a></p>
+<h2 id="script-build">将打包过程脚本化</h2>
+<p>工作中，特别是所做项目进入测试阶段，肯定会经常打 Ad-hoc 包给测试人员进行测试，但是我们肯定不想每次进行打包的时候都要进行一些工程的设置修改，以及一系列的 next 按钮点击操作，现在就让这些操作都交给脚本化吧。</p>
+<ol type="1">
+<li>脚本化中使用如下的命令打包:</li>
+</ol>
+<p><code>xcodebuild -project name.xcodeproj -target targetname -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY=&quot;$(CODE_SIGN_IDENTITY)&quot; PROVISIONING_PROFILE=&quot;$(PROVISIONING_PROFILE)&quot;</code></p>
+<p>或者</p>
+<p><code>xcodebuild -workspace name.xcworkspace -scheme schemename -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY=&quot;$(CODE_SIGN_IDENTITY)&quot; PROVISIONING_PROFILE=&quot;$(PROVISIONING_PROFILE)&quot;</code></p>
+<ol start="2" type="1">
+<li>然后使用 xcrun 生成 ipa 文件:</li>
+</ol>
+<p>`xcrun -sdk iphoneos -v PackageApplication ./build/Release-iphoneos/$(target|scheme).app&quot;</p>
+<ol start="3" type="1">
+<li>清除 build 过程中产生的中间文件</li>
+<li>结合蒲公英分发平台，将 ipa 文件上传至蒲公英分发平台，同时在终端会打印上传结果以及上传应用后该应用的 URL。蒲公英分发平台能够方便地将 ipa 文件尽快分发到测试人员，该平台有开放 API，可避免人工上传。</li>
+</ol>
+<p>该脚本的使用可使用 <code>python autobuild.py -h</code> 查看，与 <code>xcodebuild</code> 的使用相似:</p>
+<blockquote>
+<p>Usage: autobuild.py [options]</p>
+<p>Options:<br />
+<code>-h, --help</code>: show this help message and exit<br />
+<code>-w name.xcworkspace, --workspace=name.xcworkspace</code>: Build the workspace name.xcworkspace.<br />
+<code>-p name.xcodeproj, --project=name.xcodeproj</code>: Build the project name.xcodeproj.<br />
+<code>-s schemename, --scheme=schemename</code>: Build the scheme specified by schemename. Required if building a workspace.<br />
+<code>-t targetname, --target=targetname</code>: Build the target specified by targetname. Required if building a project.<br />
+<code>-o output_filename, --output=output_filename</code>: specify output filename</p>
+</blockquote>
+<p>在脚本顶部，有几个全局变量，根据自己的项目情况修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CODE_SIGN_IDENTITY &#x3D; &quot;iPhone Distribution: companyname (9xxxxxxx9A)&quot;</span><br><span class="line">PROVISIONING_PROFILE &#x3D; &quot;xxxxx-xxxx-xxx-xxxx-xxxxxxxxx&quot;</span><br><span class="line">CONFIGURATION &#x3D; &quot;Release&quot;</span><br><span class="line">SDK &#x3D; &quot;iphoneos&quot;</span><br><span class="line"></span><br><span class="line">USER_KEY &#x3D; &quot;15d6xxxxxxxxxxxxxxxxxx&quot;</span><br><span class="line">API_KEY &#x3D; &quot;efxxxxxxxxxxxxxxxxxxxx&quot;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>CODE_SIGN_IDENTITY</code> 为开发者证书标识，可以在 Keychain Access -&gt; Certificates -&gt; 选中证书右键弹出菜单 -&gt; Get Info -&gt; Common Name 获取，类似 <code>iPhone Distribution: Company name Co. Ltd (xxxxxxxx9A)</code>, 包括括号内的内容。</p>
+<p><code>PROVISIONING_PROFILE</code>: 这个是 mobileprovision 文件的 identifier，获取方式：</p>
+<p>Xcode -&gt; Preferences -&gt; 选中申请开发者证书的 Apple ID -&gt; 选中开发者证书 -&gt; View Details... -&gt; 根据 Provisioning Profiles 的名字选中打包所需的 mobileprovision 文件 -&gt; 右键菜单 -&gt; Show in Finder -&gt; 找到该文件后，除了该文件后缀名的字符串就是 <code>PROVISIONING_PROFILE</code> 字段的内容。</p>
+<p>当然也可以使用脚本获取, 此处参考 <a target="_blank" rel="noopener" href="http://my.oschina.net/ioslighter/blog/494342">命令行获取mobileprovision文件的UUID</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">if [ $# -ne 1 ]</span><br><span class="line">then</span><br><span class="line">  echo &quot;Usage: getmobileuuid the-mobileprovision-file-path&quot;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">mobileprovision_uuid&#x3D;&#96;&#x2F;usr&#x2F;libexec&#x2F;PlistBuddy -c &quot;Print UUID&quot; &#x2F;dev&#x2F;stdin &lt;&lt;&lt; $(&#x2F;usr&#x2F;bin&#x2F;security cms -D -i $1)&#96;</span><br><span class="line">echo &quot;UUID is:&quot;</span><br><span class="line">echo $&#123;mobileprovision_uuid&#125;</span><br></pre></td></tr></table></figure>
+<p><code>USER_KEY</code>, <code>API_KEY</code>: 是蒲公英开放 API 的密钥。</p>
+<p>将<code>autobuild.py</code>脚本放在你项目的根目录下，进入根目录，如下使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;autobuild.py -w yourname.xcworkspace -s schemename -o ~&#x2F;Desktop&#x2F;yourname.ipa</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;autobuild.py -p yourname.xcodeproj -t targetname -o ~&#x2F;Desktop&#x2F;yourname.ipa</span><br></pre></td></tr></table></figure>
+<p>该脚本可在 <a target="_blank" rel="noopener" href="https://github.com/carya/Util.git">github</a> 查看，如有任何问题，请留言回复。</p>
+<hr />
+<p>常见问题:</p>
+<ol type="1">
+<li><p>找不到<em>request module</em>. <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">ImportError: No module named requests</span><br></pre></td></tr></table></figure> 找不到<em>request module</em>，参考<a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/17309288/importerror-no-module-named-requests">stackoverflow</a>, 使用 <code>$ sudo pip install requests</code>或者<code>sudo easy_install -U requests</code>;</p></li>
+<li><p>如果使用了上传蒲公英，且安装需要密码，请打开脚本，搜一下脚本里的<em>password</em>，将其值设置为空。</p></li>
+</ol>
+<p>========== update 2016-12-28 ==========</p>
+<p>github上脚本进行更新：</p>
+<ol type="1">
+<li>使用<code>xcodebuild -exportArchive</code>替换<em>PackageApplication</em>进行打包.</li>
+<li>解析传入参数使用<em>argparse</em>替换<em>OptionParser</em>.</li>
+<li>去掉对<em>PROVISIONING_PROFILE</em>和<em>CODE_SIGN_IDENTITY</em>的配置，请使用<em>Xcode8</em>的自动证书管理。</li>
+<li>新增<em>exportOptions.plist</em>文件，用于设置导出<em>ipa</em>文件的参数，该文件中的可配置参数可使用<code>xcodebuild --help</code>查看。</li>
+<li>脚本传入参数去掉<code>--target</code>和<code>--output</code>，<em>ipa</em>文件默认会存放在<em>Desktop</em>创建诸如<em>{scheme}{2016-12-28_08-08-10}</em>格式的文件夹中。</li>
+</ol>
+<p>假如你的项目目录如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">|____AOP</span><br><span class="line">| |____AppDelegate.h</span><br><span class="line">| |____AppDelegate.m</span><br><span class="line">| |____Base.lproj</span><br><span class="line">| | |____LaunchScreen.xib</span><br><span class="line">| | |____Main.storyboard</span><br><span class="line">| |____Images.xcassets</span><br><span class="line">| |____Info.plist</span><br><span class="line">| |____main.m</span><br><span class="line">| |____ViewController.h</span><br><span class="line">| |____ViewController.m</span><br><span class="line">|____AOP.xcodeproj</span><br><span class="line">|____autobuild</span><br><span class="line">| |____autobuild.py</span><br><span class="line">| |____exportOptions.plist</span><br></pre></td></tr></table></figure>
+<p>先进入<em>autobuild</em>目录，使用脚本打包的命令如下:</p>
+<p><code>python autobuild.py -p ../AOP.xcodeproj -s AOP</code></p>
+<p>脚本执行完毕，若成功，则会在桌面生成<em>ipa</em>文件。</p>
+<p>若是打包<em>xcworkspace</em>项目，则打包命令格式如下所示:</p>
+<p><code>python autobuild.py -w ../yourworkspace.xcworkspace -s yourscheme</code></p>
+<p><em>exportOptions.plist</em>文件中的可选配置参数如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">compileBitcode : Bool</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, should Xcode re-compile the app from bitcode? Defaults to YES.</span><br><span class="line"></span><br><span class="line">embedOnDemandResourcesAssetPacksInBundle : Bool</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app uses On Demand Resources and this is YES, asset   </span><br><span class="line">  packs are embedded in the app bundle so that the app can be tested without a server to   </span><br><span class="line">  host asset packs. Defaults to YES unless onDemandResourcesAssetPacksBaseURL is specified.</span><br><span class="line"></span><br><span class="line">iCloudContainerEnvironment</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app is using CloudKit, this configures the   </span><br><span class="line">  &quot;com.apple.developer.icloud-container-environment&quot; entitlement. Available options:   </span><br><span class="line">  Development and Production. Defaults to Development.</span><br><span class="line"></span><br><span class="line">manifest : Dictionary</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, users can download your app over the web by opening your   </span><br><span class="line">  distribution manifest file in a web browser. To generate a distribution manifest, the   </span><br><span class="line">  value of this key should be a dictionary with three sub-keys: appURL, displayImageURL,   </span><br><span class="line">  fullSizeImageURL. The additional sub-key assetPackManifestURL is required when using on demand resources.</span><br><span class="line"></span><br><span class="line">method : String</span><br><span class="line"></span><br><span class="line">  Describes how Xcode should export the archive. Available options: app-store, ad-hoc,   </span><br><span class="line">  package, enterprise, development, and developer-id. The list of options varies based on   </span><br><span class="line">  the type of archive. Defaults to development.</span><br><span class="line"></span><br><span class="line">onDemandResourcesAssetPacksBaseURL : String</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app uses On Demand Resources and   </span><br><span class="line">  embedOnDemandResourcesAssetPacksInBundle isn&#39;t YES, this should be a base URL specifying   </span><br><span class="line">  where asset packs are going to be hosted. This configures the app to download asset   </span><br><span class="line">  packs from the specified URL.</span><br><span class="line"></span><br><span class="line">teamID : String</span><br><span class="line"></span><br><span class="line">  The Developer Portal team to use for this export. Defaults to the team used to build the archive.</span><br><span class="line"></span><br><span class="line">thinning : String</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, should Xcode thin the package for one or more device   </span><br><span class="line">  variants? Available options: &lt;none&gt; (Xcode produces a non-thinned universal app),   </span><br><span class="line">  &lt;thin-for-all-variants&gt; (Xcode produces a universal app and all available thinned   </span><br><span class="line">  variants), or a model identifier for a specific device (e.g. &quot;iPhone7,1&quot;). Defaults to &lt;none&gt;.</span><br><span class="line"></span><br><span class="line">uploadBitcode : Bool</span><br><span class="line"></span><br><span class="line">  For App Store exports, should the package include bitcode? Defaults to YES.</span><br><span class="line"></span><br><span class="line">uploadSymbols : Bool</span><br><span class="line"></span><br><span class="line">  For App Store exports, should the package include symbols? Defaults to YES.</span><br></pre></td></tr></table></figure>
+<hr />
+<p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
+<div class="figure " style="width:117;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" width="117" height="174" alt=""></div>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/iOS/" rel="tag">iOS</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/12/07/ios-how-to-documentation/"  data-tooltip="iOS中这样写注释">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/11/19/ios-talk-naming-guide/" data-tooltip="谈谈iOS中的命名规范">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-ios-auto-archive-ipa" data-title="iOS自动打包并发布脚本" data-url="http://liumh.com/2015/11/25/ios-auto-archive-ipa/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/12/07/ios-how-to-documentation/"  data-tooltip="iOS中这样写注释">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/11/19/ios-talk-naming-guide/" data-tooltip="谈谈iOS中的命名规范">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

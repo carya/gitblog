@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>Xcode使用xcconfig文件配置环境 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Xcode使用xcconfig文件配置环境">
+<meta property="og:url" content="http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configfile.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_linkto_configfile.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_valid_configuration_default.png">
+<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
+<meta property="article:published_time" content="2016-05-22T01:42:50.000Z">
+<meta property="article:modified_time" content="2018-11-20T08:35:27.819Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Xcode">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            Xcode使用xcconfig文件配置环境
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Sun May 22 2016 09:42:50 GMT+0800">
+	
+		    May 22, 2016
+    	
+    </time>
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。</p>
+<p>其实，我也讨厌修改环境参数啊，😂</p>
+<p>为达成上述目的，主要是使用 Xcode 的 Configurations Setting File(即后缀为 xcconfig 文件) 来配置开发不同阶段下的环境。本文包含的内容如下:</p>
+<span id="more"></span>
+<ol type="1">
+<li><a href="#xcode-target">Xcode Target</a></li>
+<li><a href="#xcode-project">Xcode Project</a></li>
+<li><a href="#inherits-build-setting">Build Setting的继承关系</a></li>
+<li><a href="#xcconfig-environment">如何使用xcconfig文件来配置不同开发阶段的环境</a></li>
+</ol>
+<p>包含了一些与 build settings 相关的知识。</p>
+<h3 id="xcode-target">Xcode Target</h3>
+<p>target, 官方文档如下解释:</p>
+<blockquote>
+<p>A target specifies a product to build and contains the instructions for building the product from a set of files in a project or workspace. A target defines a single product; it organizes the inputs into the build system—the source files and instructions for processing those source files—required to build that product. Projects can contain one or more targets, each of which produces one product.</p>
+</blockquote>
+<p>target 定义了生成的唯一 product, 它将构建该 product 所需的文件和处理这些文件所需的指令集整合进 build system 中。Projects 会包含一个或者多个 targets,每一个 target 将会产出一个 product.</p>
+<blockquote>
+<p>The instructions for building a product take the form of build settings and build phases, which you can examine and edit in the Xcode project editor. <em>A target inherits the project build settings, but you can override any of the project settings by specifying different settings at the target level.</em> There can be only one active target at a time; the Xcode scheme specifies the active target.</p>
+</blockquote>
+<p>这些指令以 build setting 和 build phases 的形式存在，你可在 Xcode 的项目编辑器(TARGETS-&gt;Build Setting, TARGETS-&gt;Build Phases)中进行查看和编辑。<em>target 中的 build setting 参数继承自 project 的 build settings, 但是你可以在 target 中修改任意 settings 来重写 project settings，这样，最终生效的 settings 参数以在 target 中设置的为准</em>. Project 可包含多个 target, 但是在同一时刻，只会有一个 target 生效，可用 Xcode 的 scheme 来指定是哪一个 target 生效.</p>
+<blockquote>
+<p>A target and the product it creates can be related to another target. If a target requires the output of another target in order to build, the first target is said to depend upon the second. If both targets are in the same workspace, Xcode can discover the dependency, in which case it builds the products in the required order. Such a relationship is referred to as an implicit dependency. You can also specify explicit target dependencies in your build settings, and you can specify that two targets that Xcode might expect to have an implicit dependency are actually not dependent. For example, you might build both a library and an application that links against that library in the same workspace. Xcode can discover this relationship and automatically build the library first. However, if you actually want to link against a version of the library other than the one built in the workspace, you can create an explicit dependency in your build settings, which overrides this implicit dependency.</p>
+</blockquote>
+<p>target 和其生成的 product 可与另一个 target 有关，如果一个 target 的 build 依赖于另一个 target 的输出，那么我们就说前一个 target 依赖于后一个 target .如果这些 target 在同一个 workspace 中，那么 Xcode 能够发现这种依赖关系，从而使其以我们期望的顺序生成 products.这种关系被称为隐式依赖关系。同时，你可以显示指定 targets 之间的依赖关系，并且这种依赖关系会覆盖 Xcode 推测出的隐式依赖关系。</p>
+<p>指定 targets 之间的依赖关系的地方在 Project Editor-&gt;TRAGETS-&gt;Build Phases-&gt;Target Dependencies 处设置。</p>
+<h3 id="xcode-project">Xcode Project</h3>
+<p>官方文档的解释如下:</p>
+<blockquote>
+<p>An Xcode project is a repository for all the files, resources, and information required to build one or more software products. A project contains all the elements used to build your products and maintains the relationships between those elements. It contains one or more targets, which specify how to build products. A project defines default build settings for all the targets in the project (each target can also specify its own build settings, which override the project build settings).</p>
+</blockquote>
+<p>Xcode project 是一个仓库，该仓库包含了所有的文件，资源和用于生成一个或者多个 software products 的信息。它包含一个或者多个 targets，其中的每一个 target 指明了如何生成 products。project 为其拥有的所有 targets 定义了默认的 build settings，当然，每一个 target 能够制定其自己的 build settings，且 target 的 build settings 会重写 project 的 build settings。</p>
+<p>Xcode project 文件包含以下信息:</p>
+<ul>
+<li>源文件的引用:
+<ul>
+<li>源码，包括头文件和实现文件</li>
+<li>内部和外部的库或者框架</li>
+<li>资源文件</li>
+<li>图片文件</li>
+<li>Interface Builder(nib)文件</li>
+</ul></li>
+<li>文件结构导航中用来组织源文件的组</li>
+<li>Project-level build configurations.你可以为 project 指定多个 build configuration，例如，project 中默认包含 debug 和 release 两种 build settings.</li>
+<li>Targets, 每一个 target 指定了：
+<ul>
+<li>project 生成的 product</li>
+<li>生成 product 所需的源文件</li>
+<li>生成 product 所需的配置文件，包括对其他 targets 的依赖以及一些其他设置；当 targets 的 build configurations 没有重写 project-level 的 build settings 时，会直接使用 project-level 的 build setting.</li>
+</ul></li>
+<li>可执行环境，该环境用于调试或者测试程序，每个可执行环境会指定：
+<ul>
+<li>运行或者调试程序时加载的可执行程序</li>
+<li>传递给可执行程序的命令行参数</li>
+<li>运行程序时需设置的环境变量</li>
+</ul></li>
+</ul>
+<p>project 可独立存在，也可被包含在 workspace 中。</p>
+<h3 id="inherits-build-setting">Build Setting 的继承关系</h3>
+<p>官方文档内容如下:</p>
+<blockquote>
+<p>A build setting is a variable that contains information about how a particular aspect of a product’s build process should be performed. For example, the information in a build setting can specify which options Xcode passes to the compiler.</p>
+<p>You can specify build settings at the project or target level. Each project-level build setting applies to all targets in the project unless explicitly overridden by the build settings for a specific target.</p>
+</blockquote>
+<p>build setting 中包含了 product 生成过程中所需的参数信息。你可以在 project-level 和 target-level 层指定 build settings。project-level 的 build settings 适用于 project 中的所有targets，但是当 target-level 的 build settings 重写了 project-level 的 build settings，以 target-level 中的 build settings 中的值为准。</p>
+<blockquote>
+<p>Each target organizes the source files needed to build one product. A build configuration specifies a set of build settings used to build a target's product in a particular way. For example, it is common to have separate build configurations for debug and release builds of a product.</p>
+</blockquote>
+<p>一个 build configaration 指定了一套 build settings 用于生成某一 target 的 product，例如，在 Xcode 创建项目时默认就有两套独立的 build configarations, 分别用于生成 debug 和 release 模式下的 product。</p>
+<blockquote>
+<p>In addition to the default build settings provided by Xcode when you create a new project from a project template, you can create user-defined build settings for your project or for a particular target. You can also specify conditional build settings. The value of a conditional build setting depends on whether one or more prerequisites are met. This mechanism allows you to, for example, specify the SDK to use to build a product based on the targeted architecture.</p>
+</blockquote>
+<p>除了创建工程时生成的默认 build settings，你也可以自定义 project-level 或者 target-level 的 build settings.</p>
+<p>关于继承关系，<a target="_blank" rel="noopener" href="http://pewpewthespells.com/blog/xcconfig_guide.html#BuildSettingInheritance">The Unofficial Guide to xcconfig files</a> 这里也有详细的说明，强烈建议阅读。</p>
+<p>现在就来看看如何使用自定义的 build settings 来达到本文开始处提到的需求.</p>
+<h3 id="xcconfig-environment">如何使用 xcconfig 文件来配置不同开发阶段的环境</h3>
+<p>目前公司中的开发大致分两个阶段，第一阶段：开发阶段，此时所打包都是使用 development 的证书，极光和友盟统计的账号都是使用开发者自己申请的账号，webservice 的地址使用开发环境地址；第二阶段：uat 阶段，此时属于预发版阶段，此时打包使用 ad-hoc 的证书，极光和友盟统计的账号使用公司申请生成账号，webservice 使用的特定的预发版环境；另外，打上传到 App Store 的生产包，使用 distribution 的证书，webservice 的地址使用生产环境的地址。</p>
+<p>由此，可新建一种 build configuration, 由 Xcode 自动生成的 Release 复制而来，如下所示:</p>
+<!--![新建Configurations](/img/use-xcconfig/use_xcconfig_new_configuration.png)-->
+<div class="figure center"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_new_configuration.png" width="476" height="148" alt="新建Configurations"><span class="caption">新建Configurations</span></div>
+<p>并命名为 PreRelease。</p>
+<p>官方文档<a target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/recipes/xcode_help-project_editor/Articles/BasingBuildConfigurationsonConfigurationFiles.html#//apple_ref/doc/uid/TP40010155-CH13-SW1">Adding a Build Configuration</a> 中如下提到：</p>
+<blockquote>
+<p>A configuration file is a plain text file with a list of build setting definitions, one per line. You can base a build configuration only on a configuration file that is in your project, not on an external file.</p>
+<p><em>When you base a target or project’s build configuration on a configuration file, that build configuration automatically inherits the build setting definitions in that configuration file (and any configuration files it includes). If you then modify the value of any of those build settings in the target or project, the new value is used instead of the value in the configuration file.</em></p>
+<p>Build settings defined at the target level override any values assigned to those build settings at the project level. Therefore, target-level configurations take precedence over any project-level configurations.</p>
+</blockquote>
+<p>这里需要注意的是：<em>当你的 target-level 或者 project-levle 的 build configurations 基于配置文件时，build configuration 会自动继承配置文件(以及配置文件中引入的配置文件)中定义的 build settings，但是如果你又在之后 target 或者 project 中修改了配置文件中定义的 build settings 值，那么最终配置文件中的值会失效，实际使用的是 target 或者 project 中设置的值。</em></p>
+<p>这里鉴于公司的情况，新建了 Debug.xcconfig/PreRelease.xcconfig/Release.xcconfig 配置对应于开发阶段、预发版阶段、上传 AppStore 三种情况下的打包。</p>
+<p>新建一个 xcconfig 目录，在该目录下新建配置文件:</p>
+<!--![创建配置文件](/img/use-xcconfig/use_xcconfig_new_configfile.png 476 148)-->
+<div class="figure center"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_new_configfile.png" width="476" height="148" alt="创建配置文件"><span class="caption">创建配置文件</span></div>
+<p>根据项目情况，每个配置文件中都包含同样的 key 值，内容大致如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;网络请求baseurl</span><br><span class="line">WEBSERVICE_URL &#x3D; @&quot;http:\&#x2F;\&#x2F;127.0.0.1&quot;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;友盟配置</span><br><span class="line">UMENG_APPKEY &#x3D; @&quot;xxxvvv555999&#x3D;&#x3D;&quot;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;极光推送配置</span><br><span class="line">JPUSH_DEVELOPMENT_APPKEY &#x3D; @&quot;nnncccvvvwww&quot;</span><br><span class="line">IS_PRODUCATION &#x3D; NO</span><br><span class="line"></span><br><span class="line">#include &quot;Generator.xcconfig&quot;</span><br></pre></td></tr></table></figure>
+<p>你可在配置文件中包含其他配置文件，其中 Generator.xcconfig 文件的内容是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GCC_PREPROCESSOR_DEFINITIONS &#x3D; $(inherited) WEBSERVICE_URL&#x3D;&#39;$(WEBSERVICE_URL)&#39; MESSAGE_SYSTEM_URL&#x3D;&#39;$(MESSAGE_SYSTEM_URL)&#39; UMENG_APPKEY&#x3D;&#39;$(UMENG_APPKEY)&#39;  IS_PRODUCATION&#x3D;&#39;$(IS_PRODUCATION)&#39;</span><br></pre></td></tr></table></figure>
+<p>其作用是将配置文件中定义的常量定义成预编译宏，以便于在代码中获取。</p>
+<p>其中 GCC_PREPROCESSOR_DEFINITIONS, 文档如下：</p>
+<blockquote>
+<p>Space-separated list of option specifications. Specifies preprocessor macros in the form foo (for a simple #define) or foo=1 (for a value definition). This list is passed to the compiler through the gcc -D option when compiling precompiled headers and implementation files.</p>
+</blockquote>
+<p>GCC_PREPROCESSOR_DEFINITIONS 是 GCC 预编译头参数，通常我们可以在 Project 文件下的 Build Settings 对预编译宏定义进行默认赋值。在 Xcode7 下的路径为 Build Settings-&gt;Apple LLVM 7.x Preprocessing-&gt;Preprocessor Macros，</p>
+<!-- ![GCC_PREPROCESSOR_DEFINITIONS](/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png)-->
+<div class="figure center"><img class="fig-img" src="/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png" width="514" height="146" alt="GCC_PREPROCESSOR_DEFINITIONS"><span class="caption">GCC_PREPROCESSOR_DEFINITIONS</span></div>
+<p>想必大家看这个宏的名字已经知道它的作用了, 使用上和在 pch 头文件中添加宏定义没有太大的区别, 但有以下好处:</p>
+<ol type="1">
+<li>Xcode 的 Project 的 Build Settings 是由一个 plist 文件进行描述的, plist 本质上是一个 XML 配置文件, 通过外部的脚本比较容易去修改。</li>
+<li>Preprocessor Macros 可以按照 Configuration 选项进行默认配置, 也就是说可以根据不同的环境预先制定不同定义的宏，或者为不同环境下的相同变量定义不同的值</li>
+</ol>
+<p>xcconfig 支持可以根据不同的 Configuration 选项配置不同的文件。不同的 xcconfig 可以指定不同的 Build Settings 里的属性值, 这样子我们就可以通过项目 xcconfig 去修改 GCC_PREPROCESSOR_DEFINITIONS 的值了(最终目的就达到了)。</p>
+<p>配置文件中变量定义好之后，怎么让 Xcode 自动加载呢？如下图设置所示，是将 project-level 的 build settings 基于配置文件，三种情况的 configurations 分别选择与之对应的配置文件。</p>
+<!--![将配置文件与项目关联](/img/use-xcconfig/use_xcconfig_linkto_configfile.png 444 232)-->
+<div class="figure center"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_linkto_configfile.png" width="444" height="232" alt="将配置文件与项目关联"><span class="caption">将配置文件与项目关联</span></div>
+<p>当我们想把 project-level 或者 target-level 中的 Build Settings 的设置挪动到 xcconfig 配置文件来设置时，是否需要一个个手动输入呢？当然不是，直接在 Build Settings 中选中你想要在 xcconfig 中配置的键值对所在行（当然也可以选多行），<em>command + c</em>复制，然后到对应的 xcconfig 中去粘贴就好了，记得在 Build Settings 中改为你想要的值后再复制，如果为默认值的话则只可复制其键。如果需要改回去的话，还是选中这行，<code>command + delete</code> 就恢复默认值了。</p>
+<p>现在我们将设置挪动到了配置文件中，所有的配置文件都是键值对类型的文本文件，但是当同一个键同时存在于 target-level、project-level 和配置文件中时，到底是哪一个键值对起作用了呢？现在看看下图。</p>
+<!--![多个配置项列](/img/use-xcconfig/use_xcconfig_valid_configuration_default.png)-->
+<div class="figure center"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_valid_configuration_default.png" width="583" height="126" alt="多个配置项列"><span class="caption">多个配置项列</span></div>
+<p>注意: Xcode以从左至右的顺序设置解析的优先级，从左至右优先级降低，最左边的具有最高优先级，即 target-level &gt; project-level &gt; 自定义配置文件 &gt; iOS 默认配置；且最左列 Resolved 列显示的是最终使用的值。那么如何使 Xcode 使用配置文件中的配置项呢？这需要选中要使用配置文件的行，点击 Delete 按键，你会发现项目的默认设置已经被删除，且 xcconfig 的配置文件列被标记为绿色。标记为绿色代表该列的值生效，其值应该与 Resolved 列的值相同。</p>
+<p>最后，你可以像如下示例使用 xcconfig 中定义的宏：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;webservice url: %@, umeng appkey: %@&quot;, WEBSERVICE_URL, UMENG_APPKEY);</span><br></pre></td></tr></table></figure>
+<p>通过以上步骤，就达到了使用 xcconfig 文件来配置开发不同阶段时的环境变量的目的了。</p>
+<p>文中内容为自己学习总结，如有错误之处请指正。如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
+<div class="figure center"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" width="117" height="174" alt=""></div>
+<hr />
+<p>参考:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/featuredarticles/XcodeConcepts/Concept-Targets.html">Xcode Concepts</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.jontolof.com/cocoa/using-xcconfig-files-for-you-xcode-project/">Using xcconfig files for your XCode Project</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.startry.com/2015/07/24/iOS_EnvWithXcconfig/">iOS开发必备 - 环境变量配置</a></li>
+<li><a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/24668284/xcconfig-how-to-set-environment-variables">xcconfig-how-to-set-environment-variables</a></li>
+</ul>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/Xcode/" rel="tag">Xcode</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/iOS/" rel="tag">iOS</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/10/03/swift-dim-background-viewcontroller/"  data-tooltip="创建模态视图">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/06/ios-object-equal/" data-tooltip="iOS中的对象等同性">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-use-xcconfig-config-specific-variable" data-title="Xcode使用xcconfig文件配置环境" data-url="http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/10/03/swift-dim-background-viewcontroller/"  data-tooltip="创建模态视图">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/06/ios-object-equal/" data-tooltip="iOS中的对象等同性">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

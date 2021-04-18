@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>pandoc转换中文pdf攻略 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文记录的在Mac下pandoc转换markdown输出含中文的文本，包含一些依赖的安装以及命令使用，最后的参考文档给了我很大帮助。  pandoc的安装 转换pdf常用参数  pandoc的安装 简要记录安装步骤如下:  按照pandoc官方网站说明, 下载安装pandoc 按照pandoc官方网站说明，转换输出PDF时，需要LaTeX，下载安装MacTex-Additions和BasicTex">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="pandoc转换中文pdf攻略">
+<meta property="og:url" content="http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文记录的在Mac下pandoc转换markdown输出含中文的文本，包含一些依赖的安装以及命令使用，最后的参考文档给了我很大帮助。  pandoc的安装 转换pdf常用参数  pandoc的安装 简要记录安装步骤如下:  按照pandoc官方网站说明, 下载安装pandoc 按照pandoc官方网站说明，转换输出PDF时，需要LaTeX，下载安装MacTex-Additions和BasicTex">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2014-07-18T07:33:46.000Z">
+<meta property="article:modified_time" content="2017-12-02T02:59:51.170Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="markdown">
+<meta property="article:tag" content="pandoc">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            pandoc转换中文pdf攻略
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Fri Jul 18 2014 15:33:46 GMT+0800">
+	
+		    Jul 18, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文记录的在Mac下pandoc转换markdown输出含中文的文本，包含一些依赖的安装以及命令使用，最后的参考文档给了我很大帮助。</p>
+<ol type="1">
+<li><p><a href="#pandoc-install">pandoc的安装</a></p></li>
+<li><p><a href="#pdf-convert-params">转换pdf常用参数</a></p></li>
+</ol>
+<h3 id="pandoc-install">pandoc的安装</h3>
+<p>简要记录安装步骤如下:</p>
+<ol type="1">
+<li><p>按照<a target="_blank" rel="noopener" href="http://johnmacfarlane.net/pandoc/installing.html">pandoc官方网站</a>说明, 下载安装pandoc</p></li>
+<li><p>按照<a target="_blank" rel="noopener" href="http://johnmacfarlane.net/pandoc/installing.html">pandoc官方网站</a>说明，转换输出PDF时，需要LaTeX，下载安装MacTex-Additions和BasicTex</p></li>
+<li><p>在tzengyuxio的开源项目中下载<a target="_blank" rel="noopener" href="https://github.com/tzengyuxio/pages/blob/gh-pages/pandoc/pm-template.latex">pm-template.latex</a> pdf中文模板，将该模板中setCJKmainfont字段值LiHei Pro修改为电脑上带有的中文字体，我的自己安装了微软雅黑字体，于是修改成了<code>Microsoft YaHei</code></p></li>
+<li><p>使用tlmgr工具安装依赖titling和lastpage</p></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$sudo tlmgr install titling</span><br><span class="line">$sudo tlmgr install lastpage</span><br></pre></td></tr></table></figure>
+<ol start="5" type="1">
+<li>使用命令<code>pandoc --latex-engine=xelatex --template=pm-template markdown_strict.md -o markdown.pdf</code>转换输出pdf, 可将pm-template.latex文件放置任意处，只是需要使用--template参数指定其路径.</li>
+</ol>
+<span id="more"></span>
+<p>我在安装上述包时出现找不到相应包的情况，即使使用</p>
+<p><code>sudo tlmgr option --repository http://mirrors.ustc.edu.cn/CTAN/systems/texlive/tlnet</code></p>
+<p>修改repository之后也不行，于是手动安装。先下载<a target="_blank" rel="noopener" href="http://www.ctan.org/tex-archive/macros/latex/contrib/titling">titling</a>和<a target="_blank" rel="noopener" href="http://www.ctan.org/tex-archive/macros/latex/contrib/lastpage">lastpage</a>, 然后运行<code>kpsewhich -var-value=TEXMFHOME</code>命令找出tex安装目录，进入该目录，如没有则创建之，接着执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p texmf&#x2F;tex&#x2F;latex&#x2F;local&#x2F;</span><br><span class="line">sudo cp Downloads&#x2F;titling.sty ~&#x2F;Library&#x2F;texmf&#x2F;tex&#x2F;latex&#x2F;local</span><br></pre></td></tr></table></figure>
+<p>安装titling和lastpage时直接根据其安装指导安装即可，需要先经历一些简单的*.sty文件生成，zip解压及文件移动等操作</p>
+<h3 id="pdf-convert-params">转换pdf常用参数</h3>
+<ul>
+<li>--latex-engine=pdflatex|lualatex|xelatex</li>
+</ul>
+<p>--latex-engine用来指定转换PDF格式时LaTeX引擎，默认情况下是pdflatex，但是由于pdflatex不支持中文，因此需要将引擎设置为xelatex</p>
+<ul>
+<li>--template=FILE</li>
+</ul>
+<p>使用FILE指定的文件作为输出文档的自定义模板。可将模板文件放置任意处，只是指定FILE时需要该FILE的路径。</p>
+<ul>
+<li>--toc, --table-of-contents</li>
+</ul>
+<p>使用该参数后，会在输出文档开头自动产生文件目录，对于输出格式是man, docbook, slidy, slideous, s5, docx 或者odt的文档，该参数不起任何作用。</p>
+<ul>
+<li>--toc-depth=NUMBER</li>
+</ul>
+<p>指定文件目录中包含的章节级别，默认NUMBER=3，表示一级标题、二级标题、三级标题都会被在目录中展示。</p>
+<ul>
+<li>-V KEY[=VAL], --variable=KEY[:VAL]</li>
+</ul>
+<p>当渲染standalone模式下文档时，设置模板变量KEY的值为VAL。pandoc会自动设置默认模板中的这些变量，因此该选项这通常在使用--template选项指定自定义模板时有用，如果没有指定VAL值，那么该KEY会被赋予值true。</p>
+<ul>
+<li>-s, --standalone</li>
+</ul>
+<p>转换输出文档时会自动加上合适的header和footer(例如standalone HTML, LaTeX, RTF).该选择在转换输出pdf，epub，epub3，fb2，docx，odt格式文件时会被自动设置，因此如果转换输出上述格式文件，则不用显示指定该选项。</p>
+<ul>
+<li>-N, --number-sections</li>
+</ul>
+<p>对于转换输出LaTeX, ConTeXt, HTML, EPUB格式文档时，对文中章节进行编号。默认情况下，文章的章节是不会被编号的。对于使用了class unnumbered 的章节肯定不会被标号，即使使用了--number-sections选项。</p>
+<p>参考: <a target="_blank" rel="noopener" href="http://afoo.me/posts/2013-07-10-how-to-transform-chinese-pdf-with-pandoc.html">pandoc中文pdf转换攻略</a></p>
+<hr />
+<p>我的博客: <a href="http://liumh.com" class="uri">http://liumh.com</a></p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/markdown/" rel="tag">markdown</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/pandoc/" rel="tag">pandoc</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/21/gson-pretty-printing/"  data-tooltip="Gson格式化输出JSON字符串">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/08/pandoc-markdown-named-anchors/" data-tooltip="Pandoc&#39;s markdown命名锚">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-pandoc-convert-chinese-pdf" data-title="pandoc转换中文pdf攻略" data-url="http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/21/gson-pretty-printing/"  data-tooltip="Gson格式化输出JSON字符串">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/07/08/pandoc-markdown-named-anchors/" data-tooltip="Pandoc&#39;s markdown命名锚">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/07/18/pandoc-convert-chinese-pdf/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>

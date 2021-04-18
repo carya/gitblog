@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="刘茂华的博客">
+    <title>Java类中调用外部可执行脚本 - 刘茂华的博客</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <meta name="description" content="本文记录的是如何在Java类中调用外部可执行脚本,例如shell脚本、Python脚本、ruby脚本等。文中阐述了Runtime.exec和ProcessBuilder.start两种调用脚本的方式，官方推荐使用后者的方式，下面对其分别讲述。 &lt;!-- more --&gt;  以Runtime.exec的方式调用脚本 以ProcessBuilder.start方式调用脚本 Runtime.">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Java类中调用外部可执行脚本">
+<meta property="og:url" content="http://liumh.com/2014/05/22/java-running-executable-script/index.html">
+<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:description" content="本文记录的是如何在Java类中调用外部可执行脚本,例如shell脚本、Python脚本、ruby脚本等。文中阐述了Runtime.exec和ProcessBuilder.start两种调用脚本的方式，官方推荐使用后者的方式，下面对其分别讲述。 &lt;!-- more --&gt;  以Runtime.exec的方式调用脚本 以ProcessBuilder.start方式调用脚本 Runtime.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2014-05-22T14:49:01.000Z">
+<meta property="article:modified_time" content="2014-06-25T09:06:20.000Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="shell">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+            <meta property="fb:admins" content="100002986778881" />
+        
+    
+    
+        <meta property="og:image" content="/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link rel="stylesheet" href="/.css" src="/.js">
+
+    <!--STYLES END-->
+    
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-45123163-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+    </script>
+
+</head>
+
+    <body>
+        <div id="blog">
+            <header id="header" data-behavior="3">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <h1 class="header-title">
+        <a class="header-title-link" href="/%20">刘茂华的博客</a>
+    </h1>
+    
+        <a class="header-right-picture" href="/#about">
+            <img class="header-picture" src="/assets/images/header.png"/>
+        </a>
+    
+</header>
+            <nav id="sidebar" data-behavior="3">
+    
+        <div class="sidebar-profile">
+            <a href="/#about">
+                
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
+                
+            </a>
+            <span class="sidebar-profile-name">CaryaLiu</span>
+        </div>
+    
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/%20"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                    <span class="sidebar-button-desc">Home</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-categories"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                    <span class="sidebar-button-desc">Categories</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-tags"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                    <span class="sidebar-button-desc">Tags</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/all-archives"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                    <span class="sidebar-button-desc">Archive</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link st-search-show-outputs"
+                         href="#search"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                    <span class="sidebar-button-desc">Search</span>
+                </a>
+        </li>
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="#about"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                    <span class="sidebar-button-desc">About</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+    </ul>
+    
+        <ul class="sidebar-buttons">
+        
+            <li class="sidebar-button">
+                
+                    <a  class="sidebar-button-link "
+                         href="/atom.xml"
+                        
+                    >
+                
+                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+                    <span class="sidebar-button-desc">RSS</span>
+                </a>
+        </li>
+        
+    </ul>
+    
+</nav>
+
+            
+            <div id="main" data-behavior="3"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            Java类中调用外部可执行脚本
+        </h1>
+    
+    <div class="post-meta">
+    <time itemprop="datePublished" content="Thu May 22 2014 22:49:01 GMT+0800">
+	
+		    May 22, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <p>本文记录的是如何在Java类中调用外部可执行脚本,例如shell脚本、Python脚本、ruby脚本等。文中阐述了Runtime.exec和ProcessBuilder.start两种调用脚本的方式，官方推荐使用后者的方式，下面对其分别讲述。</p>
+<p>&lt;!-- more --&gt;</p>
+<ul>
+<li><a href="#runtime_exec">以Runtime.exec的方式调用脚本</a></li>
+<li><a href="#process_builder">以ProcessBuilder.start方式调用脚本</a></li>
+<li><a href="#diff">Runtime.exec()与ProcessBuilder的不同</a></li>
+</ul>
+<p>&lt;h3 id=&quot;runtime_exec&quot;&gt;以Runtime.exec的方式调用脚本&lt;/h3&gt;</p>
+<p>代码是最直观说明问题的方式，先贴上代码:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">public void executeScript() &#123;</span><br><span class="line">    &#x2F;&#x2F;获取可执行脚本路径|scriptPath|及其参数文本路径|logPath|</span><br><span class="line">    String scriptPath &#x3D; Thread.currentThread().getContextClassLoader()</span><br><span class="line">            .getResource(&quot;log_analysis.sh&quot;).getPath();</span><br><span class="line">    String logPath &#x3D; Thread.currentThread().getContextClassLoader()</span><br><span class="line">            .getResource(&quot;log.txt&quot;).getPath();</span><br><span class="line"></span><br><span class="line">    Runtime runtime &#x3D; Runtime.getRuntime();</span><br><span class="line">    String[] cmdarray &#x3D; &#123; &quot;sh&quot;, scriptPath, logPath &#125;;</span><br><span class="line">    BufferedReader br &#x3D; null;</span><br><span class="line">    BufferedReader bre &#x3D; null;</span><br><span class="line">    try &#123;</span><br><span class="line">        Process process &#x3D; runtime.exec(cmdarray);</span><br><span class="line">        &#x2F;&#x2F;读取标准输出流</span><br><span class="line">        br &#x3D; new BufferedReader(new InputStreamReader(</span><br><span class="line">                process.getInputStream()));</span><br><span class="line">        StringBuffer linesBuffer &#x3D; new StringBuffer();</span><br><span class="line">        String line &#x3D; null;</span><br><span class="line">        while (null !&#x3D; (line &#x3D; br.readLine())) &#123;</span><br><span class="line">            linesBuffer.append(line).append(&quot;\n&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;get output: \n&quot; + linesBuffer.toString());</span><br><span class="line">        &#x2F;&#x2F;读取标准错误输出流</span><br><span class="line">        bre &#x3D; new BufferedReader(new InputStreamReader(</span><br><span class="line">                process.getErrorStream()));</span><br><span class="line">        StringBuffer errorBuffer &#x3D; new StringBuffer();</span><br><span class="line">        String errorline &#x3D; null;</span><br><span class="line">        while (null !&#x3D; (errorline &#x3D; bre.readLine())) &#123;</span><br><span class="line">            errorBuffer.append(errorline).append(&quot;\n&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;get error output: \n&quot; + errorBuffer.toString());</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;等到脚本执行完毕，获取返回码|exitValue|</span><br><span class="line">        int exitValue &#x3D; process.waitFor();</span><br><span class="line">        if (0 &#x3D;&#x3D; exitValue) &#123;</span><br><span class="line">            System.out.println(&quot;execute script success.&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;execute script failed: exitValue &#x3D; &quot;</span><br><span class="line">                    + exitValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        System.out.println(&quot;execute script failed:&quot; + e);</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        System.out.println(&quot;execute script failed:&quot; + e);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        if (null !&#x3D; br) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                br.close();</span><br><span class="line">                br &#x3D; null;</span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (null !&#x3D; bre) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                bre.close();</span><br><span class="line">                bre &#x3D; null;</span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                &#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+在代码的开始(2-6行)，获取脚本文件以及参数文件的路径(<code>scriptPath/logPath</code>)，这两个文件都放置在项目的资源文件夹下。关于资源文件路径的获取可参考:<a target="_blank" rel="noopener" href="http://readus.org/2014/01/14/get-path-of-file-with-java/">Java获取文件的路径</a>.</p>
+<p>代码8-13行是调用外部应用的核心代码。<code>java.lang.Runtime</code>的静态方法<code>getRuntime()</code>会获取当前<code>Java Runtime Environment</code>，这是获取<code>Runtime</code>对象的唯一途径，通过该引用，可以通过调用<code>Runtime</code>类的<code>exec()</code>方法运行外部应用。</p>
+<p>代码14-31行是通过进程的输入输出流获取该进程的输入输出，对于进程有大量的输入输出信息时，则必须使用上述代码读取进程的输入输出流，在<a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/api/java/lang/Process.html">JDK's Javadoc</a>中有如下描述:</p>
+<blockquote>
+<p>Because some native platforms only provide limited buffer size for standard input and output streams, failure to promptly write the input stream or read the output stream of the subprocess may cause the subprocess to block, and even deadlock.</p>
+</blockquote>
+<p>如果不读取该进程的输入输出流，则可能会导致该进程的挂起。关于使用Runtime.exec()的一些陷阱可参考<a target="_blank" rel="noopener" href="http://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html">When Runtime.exec() won't</a>,该文有详细的阐述；更健壮的方案是启动两个线程，一个线程负责读标准输出流，另一个负责读标准错误流，<a target="_blank" rel="noopener" href="http://yearsaaaa123789.iteye.com/blog/1404865">该文</a>有涉及，需要的童鞋可点击超链接查看。</p>
+<p>代码33-40行的<a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/api/java/lang/Process.html#waitFor()">waitFor()</a>方法使当前线程等待直至Process对象运行结束，如果子进程已结束则该方法立即返回，如果子进程未结束，则当前线程会阻塞直至子进程退出。该方法的返回(<code>int exitValue</code>)代表子进程的退出码，0指示正常终止退出。按照我的理解，该<code>exitValue</code>类似于在Linux shell终端环境下执行命令后的<code>$?</code>的值，如下:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ls </span><br><span class="line">ExecuteScriptDemo</span><br><span class="line">$ echo $?</span><br><span class="line">0</span><br><span class="line">$ ls -l noExistFile</span><br><span class="line">ls: noExistFile: No such file or directory</span><br><span class="line">$ echo $?</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+最后测试上述方法，将log_analysis.sh文件中第4行执行python的调用代码注释和不注释两种情况，分别运行测试代码，可得到下面两种情况的输出:</p>
+<ul>
+<li>注释python调用的代码情况输出</li>
+</ul>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">get output: </span><br><span class="line">APUE</span><br><span class="line">Linux</span><br><span class="line">Spring</span><br><span class="line">Java</span><br><span class="line">Objective-c</span><br><span class="line"></span><br><span class="line">get error output: </span><br><span class="line"></span><br><span class="line">execute script success.</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>不注释python调用的代码情况输出</li>
+</ul>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">get output: </span><br><span class="line">APUE</span><br><span class="line">Linux</span><br><span class="line">Spring</span><br><span class="line">Java</span><br><span class="line">Objective-c</span><br><span class="line"></span><br><span class="line">get error output: </span><br><span class="line">  File &quot;&#x2F;Users&#x2F;carya&#x2F;workspace&#x2F;github&#x2F;ExecuteScriptDemo&#x2F;target&#x2F;classes&#x2F;log.txt&quot;, line 1</span><br><span class="line">    2014.05.24 ExecuteScript.class APUE</span><br><span class="line">             ^</span><br><span class="line">SyntaxError: invalid syntax</span><br><span class="line"></span><br><span class="line">execute script failed: exitValue &#x3D; 1</span><br></pre></td></tr></table></figure></p>
+<p>&lt;h3 id=&quot;process_builder&quot;&gt;以ProcessBuilder.start方式调用脚本&lt;/h3&gt;</p>
+<p>同上，首先贴出代码,主要注意代码第8-17行与上一种方法的不同之处:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">public void executeScript2() &#123;</span><br><span class="line">    ClassLoader classLoader &#x3D; Thread.currentThread()</span><br><span class="line">            .getContextClassLoader();</span><br><span class="line">    String scriptPath &#x3D; classLoader.getResource(&quot;log_analysis.sh&quot;)</span><br><span class="line">            .getPath();</span><br><span class="line">    String logPath &#x3D; classLoader.getResource(&quot;log.txt&quot;).getPath();</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; commandsList &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">    commandsList.add(&quot;sh&quot;);</span><br><span class="line">    commandsList.add(scriptPath);</span><br><span class="line">    commandsList.add(logPath);</span><br><span class="line">    ProcessBuilder processBuilder &#x3D; new ProcessBuilder(commandsList);</span><br><span class="line">    &#x2F;&#x2F;merge standard output stream and standard error output stream</span><br><span class="line">    processBuilder.redirectErrorStream(true);</span><br><span class="line">    BufferedReader br &#x3D; null;</span><br><span class="line">    try &#123;</span><br><span class="line">        Process process &#x3D; processBuilder.start();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;读取标准输出流和标准错误输出流</span><br><span class="line">            br &#x3D; new BufferedReader(new InputStreamReader(</span><br><span class="line">                    process.getInputStream()));</span><br><span class="line">            StringBuffer linesBuffer &#x3D; new StringBuffer();</span><br><span class="line">            String line &#x3D; null;</span><br><span class="line">            while (null !&#x3D; (line &#x3D; br.readLine())) &#123;</span><br><span class="line">                linesBuffer.append(line).append(&quot;\n&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(&quot;get output: \n&quot; + linesBuffer.toString());</span><br><span class="line"></span><br><span class="line">            int exitValue &#x3D; process.waitFor();</span><br><span class="line">            if (0 &#x3D;&#x3D; exitValue) &#123;</span><br><span class="line">                System.out.println(&quot;execute script success.&quot;);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                System.out.println(&quot;execute script failed: exitValue &#x3D; &quot;</span><br><span class="line">                        + exitValue);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;execute script failed:&quot; + e);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;execute script failed:&quot; + e);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (null !&#x3D; br) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    br.close();</span><br><span class="line">                    br &#x3D; null;</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        &#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关于<a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/api/java/lang/ProcessBuilder.html">ProcessBuilder</a>的详细描述可以参考其文档.其余对其输出流的读取等与上述<code>Runtime.exec()</code>相同。</p>
+<p>&lt;h3 id=&quot;diff&quot;&gt;Runtime.exec()与ProcessBuilder的不同&lt;/h3&gt;</p>
+<p>两者的主要不同之处体现在ProcessBuilder能够以更灵活，简单的方式定义新创建进程的运行环境，以及启动新进程。<a target="_blank" rel="noopener" href="http://www.java-tips.org/java-se-tips/java.util/from-runtime.exec-to-processbuilder.html">From Runtime.exec() to ProcessBuilder</a>一文对此进行了对比，英文的，建议直接查看该文，下面对其进行简要的概括。</p>
+<p>JDK 5.0之前，只能使用以下Runtime.exec()的六种方式创建进程调用外部应用，在调用<code>exec()</code>方法之前，需要指定调用的命令及其参数，设置环境变量和工作目录。每一个版本的<code>exec()</code>方法都会返回一个<code>java.lang.Process</code>对象来管理新创建的进程，这使你可以获取新创建进程的输入输出流以及返回码.</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public Process exec(String command) throws IOException</span><br><span class="line">public Process exec(String[] cmdarray) throws IOException</span><br><span class="line"></span><br><span class="line">public Process exec(String command, String[] envp) throws IOException</span><br><span class="line">public Process exec(String[] cmdarray, String[] envp) throws IOException</span><br><span class="line"></span><br><span class="line">public Process exec(String command, String[] envp, File dir) throws IOException</span><br><span class="line">public Process exec(String[] cmdarray, String[] envp, File dir) throws IOException</span><br></pre></td></tr></table></figure>
+若以以下方法调用:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">File file &#x3D; new File(other directory);</span><br><span class="line">Runtime runtime &#x3D; Runtime.getRuntime();</span><br><span class="line">Process process &#x3D; runtime.exec(command, null, file);</span><br></pre></td></tr></table></figure>
+将会改变命令运行的工作目录，上述第二个参数是环境的设置，传入的是<code>null</code>，表示子进程继承当前进程的环境设置。</p>
+<p>而，ProcessBuilder类有两个构造函数, 一个是以List的方式传入命令及命令参数，另一个以可变字符串的方式传入命令及命令参数:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public ProcessBuilder(List command)</span><br><span class="line">public ProcessBuilder(String... command)</span><br></pre></td></tr></table></figure>
+ProcessBuilder使用<code>start()</code>方法执行命令，在调用<code>start()</code>方法之前，可以改变Process创建的方式。如果想让process工作在不同的目录，与<code>Runtime.exec()</code>传入工作目录参数不同，ProcessBuilder调用<code>directory()</code>方法:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public ProcessBuilder directory(File directory)</span><br></pre></td></tr></table></figure></p>
+<p>ProcessBuilder没有显示的<code>setter</code>方法来改变进程的环境变量，你可以使用<code>environment()</code>方法获取当前环境变量列表:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ProcessBuilder processBuilder &#x3D; new ProcessBuilder(command);</span><br><span class="line">Map env &#x3D; processBuilder.environment();</span><br><span class="line">&#x2F;&#x2F; manipulate env</span><br></pre></td></tr></table></figure></p>
+<p>通过操作该Map可以添加、更新、移除环境变量值:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ProcessBuilder processBuilder &#x3D; new ProcessBuilder(command, arg1, arg2);</span><br><span class="line">Map env &#x3D; processBuilder.environment();</span><br><span class="line">env.put(&quot;var1&quot;, &quot;value&quot;);</span><br><span class="line">env.remove(&quot;var3&quot;);</span><br></pre></td></tr></table></figure>
+在环境变量和工作目录都设置好后，调用<code>start()</code>方法，执行命令:</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">processBuilder.directory(&quot;Dir&quot;);</span><br><span class="line">Process p &#x3D; processBuilder.start();</span><br></pre></td></tr></table></figure>
+你可以使用<code>clear()</code>方法清除掉当前的所有环境变量设置，显示设置自己所需的环境。</p>
+<p>除此之外，与<code>Runtime.exec()</code>不同之处，ProcessBuilder可使用<code>redirectInput</code>方法重定向输入源，以及使用<code>redirectOutput</code>和<code>redirectError</code>重定向标准输出和标准错误输出流，这样的情况下，<code>Process.getInputStream()</code>和<code>Process.getErrorStream()</code>将会返回<em>null input stream</em>:</p>
+<ul>
+<li>输入流的<code>read</code>方法总是返回<code>-1</code></li>
+<li>输入流的<code>available</code>方法总是返回<code>0</code></li>
+<li>输入流的<code>close</code>方法不会做任何操作</li>
+</ul>
+<p>ProcessBuilder的<code>redirectErrorStream</code>属性默认值是<code>false</code>，这种情况下，标准输出和标准错误输出会输出到两个不同的输出流，二者可通过<code>Process.getInputStream()</code>和<code>Process.getErrorStream()</code>分别获取.如果属性值设置为<code>true</code>，那么:</p>
+<ul>
+<li>标准输出和标准错误输出流会合并输出到同一目的地</li>
+<li>标准输出和标准错误输出流的共同目的地可通过<code>redirectOutput</code>方法重定向</li>
+<li>使用<code>redirectError</code>方法对标准错误输出流的重定向都会被忽略</li>
+<li>使用<code>Process.getErrorStream()</code>返回的会是<em>null input stream</em></li>
+</ul>
+<p>本文所涉及的代码托管在了GitHub上<a target="_blank" rel="noopener" href="https://github.com/carya/ExecuteScriptDemo">ExecuteScriptDemo</a>.</p>
+
+            
+                
+
+            
+        </div>
+    </div>
+    <div class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/Java/" rel="tag">Java</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/shell/" rel="tag">shell</a>
+
+            </div>
+        
+        <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/27/java-start-long-running-process/"  data-tooltip="Java类中启动长时间运行的进程">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/01/hexo-named-anchors/" data-tooltip="markdown中命名锚">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+            <section id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="post-java-running-executable-script" data-title="Java类中调用外部可执行脚本" data-url="http://liumh.com/2014/05/22/java-running-executable-script/"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'readus'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+</section>
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/27/java-start-long-running-process/"  data-tooltip="Java类中启动长时间运行的进程">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/01/hexo-named-anchors/" data-tooltip="markdown中命名锚">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-google-plus"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-facebook-official"></i>
+            </a>
+        </li>
+        <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-twitter"></i>
+            </a>
+        </li>
+        
+            <li class="post-action">
+                <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                    <i class="fa fa-comment-o"></i>
+                </a>
+            </li>
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
+    <ul class="share-options">
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+            </a>
+        </li>
+        <li class="share-option">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/22/java-running-executable-script/">
+                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+            
+        </div>
+        <div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
+</h5>
+        
+        
+            <h5 id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS开发工程师</p>
+
+            </h5>
+        
+        
+            <h5 id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                成都
+            </h5>
+        
+    </div>
+</div>
+
+        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
+    </body>
+    <!--SCRIPTS-->
+
+<script src="/assets/js/script.min.js"></script>
+<script href="/.css" src="/.js"></script>
+
+<!--SCRIPTS END-->
+
+
+
+</html>
