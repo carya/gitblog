@@ -204,6 +204,48 @@
                 <div class="postShorten-header">
                     <h1 class="postShorten-title" itemprop="headline">
                         
+                                <a class="link-unstyled" href="/2015/12/12/ios-understand-copy/">iOS理解NSCopying协议</a>
+                        
+                    </h1>
+                    <div class="postShorten-meta">
+    <time itemprop="datePublished" content="Sat Dec 12 2015 22:04:30 GMT+0800">
+	
+		    Dec 12, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+                </div>
+                <div class="postShorten-excerpt" itemprop="articleBody">
+                    
+                        <p>如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:</p>
+                    
+                    
+                        
+                            <a href="/2015/12/12/ios-understand-copy/" class="postShorten-excerpt_link link ">Continue reading</a>
+                            
+                        
+                    
+                    
+                </div>
+            </div>
+            
+        </article>
+    
+        
+        
+                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
+        
+            <div class="postShorten-wrap">
+                <div class="postShorten-header">
+                    <h1 class="postShorten-title" itemprop="headline">
+                        
                                 <a class="link-unstyled" href="/2015/12/08/ios-change-readonly-property/">iOS修改声明为readonly的属性值</a>
                         
                     </h1>
@@ -597,55 +639,6 @@
                     
                         
                             <a href="/2015/09/04/ios-kvc-collection-operators/" class="postShorten-excerpt_link link ">Continue reading</a>
-                            
-                        
-                    
-                    
-                </div>
-            </div>
-            
-        </article>
-    
-        
-        
-                <article class="postShorten" itemscope itemType="http://schema.org/BlogPosting">
-        
-            <div class="postShorten-wrap">
-                <div class="postShorten-header">
-                    <h1 class="postShorten-title" itemprop="headline">
-                        
-                                <a class="link-unstyled" href="/2015/08/25/ios-know-kvo/">iOS初探KVO</a>
-                        
-                    </h1>
-                    <div class="postShorten-meta">
-    <time itemprop="datePublished" content="Tue Aug 25 2015 22:00:27 GMT+0800">
-	
-		    Aug 25, 2015
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
-
-
-    
-</div>
-                </div>
-                <div class="postShorten-excerpt" itemprop="articleBody">
-                    
-                        <p>KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。</p>
-<p>监听属性变化需要以下几步:</p>
-<ol type="1">
-<li>使用函数 <code>addObserver:forKeyPath:options:context:</code> 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
-<li>为了响应被观察者对象的变化通知，观察者必须实现 <code>observeValueForKeyPath:ofObject:change:context:</code> 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
-<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code> 方法会自动调用。</li>
-<li>调用 <code>– removeObserver:forKeyPath:context:</code> 取消注册。</li>
-</ol>
-                    
-                    
-                        
-                            <a href="/2015/08/25/ios-know-kvo/" class="postShorten-excerpt_link link ">Continue reading</a>
                             
                         
                     
