@@ -225,22 +225,22 @@
         <div class="main-content-wrap">
             <p>本文记录的是关于shell之echo的知识。</p>
 <p>echo是linux中常用的终端命令(command line)，其包括:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure>
 <p>首先看看echo的 man page:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#39; &#39;) characters and followed</span><br><span class="line">     by a newline (&#96;\n&#39;) character, to the standard output.</span><br></pre></td></tr></table></figure>
-从帮助文档可以看出:</p>
-<ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#39; &#39;) characters and followed</span><br><span class="line">     by a newline (&#96;\n&#39;) character, to the standard output.</span><br></pre></td></tr></table></figure>
+<p>从帮助文档可以看出:</p>
+<ol type="1">
 <li>echo是将其后的arguments输出到(STDOUT),通常就是bash界面.</li>
-<li>echo是将所有的操作对象，以单一的空格<code></code>分开的字符串，最后紧跟着换行符('\n')，输出到bash</li>
+<li>echo是将所有的操作对象，以单一的空格` `分开的字符串，最后紧跟着换行符('')，输出到bash</li>
 </ol>
-<p>&lt;!-- more --&gt;</p>
+<span id="more"></span>
 <p>通过下面的例子更容易理解:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;hello     world&quot;    China   &#39;English&#39;</span><br><span class="line">hello     world China English</span><br><span class="line">$ echo</span><br><span class="line"></span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
-上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开. 第二个例子中，echo后未接任何arguments，输出到bash是一空白行('\n').</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;hello     world&quot;    China   &#39;English&#39;</span><br><span class="line">hello     world China English</span><br><span class="line">$ echo</span><br><span class="line"></span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
+<p>上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开. 第二个例子中，echo后未接任何arguments，输出到bash是一空白行('').</p>
 <p>在echo的man page中提到:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-n: Do not print the trailing newline character.  This may also be achieved by appending &#96;\c&#39; to the end of the string.</span><br></pre></td></tr></table></figure>
-可以使用 <code>-n</code> option取消打印末尾的换行符，也可通过在字符串末尾添加'\c'字符实现，如下:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -n</span><br><span class="line">$ echo -e &quot;\c&quot;</span><br><span class="line">$ </span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-n: Do not print the trailing newline character.  This may also be achieved by appending &#96;\c&#39; to the end of the string.</span><br></pre></td></tr></table></figure>
+<p>可以使用 <code>-n</code> option取消打印末尾的换行符，也可通过在字符串末尾添加'字符实现，如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -n</span><br><span class="line">$ echo -e &quot;\c&quot;</span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
 <p>echo 除了 <code>-n</code> option外，常用的选项还有:</p>
 <ul>
 <li>-e:启用反斜线控制字符的转换(参考下表)</li>
@@ -263,15 +263,15 @@
 </ul>
 <p>下面是echo的实例。</p>
 <p>例一, 不带任何option，原样输出字符串</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a\tb\tc\nd\te\bf\a</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a\tb\tc\nd\te\bf\a</span><br></pre></td></tr></table></figure>
 <p>例二，使用 <code>-e</code>选项，启用反斜线控制字符的转换</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f</span><br></pre></td></tr></table></figure>
 <p>例三，启用 <code>-n</code>选项，取消行末换行符</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -ne &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f$</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -ne &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f$</span><br></pre></td></tr></table></figure>
 <p>例四，使用 <code>-e</code> + <code>\c</code> 达到与例三效果</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a\c&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f$ </span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a\c&quot;</span><br><span class="line">a	b	c</span><br><span class="line">d	f$ </span><br></pre></td></tr></table></figure>
 <p>最后，echo用来检查变量值:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ A&#x3D;&quot;hello world&quot;</span><br><span class="line">$ echo $A</span><br><span class="line">hello world</span><br><span class="line">$ echo $?</span><br><span class="line">0</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ A&#x3D;&quot;hello world&quot;</span><br><span class="line">$ echo $A</span><br><span class="line">hello world</span><br><span class="line">$ echo $?</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
 <p>参考:</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="http://bbs.chinaunix.net/forum.php?mod=viewthread&amp;tid=218853&amp;extra=page%3D1%26filter%3Ddigest%26digest%3D1%26digest%3D1">shell 十三問</a></li>

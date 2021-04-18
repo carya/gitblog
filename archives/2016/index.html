@@ -358,9 +358,8 @@ Popup_Window动画
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:
-123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1<br>
+                        <p>使用 <code>==</code> 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSString *str &#x3D; @&quot;origin1&quot;;</span><br><span class="line">NSString *strCopy &#x3D; [str copy];</span><br><span class="line">NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];</span><br><span class="line">    </span><br><span class="line">BOOL equalA &#x3D; (str &#x3D;&#x3D; strCopy);</span><br><span class="line">BOOL equalB &#x3D; (str &#x3D;&#x3D; str1);</span><br><span class="line"></span><br><span class="line">BOOL equalC &#x3D; [str isEqualToString:str1];  &#x2F;**&lt; equalC is YES *&#x2F;</span><br><span class="line">BOOL equalD &#x3D; [str isEqual:str1]; &#x2F;**&lt; equalD is YES *&#x2F;</span><br></pre></td></tr></table></figure>
                     
                     
                         
@@ -368,8 +367,6 @@ Popup_Window动画
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -404,17 +401,7 @@ Popup_Window动画
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            今天是2015年的最后一天了，根据手机相册总结一下今年吧。
-&lt;!-- more --&gt;
-老家，每年的旅程出发的地方
-3月，大学时的好友叶子来成都，毕业离开北京后，就很少遇到在北京的朋友了，和老婆一起陪她玩了一天。
-川剧变脸
-成都锦鲤外，老婆和叶子
-2015年2月2日，领证了，结束了4年的恋爱旅程，很抱歉的没有给老婆一个婚礼，仅仅是一场简简单单的旅行。
-3月，拍了婚纱照。
-
-6月底，请了<br>
+                        <p>今天是2015年的最后一天了，根据手机相册总结一下今年吧。</p>
                     
                     
                         
@@ -422,8 +409,6 @@ Popup_Window动画
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

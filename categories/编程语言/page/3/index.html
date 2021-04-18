@@ -311,11 +311,12 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。
-对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:
-
-上面的情况如果打印UITextField的text属性会输出:中国di zhi。由于拼音是选中状态的，那么可以根据 UITextInp<br>
+                        <p>项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。</p>
+<p>对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:</p>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png" alt="输入中文时包含选中状态的拼音" /><figcaption>输入中文时包含选中状态的拼音</figcaption>
+</figure>
+<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据 UITextInput 协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
                     
                     
                         
@@ -323,8 +324,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -359,11 +358,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。
-&lt;!-- more --&gt;
-现在有四张UIImage，初始化后将其存入数组中:
-12345self.imgs &#x3D; @[[UIImage imageNamed:@&quot;bg01&quot;], <br>
+                        <p>当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。</p>
                     
                     
                         
@@ -371,8 +366,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -407,11 +400,11 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用Xcode xcassets的Slicing功能或者 api
-- resizableImageWithCapInsets:
-完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api
-+ (UIColo<br>
+                        <p>项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用<code>Xcode xcassets</code>的Slicing功能或者 api</p>
+<p><code>- resizableImageWithCapInsets:</code></p>
+<p>完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api</p>
+<p><code>+ (UIColor *)colorWithPatternImage:(UIImage *)image</code></p>
+<p>来设置背景色。</p>
                     
                     
                         
@@ -419,8 +412,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -455,10 +446,11 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式:
-[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];
-上述UIColor的十六进制的表示为0x3CB4AE, 使用0x<br>
+                        <p>iOS UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为 <code>R:60 G:180 B:174</code> 的UIColor，使用UIColor的api可以使用如下的方式:</p>
+<p><code>[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
+<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>, 使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>, 那么可以使用如下方式创建UIColor:</p>
+<p><code>[UIColor colorWithHex:0xFF3CB4AE]</code></p>
+<p>实现方式如下:</p>
                     
                     
                         
@@ -466,8 +458,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -502,10 +492,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是使用OC进行NSData和十六进制字符串之间的相互转换。其中将十六进制字符串转换成NSData的代码如下:
-&lt;!-- more --&gt;
-12345678910111213141516171819202122232425262728- (NSData *)convertHexStrToData:(NSString *)str &#123;    if (!str || [st<br>
+                        <p>本文记录的是使用OC进行NSData和十六进制字符串之间的相互转换。其中将十六进制字符串转换成NSData的代码如下:</p>
                     
                     
                         
@@ -513,8 +500,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -549,12 +534,11 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            有时候需要为UIView添加虚线描边，本文记录一种实现方式，主要是通过对UIView的根layer添加CAShapeLayer来完成。效果图如下:
-
-核心代码示例如下:
-&lt;!-- more --&gt;
-12345678910111213141516171819202122CGSize screenSize &#x3D; [UIScreen mainScreen].bounds.size;C<br>
+                        <p>有时候需要为UIView添加虚线描边，本文记录一种实现方式，主要是通过对UIView的根layer添加CAShapeLayer来完成。效果图如下:</p>
+<figure>
+<img src="http://readus-org.qiniudn.com/img/ios_dash_border_view.png" alt="UIView虚线边框示意图" /><figcaption>UIView虚线边框示意图</figcaption>
+</figure>
+<p>核心代码示例如下:</p>
                     
                     
                         
@@ -562,8 +546,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -598,10 +580,10 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是，当在UIViewController的根view.window上添加子视图maskView，且在该子视图maskView上的某一操作会触发UIAlertController的弹出的情况下，如何保证UIAlertController是显示在整个视图的最上方。如不做任何处理，UIAlertController会处在子视图maskView的视图层级之下，如下图所示:
-
-&lt;!-- mo<br>
+                        <p>本文记录的是，当在UIViewController的根view.window上添加子视图maskView，且在该子视图maskView上的某一操作会触发UIAlertController的弹出的情况下，如何保证UIAlertController是显示在整个视图的最上方。如不做任何处理，UIAlertController会处在子视图maskView的视图层级之下，如下图所示:</p>
+<figure>
+<img src="http://readus-org.qiniudn.com/img/wrong_layout_alertcontroller.png" alt="错误显示的UIAlertController" /><figcaption>错误显示的UIAlertController</figcaption>
+</figure>
                     
                     
                         
@@ -609,8 +591,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -645,14 +625,14 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是如何绘制一个背景颜色渐变的滑动条，最终的效果如下图:
-
-绘制渐变背景这里用到了CAGradientLayer和CALayer的mask，首先使用两个CAGradientLayer绘制如下的背景:
-
-&lt;!-- more --&gt;
-代码如下:
-12345678910111213141516171819202122_bgLayer &#x3D; [CALayer layer];_b<br>
+                        <p>本文记录的是如何绘制一个背景颜色渐变的滑动条，最终的效果如下图:</p>
+<figure>
+<img src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual-circle-slider.png" alt="背景颜色渐变的滑动条" /><figcaption>背景颜色渐变的滑动条</figcaption>
+</figure>
+<p>绘制渐变背景这里用到了CAGradientLayer和CALayer的mask，首先使用两个CAGradientLayer绘制如下的背景:</p>
+<figure>
+<img src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual_background.png" alt="渐变背景" /><figcaption>渐变背景</figcaption>
+</figure>
                     
                     
                         
@@ -660,8 +640,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

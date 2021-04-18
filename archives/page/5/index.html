@@ -382,12 +382,12 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录Java中关闭Chained-Streams的正确方式。
-在Java开发过程中，我们时常使用这样的方式创建输入输出流，如下方式1:
-1BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(process.getInputStream()));
-或者如下方式2创建:
-123FileOutputStream fos <br>
+                        <p>本文记录Java中关闭Chained-Streams的正确方式。</p>
+<p>在Java开发过程中，我们时常使用这样的方式创建输入输出流，如下方式1:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(process.getInputStream()));</span><br></pre></td></tr></table></figure>
+<p>或者如下方式2创建:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FileOutputStream fos &#x3D; new FileOutputStream(...)</span><br><span class="line">BufferedOS bos &#x3D; new BufferedOS(fos);</span><br><span class="line">ObjectOutputStream oos &#x3D; new ObjectOutputStream(bos);</span><br></pre></td></tr></table></figure>
+<p>使用方式1时，我们仅仅使用<code>br.close()</code>是否会造成流资源的不正确关闭？使用方式2时，是否需要把创建的每个流(oos/bos/fos)都依次关闭呢？</p>
                     
                     
                         
@@ -395,8 +395,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -431,10 +429,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            项目中有时需要在Java类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在tomcat启动时启动，在tomcat停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。
-&lt;!-- more --&gt;
-ServletContextListener接口能够接收到web<br>
+                        <p>项目中有时需要在<code>Java</code>类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在<code>tomcat</code>启动时启动，在<code>tomcat</code>停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。</p>
                     
                     
                         
@@ -442,8 +437,6 @@ ServletContextListener接口能够接收到web<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -478,13 +471,7 @@ ServletContextListener接口能够接收到web<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是如何在Java类中调用外部可执行脚本,例如shell脚本、Python脚本、ruby脚本等。文中阐述了Runtime.exec和ProcessBuilder.start两种调用脚本的方式，官方推荐使用后者的方式，下面对其分别讲述。
-&lt;!-- more --&gt;
-
-以Runtime.exec的方式调用脚本
-以ProcessBuilder.start方式调用脚本
-Runtime.<br>
+                        <p>本文记录的是如何在Java类中调用外部可执行脚本,例如shell脚本、Python脚本、ruby脚本等。文中阐述了Runtime.exec和ProcessBuilder.start两种调用脚本的方式，官方推荐使用后者的方式，下面对其分别讲述。</p>
                     
                     
                         
@@ -492,8 +479,6 @@ Runtime.<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -528,9 +513,8 @@ Runtime.<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是如何使用markdown命名锚(names anchors)，当使用命名锚时，我们可以创建文章目录，直接跳至该命名锚(比如页面中某个小节)的链接，这样使用者就无需不停地滚动页面来寻找他们需要的信息了。
-其实使用markdown不能直接达到定义命名锚的目的，借助了html的功能。在定义标题时不使用markdown语法(#个数对应相应级别的HTML样式标题)，而使用h1/h2等，且使用id<br>
+                        <p>本文记录的是如何使用<code>markdown</code>命名锚(<code>names anchors</code>)，当使用命名锚时，我们可以创建文章目录，直接跳至该命名锚(比如页面中某个小节)的链接，这样使用者就无需不停地滚动页面来寻找他们需要的信息了。</p>
+<p>其实使用<code>markdown</code>不能直接达到定义命名锚的目的，借助了<code>html</code>的功能。在定义标题时不使用<code>markdown</code>语法(<code>#</code>个数对应相应级别的<code>HTML</code>样式标题)，而使用<code>h1/h2</code>等，且使用<code>id</code>属性命名锚，如:</p>
                     
                     
                         
@@ -538,8 +522,6 @@ Runtime.<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -574,10 +556,15 @@ Runtime.<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是shell之printf格式化输出.
-首先看看其 man page 内容:
-1234567891011121314151617181920NAME     printf -- formatted outputSYNOPSIS     printf format [arguments ...]DESCRIPTION     The printf utility formats and p<br>
+                        <p>本文记录的是shell之printf格式化输出.</p>
+<p>首先看看其 man page 内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     printf -- formatted output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     printf format [arguments ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The printf utility formats and prints its arguments, after   </span><br><span class="line">the first, under control of the format.  The format is a character  string which contains three types of objects: plain characters,   </span><br><span class="line">which are simply copied to standard output, character escape   </span><br><span class="line">sequences which are converted and copied to the standard   </span><br><span class="line">output, and format specifications, each of which causes printing   </span><br><span class="line">of the next successive argument.</span><br><span class="line"></span><br><span class="line">     The arguments after the first are treated as strings if the   </span><br><span class="line">corresponding format is either c, b or s;otherwise it is evaluated   </span><br><span class="line">as a C constant, with the following extensions:</span><br><span class="line"></span><br><span class="line">o   A leading plus or minus sign is allowed.</span><br><span class="line">o   If the leading character is a single or double quote, the value is the ASCII code of the next character.</span><br></pre></td></tr></table></figure>
+<p>从上述 man page 内容可以看出:</p>
+<ol type="1">
+<li><code>printf</code>通过<code>format</code>字符串格式化输出其后的<code>arguments</code>；</li>
+<li><code>format</code>字符串包含三种类型对象: 普通字符串，该对象输出时会直接拷贝到标准输出<code>STDOUT</code>;字符转义序列，通过字符转义之后输出到标准输出;格式说明符，每一个格式说明符对应输出相应的<code>argument</code>；</li>
+<li>如果对应的格式指示符是<code>%c</code>/<code>%b</code>/<code>%s</code>时，相对应的参数都视为字符串，否则它们会被解释为C语言的数字常量: 在其开头可使用正负号标识;如果字符串开头是单引号<code>'</code>或者双引号<code>&quot;</code>,那么打印输出的值是紧跟着单引号或者双引号后的那个字符的<code>ASCII</code>值</li>
+</ol>
                     
                     
                         
@@ -585,8 +572,6 @@ Runtime.<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -621,12 +606,16 @@ Runtime.<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是关于shell之echo的知识。
-echo是linux中常用的终端命令(command line)，其包括:
-1command_name option argument
-首先看看echo的 man page:
-123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [s<br>
+                        <p>本文记录的是关于shell之echo的知识。</p>
+<p>echo是linux中常用的终端命令(command line)，其包括:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure>
+<p>首先看看echo的 man page:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#39; &#39;) characters and followed</span><br><span class="line">     by a newline (&#96;\n&#39;) character, to the standard output.</span><br></pre></td></tr></table></figure>
+<p>从帮助文档可以看出:</p>
+<ol type="1">
+<li>echo是将其后的arguments输出到(STDOUT),通常就是bash界面.</li>
+<li>echo是将所有的操作对象，以单一的空格` `分开的字符串，最后紧跟着换行符('')，输出到bash</li>
+</ol>
                     
                     
                         
@@ -634,8 +623,6 @@ echo是linux中常用的终端命令(command line)，其包括:
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -670,10 +657,9 @@ echo是linux中常用的终端命令(command line)，其包括:
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON Array，例如:
-1[&#39;hello&#39;,5,&#123;name:&#39;GREETINGS&#39;,source:&#39;guest&#39;&#125;]
-对于这种情况看，使用 Gson toJson(collection) 序列化，无需做额外的工作都能够得到正确的结果，但是，使用 fromJson<br>
+                        <p>本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON Array，例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#39;hello&#39;,5,&#123;name:&#39;GREETINGS&#39;,source:&#39;guest&#39;&#125;]</span><br></pre></td></tr></table></figure>
+<p>对于这种情况看，使用 Gson <code>toJson(collection)</code> 序列化，无需做额外的工作都能够得到正确的结果，但是，使用 <code>fromJson(json, Collection.class)</code> 反序列化时不能得到期望结果，因为Gson不知道如何将集合中元素与其类型对应起来。可采用如下解决方法: 使用Gson parser API(JsonParser)解析数组中每个元素，然后对数组中每个元素使用<code>Gson.fromJson()</code>进行反序列化。示例如下:</p>
                     
                     
                         
@@ -681,8 +667,6 @@ echo是linux中常用的终端命令(command line)，其包括:
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

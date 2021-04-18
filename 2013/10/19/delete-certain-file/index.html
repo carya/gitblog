@@ -12,12 +12,12 @@
     
         <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <meta name="description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &amp;#123;&amp;#125; \;  . : 表示在当前目录下 -name &quot;*.txt&quot;  表示查找所有后缀为txt的文件 -type f  表示文件类型为一般">
+    <meta name="description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &amp;#123;&amp;#125; \; . : 表示在当前目录下 -name &quot;*.txt&quot; 表示查找所有后缀为txt的文件 -type f 表示文件类型为一般正规文">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="linux下删除目录及其子目录下某种类型文件">
 <meta property="og:url" content="http://liumh.com/2013/10/19/delete-certain-file/index.html">
 <meta property="og:site_name" content="刘茂华的博客">
-<meta property="og:description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &amp;#123;&amp;#125; \;  . : 表示在当前目录下 -name &quot;*.txt&quot;  表示查找所有后缀为txt的文件 -type f  表示文件类型为一般">
+<meta property="og:description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &amp;#123;&amp;#125; \; . : 表示在当前目录下 -name &quot;*.txt&quot; 表示查找所有后缀为txt的文件 -type f 表示文件类型为一般正规文">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2013-10-19T03:14:52.000Z">
 <meta property="article:modified_time" content="2014-06-24T09:03:33.000Z">
@@ -225,22 +225,16 @@
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
             <p>Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令:</p>
-<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;
-</code></pre>
+<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;</code></pre>
 <p>. : 表示在当前目录下</p>
-<pre><code>-name &quot;*.txt&quot;
-</code></pre>
+<pre><code>-name &quot;*.txt&quot;</code></pre>
 <p>表示查找所有后缀为txt的文件</p>
-<pre><code>-type f
-</code></pre>
+<pre><code>-type f</code></pre>
 <p>表示文件类型为一般正规文件</p>
-<pre><code>-print
-</code></pre>
+<pre><code>-print</code></pre>
 <p>表示将查询结果打印到屏幕上</p>
-<pre><code>-exec command
-</code></pre>
-<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是
-<code>rm -rf</code></p>
+<pre><code>-exec command</code></pre>
+<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是 <code>rm -rf</code></p>
 
             
                 

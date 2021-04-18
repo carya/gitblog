@@ -308,12 +308,15 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            iOS开发中，屏幕适配也是项很重要的工作，本文记录了一些在屏幕适配的过程中与图片相关的工作。
-基本概念
-首先，理解几个概念: Points, Rendered Pixels, Physical Pixels, Physical Device。
-
-Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以 point 作为单位，在iPhone 2G,3G,3GS的年代<br>
+                        <p>iOS开发中，屏幕适配也是项很重要的工作，本文记录了一些在屏幕适配的过程中与图片相关的工作。</p>
+<h3 id="基本概念">基本概念</h3>
+<p>首先，理解几个概念: Points, Rendered Pixels, Physical Pixels, Physical Device。</p>
+<ul>
+<li>Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以 point 作为单位，在iPhone 2G,3G,3GS的年代，point 和屏幕上的像素是完全一一对应的，即 320 * 480 (points), 也是 320 * 480 (pixels)</li>
+<li>Rendered Pixels: 渲染像素， 以 point 为单位的绘制最终都会渲染成 pixels，这个过程被称为光栅化。基于 point 的坐标系乘以比例因子可以得到基于像素的坐标系，高比例因子会使更多的细节展示，目前的比例因子会是 1x，2x，3x</li>
+<li>Physical Pixels: 物理像素，就是设备屏幕实际的像素</li>
+<li>Physical Device: 设备屏幕的物理长度，使用英寸作为单位。比如iPhone 4屏幕是3.5英寸，iPhone 5 是4英寸，iphone 6是4.7英寸，这里的数字是指手机屏幕对角线的物理长度。实际上会是Physical Pixels的像素值(而不是Rendered Pixels的像素值)会渲染到该屏幕上, 屏幕会有 PPI(pixels-per-inch) 的特性，PPI 的值告诉你每英寸会有多少像素渲染。</li>
+</ul>
                     
                     
                         
@@ -321,8 +324,6 @@ Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -357,13 +358,15 @@ Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文记录如何在 UIStoryboard 或者 xib 中进行百分比布局，包括
-
-View.Width 占其 Superview.Width 的百分比
-View.Leading 与 Superview.Leading 间距占 Superview.Width 的百分比
-View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比
-View.L<br>
+                        <p>本文记录如何在 UIStoryboard 或者 xib 中进行百分比布局，包括</p>
+<ul>
+<li>View.Width 占其 Superview.Width 的百分比</li>
+<li>View.Leading 与 Superview.Leading 间距占 Superview.Width 的百分比</li>
+<li>View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比</li>
+<li>View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比</li>
+<li>限定View的宽高比</li>
+<li>以 Superview.Width 宽度的某一百分比为 View 之间的间隔</li>
+</ul>
                     
                     
                         
@@ -371,8 +374,6 @@ View.L<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -407,13 +408,12 @@ View.L<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文转载自: https://github.com/nixzhu/dev-blog
-
-本文翻译自 http://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-2
-原作者：Derek Selander
-译者：Riven、nixzhu
-前半部分由 Riven 翻译，但他由于太忙而搁置，后由 NIX 整理校对并翻译后半部<br>
+                        <p>本文转载自: <a target="_blank" rel="noopener" href="https://github.com/nixzhu/dev-blog" class="uri">https://github.com/nixzhu/dev-blog</a></p>
+<hr />
+<p>本文翻译自 <a target="_blank" rel="noopener" href="http://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-2" class="uri">http://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-2</a></p>
+<p>原作者：<a target="_blank" rel="noopener" href="http://www.raywenderlich.com/u/Lolgrep"><em>Derek Selander</em></a></p>
+<p>译者：<a target="_blank" rel="noopener" href="http://weibo.com/riven0951"><em>Riven</em></a>、<a target="_blank" rel="noopener" href="https://twitter.com/nixzhu"><em>nixzhu</em></a></p>
+<p>前半部分由 Riven 翻译，但他由于太忙而搁置，后由 NIX 整理校对并翻译后半部分。</p>
                     
                     
                         
@@ -421,8 +421,6 @@ View.L<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -457,14 +455,11 @@ View.L<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            本文转载自: https://github.com/nixzhu/dev-blog
-
-本文翻译自 http://www.raywenderlich.com/60749/grand-central-dispatch-in-depth-part-1
-原作者：Derek Selander
-译者：nixzhu
-&lt;!-- more --&gt;
-============================<br>
+                        <p>本文转载自: <a target="_blank" rel="noopener" href="https://github.com/nixzhu/dev-blog" class="uri">https://github.com/nixzhu/dev-blog</a></p>
+<hr />
+<p>本文翻译自 <a target="_blank" rel="noopener" href="http://www.raywenderlich.com/60749/grand-central-dispatch-in-depth-part-1" class="uri">http://www.raywenderlich.com/60749/grand-central-dispatch-in-depth-part-1</a></p>
+<p>原作者：<a target="_blank" rel="noopener" href="http://www.raywenderlich.com/u/Lolgrep"><em>Derek Selander</em></a></p>
+<p>译者：<a target="_blank" rel="noopener" href="https://twitter.com/nixzhu"><em>nixzhu</em></a></p>
                     
                     
                         
@@ -472,8 +467,6 @@ View.L<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -605,10 +598,9 @@ View.L<br>
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。
-那么如何来监听呢？
-方法1，使用 mutableArrayValueForKey: 代理，这样，我们在获取定义的数组属性时不再使用其 getter 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例<br>
+                        <p>在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
+<p>那么如何来监听呢？</p>
+<p>方法1，使用 <code>mutableArrayValueForKey:</code> 代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code> 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
                     
                     
                         
@@ -616,8 +608,6 @@ View.L<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

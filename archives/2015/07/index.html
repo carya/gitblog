@@ -311,11 +311,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            tranquilpeak是Hexo的主题，目前版本是1.2.0，由于其自带的评论框架是Disqus，在国内的环境可能会加载较慢，可以修改为适应国情的多说。
-&lt;!-- more --&gt;
-在themes/tranquilpeak/layout/_partial/post.ejs中找到如下代码:
-123&lt;% if (post.comments &amp;&amp; theme.disq<br>
+                        <p><a target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/tranquilpeak-hexo-theme">tranquilpeak</a>是Hexo的主题，目前版本是1.2.0，由于其自带的评论框架是Disqus，在国内的环境可能会加载较慢，可以修改为适应国情的多说。</p>
                     
                     
                         
@@ -323,8 +319,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -359,17 +353,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            最近和老婆去了趟马尔代夫，图片记录一下。
-&lt;!-- more --&gt;
-
-6月29日，准时应该是下午4:30左右的飞机，结果等到近7点，闲得无聊，随便拍拍。
-
-到Bandos岛已是午夜，飞机在马累降落，出口有小黑接待，然后再是15分钟的快艇就到了。
-
-我们住的是标准间，小栋平房，共有4间屋，我们住在206，内部除了没有厨房其余都是有的。
-
-第一天起了个早看日出，结果在日出的时候有云层遮挡<br>
+                        <p>最近和老婆去了趟马尔代夫，图片记录一下。</p>
                     
                     
                         
@@ -377,8 +361,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -413,11 +395,12 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。
-对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:
-
-上面的情况如果打印UITextField的text属性会输出:中国di zhi。由于拼音是选中状态的，那么可以根据 UITextInp<br>
+                        <p>项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。</p>
+<p>对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:</p>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png" alt="输入中文时包含选中状态的拼音" /><figcaption>输入中文时包含选中状态的拼音</figcaption>
+</figure>
+<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据 UITextInput 协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
                     
                     
                         
@@ -425,8 +408,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -461,11 +442,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。
-&lt;!-- more --&gt;
-现在有四张UIImage，初始化后将其存入数组中:
-12345self.imgs &#x3D; @[[UIImage imageNamed:@&quot;bg01&quot;], <br>
+                        <p>当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。</p>
                     
                     
                         
@@ -473,8 +450,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

@@ -271,8 +271,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-els<br>
+                        <p>情景：把一堆算法塞到同一段代码中，然后使用<code>if-else</code>或者<code>switch-case</code>条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆<code>if-else</code>或<code>switch-case</code>语句。 面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。</p>
                     
                     
                         
@@ -280,8 +279,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -310,12 +307,7 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            __attribute__是在C, C++, Objective-C语言中使用的编译指令，一般以__attribute__(xxx)的形式出现在代码中，方便开发者向编译器表达某种要求，参与控制如Static Analyzer、Name Mangling、Code Generation等过程。
-&lt;!-- more --&gt;
-&lt;!-- toc --&gt;
-Attribute语法
-关于<br>
+                        <p><code>__attribute__</code>是在C, C++, Objective-C语言中使用的编译指令，一般以<code>__attribute__(xxx)</code>的形式出现在代码中，方便开发者向编译器表达某种要求，参与控制如Static Analyzer、Name Mangling、Code Generation等过程。</p>
                     
                     
                         
@@ -323,8 +315,6 @@ Attribute语法
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -359,10 +349,7 @@ Attribute语法
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应用。
-&lt;!--more--&gt;
-UICollectionViewLay<br>
+                        <p>UICollectionViewLayoutAttributes是UICollectionView的重要组成部分，本文从其基本定义、如何使用以及使用场景几方面来简单介绍。文末以自定义UICollectionView各个Section的背景色的示例来展示UICollectionViewLayoutAttributes的应用。</p>
                     
                     
                         
@@ -370,8 +357,6 @@ UICollectionViewLay<br>
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -540,9 +525,8 @@ Popup_Window动画
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:
-123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1<br>
+                        <p>使用 <code>==</code> 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSString *str &#x3D; @&quot;origin1&quot;;</span><br><span class="line">NSString *strCopy &#x3D; [str copy];</span><br><span class="line">NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];</span><br><span class="line">    </span><br><span class="line">BOOL equalA &#x3D; (str &#x3D;&#x3D; strCopy);</span><br><span class="line">BOOL equalB &#x3D; (str &#x3D;&#x3D; str1);</span><br><span class="line"></span><br><span class="line">BOOL equalC &#x3D; [str isEqualToString:str1];  &#x2F;**&lt; equalC is YES *&#x2F;</span><br><span class="line">BOOL equalD &#x3D; [str isEqual:str1]; &#x2F;**&lt; equalD is YES *&#x2F;</span><br></pre></td></tr></table></figure>
                     
                     
                         
@@ -550,8 +534,6 @@ Popup_Window动画
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -586,17 +568,7 @@ Popup_Window动画
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            今天是2015年的最后一天了，根据手机相册总结一下今年吧。
-&lt;!-- more --&gt;
-老家，每年的旅程出发的地方
-3月，大学时的好友叶子来成都，毕业离开北京后，就很少遇到在北京的朋友了，和老婆一起陪她玩了一天。
-川剧变脸
-成都锦鲤外，老婆和叶子
-2015年2月2日，领证了，结束了4年的恋爱旅程，很抱歉的没有给老婆一个婚礼，仅仅是一场简简单单的旅行。
-3月，拍了婚纱照。
-
-6月底，请了<br>
+                        <p>今天是2015年的最后一天了，根据手机相册总结一下今年吧。</p>
                     
                     
                         
@@ -604,8 +576,6 @@ Popup_Window动画
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>
@@ -640,11 +610,7 @@ Popup_Window动画
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:
-&lt;!-- more --&gt;
-- (id)copyWithZone:(nullable NSZone *)zone;
-以前开发程序时，会把内存分成不同的&quot;区&quot;，而对象会创建在某个区里。现在不用了，每个程序只有一个&quot;<br>
+                        <p>如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:</p>
                     
                     
                         
@@ -652,8 +618,6 @@ Popup_Window动画
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

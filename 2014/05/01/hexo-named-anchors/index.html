@@ -226,10 +226,10 @@
         <div class="main-content-wrap">
             <p>本文记录的是如何使用<code>markdown</code>命名锚(<code>names anchors</code>)，当使用命名锚时，我们可以创建文章目录，直接跳至该命名锚(比如页面中某个小节)的链接，这样使用者就无需不停地滚动页面来寻找他们需要的信息了。</p>
 <p>其实使用<code>markdown</code>不能直接达到定义命名锚的目的，借助了<code>html</code>的功能。在定义标题时不使用<code>markdown</code>语法(<code>#</code>个数对应相应级别的<code>HTML</code>样式标题)，而使用<code>h1/h2</code>等，且使用<code>id</code>属性命名锚，如:</p>
-<p>&lt;!--more --&gt;</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;h2 id&#x3D;&quot;overview&quot;&gt;Overview&lt;&#x2F;h2&gt;</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;philosophy&quot;&gt;Philosophy&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">Markdown is intended to be as easy-to-read and easy-to-write as is feasible.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;html&quot;&gt;Inline HTML&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">Markdown&#39;s syntax is intended for one purpose: to be used as a</span><br><span class="line">format for *writing* for the web.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;autoescape&quot;&gt;Automatic Escaping for Special Characters&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">In HTML, there are two characters that demand special treatment: &#96;&lt;&#96; and &#96;&amp;&#96;.</span><br><span class="line"></span><br><span class="line">&lt;h2 id&#x3D;&quot;block&quot;&gt;Block Elements&lt;&#x2F;h2&gt;</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;p&quot;&gt;Paragraphs and Line Breaks&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;header&quot;&gt;Headers&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown supports two styles of headers, [Setext] [1] and [atx][2].</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;blockquote&quot;&gt;Blockquotes&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown uses email-style &#96;&gt;&#96; characters for blockquoting. If you&#39;re familiar with quoting passages of text in an email message, then you know how to create a blockquote in Markdown. </span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;list&quot;&gt;Lists&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown supports ordered (numbered) and unordered (bulleted) lists.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;precode&quot;&gt;Code Blocks&lt;&#x2F;h3&gt;</span><br><span class="line">Pre-formatted code blocks are used for writing about programming or markup source code. Rather than forming normal paragraphs, the lines of a code block are interpreted literally.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;hr&quot;&gt;Horizontal Rules&lt;&#x2F;h3&gt;</span><br><span class="line">You can produce a horizontal rule tag (&#96;&lt;hr &#x2F;&gt;&#96;) by placing three or more hyphens, asterisks, or underscores on a line by themselves.</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<span id="more"></span>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;h2 id&#x3D;&quot;overview&quot;&gt;Overview&lt;&#x2F;h2&gt;</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;philosophy&quot;&gt;Philosophy&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">Markdown is intended to be as easy-to-read and easy-to-write as is feasible.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;html&quot;&gt;Inline HTML&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">Markdown&#39;s syntax is intended for one purpose: to be used as a</span><br><span class="line">format for *writing* for the web.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;autoescape&quot;&gt;Automatic Escaping for Special Characters&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">In HTML, there are two characters that demand special treatment: &#96;&lt;&#96; and &#96;&amp;&#96;.</span><br><span class="line"></span><br><span class="line">&lt;h2 id&#x3D;&quot;block&quot;&gt;Block Elements&lt;&#x2F;h2&gt;</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;p&quot;&gt;Paragraphs and Line Breaks&lt;&#x2F;h3&gt;</span><br><span class="line"></span><br><span class="line">A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;header&quot;&gt;Headers&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown supports two styles of headers, [Setext] [1] and [atx][2].</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;blockquote&quot;&gt;Blockquotes&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown uses email-style &#96;&gt;&#96; characters for blockquoting. If you&#39;re familiar with quoting passages of text in an email message, then you know how to create a blockquote in Markdown. </span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;list&quot;&gt;Lists&lt;&#x2F;h3&gt;</span><br><span class="line">Markdown supports ordered (numbered) and unordered (bulleted) lists.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;precode&quot;&gt;Code Blocks&lt;&#x2F;h3&gt;</span><br><span class="line">Pre-formatted code blocks are used for writing about programming or markup source code. Rather than forming normal paragraphs, the lines of a code block are interpreted literally.</span><br><span class="line"></span><br><span class="line">&lt;h3 id&#x3D;&quot;hr&quot;&gt;Horizontal Rules&lt;&#x2F;h3&gt;</span><br><span class="line">You can produce a horizontal rule tag (&#96;&lt;hr &#x2F;&gt;&#96;) by placing three or more hyphens, asterisks, or underscores on a line by themselves.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>这样在文章的开头就可以使用无序列表的嵌套来定义文章的章节目录，如下目录的定义:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">*   [Overview](#overview)</span><br><span class="line">    *   [Philosophy](#philosophy)</span><br><span class="line">    *   [Inline HTML](#html)</span><br><span class="line">    *   [Automatic Escaping for Special Characters](#autoescape)</span><br><span class="line">*   [Block Elements](#block)</span><br><span class="line">    *   [Paragraphs and Line Breaks](#p)</span><br><span class="line">    *   [Headers](#header)</span><br><span class="line">    *   [Blockquotes](#blockquote)</span><br><span class="line">    *   [Lists](#list)</span><br><span class="line">    *   [Code Blocks](#precode)</span><br><span class="line">    *   [Horizontal Rules](#hr)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">*   [Overview](#overview)</span><br><span class="line">    *   [Philosophy](#philosophy)</span><br><span class="line">    *   [Inline HTML](#html)</span><br><span class="line">    *   [Automatic Escaping for Special Characters](#autoescape)</span><br><span class="line">*   [Block Elements](#block)</span><br><span class="line">    *   [Paragraphs and Line Breaks](#p)</span><br><span class="line">    *   [Headers](#header)</span><br><span class="line">    *   [Blockquotes](#blockquote)</span><br><span class="line">    *   [Lists](#list)</span><br><span class="line">    *   [Code Blocks](#precode)</span><br><span class="line">    *   [Horizontal Rules](#hr)</span><br></pre></td></tr></table></figure>
 <p>最终效果如图:</p>
 <ul>
 <li><a href="#overview">Overview</a>
@@ -237,8 +237,7 @@
 <li><a href="#philosophy">Philosophy</a></li>
 <li><a href="#html">Inline HTML</a></li>
 <li><a href="#autoescape">Automatic Escaping for Special Characters</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#block">Block Elements</a>
 <ul>
 <li><a href="#p">Paragraphs and Line Breaks</a></li>
@@ -247,30 +246,50 @@
 <li><a href="#list">Lists</a></li>
 <li><a href="#precode">Code Blocks</a></li>
 <li><a href="#hr">Horizontal Rules</a></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p>&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;</p>
-<p>&lt;h3 id=&quot;philosophy&quot;&gt;Philosophy&lt;/h3&gt;
-Markdown is intended to be as easy-to-read and easy-to-write as is feasible.</p>
-<p>&lt;h3 id=&quot;html&quot;&gt;Inline HTML&lt;/h3&gt;
-Markdown's syntax is intended for one purpose: to be used as a
-format for <em>writing</em> for the web.</p>
-<p>&lt;h3 id=&quot;autoescape&quot;&gt;Automatic Escaping for Special Characters&lt;/h3&gt;</p>
+<h2 id="overview">
+Overview
+</h2>
+<h3 id="philosophy">
+Philosophy
+</h3>
+<p>Markdown is intended to be as easy-to-read and easy-to-write as is feasible.</p>
+<h3 id="html">
+Inline HTML
+</h3>
+<p>Markdown's syntax is intended for one purpose: to be used as a format for <em>writing</em> for the web.</p>
+<h3 id="autoescape">
+Automatic Escaping for Special Characters
+</h3>
 <p>In HTML, there are two characters that demand special treatment: <code>&lt;</code> and <code>&amp;</code>.</p>
-<p>&lt;h2 id=&quot;block&quot;&gt;Block Elements&lt;/h2&gt;</p>
-<p>&lt;h3 id=&quot;p&quot;&gt;Paragraphs and Line Breaks&lt;/h3&gt;
-A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.</p>
-<p>&lt;h3 id=&quot;header&quot;&gt;Headers&lt;/h3&gt;
-Markdown supports two styles of headers, Setext and atx.</p>
-<p>&lt;h3 id=&quot;blockquote&quot;&gt;Blockquotes&lt;/h3&gt;
-Markdown uses email-style <code>&gt;</code> characters for blockquoting. If you're familiar with quoting passages of text in an email message, then you know how to create a blockquote in Markdown.</p>
-<p>&lt;h3 id=&quot;list&quot;&gt;Lists&lt;/h3&gt;
-Markdown supports ordered (numbered) and unordered (bulleted) lists.</p>
-<p>&lt;h3 id=&quot;precode&quot;&gt;Code Blocks&lt;/h3&gt;
-Pre-formatted code blocks are used for writing about programming or markup source code. Rather than forming normal paragraphs, the lines of a code block are interpreted literally.</p>
-<p>&lt;h3 id=&quot;hr&quot;&gt;Horizontal Rules&lt;/h3&gt;
-You can produce a horizontal rule tag (<code>&lt;hr /&gt;</code>) by placing three or more hyphens, asterisks, or underscores on a line by themselves.</p>
+<h2 id="block">
+Block Elements
+</h2>
+<h3 id="p">
+Paragraphs and Line Breaks
+</h3>
+<p>A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.</p>
+<h3 id="header">
+Headers
+</h3>
+<p>Markdown supports two styles of headers, Setext and atx.</p>
+<h3 id="blockquote">
+Blockquotes
+</h3>
+<p>Markdown uses email-style <code>&gt;</code> characters for blockquoting. If you're familiar with quoting passages of text in an email message, then you know how to create a blockquote in Markdown.</p>
+<h3 id="list">
+Lists
+</h3>
+<p>Markdown supports ordered (numbered) and unordered (bulleted) lists.</p>
+<h3 id="precode">
+Code Blocks
+</h3>
+<p>Pre-formatted code blocks are used for writing about programming or markup source code. Rather than forming normal paragraphs, the lines of a code block are interpreted literally.</p>
+<h3 id="hr">
+Horizontal Rules
+</h3>
+<p>You can produce a horizontal rule tag (<code>&lt;hr /&gt;</code>) by placing three or more hyphens, asterisks, or underscores on a line by themselves.</p>
 <p>参考:</p>
 <p><a target="_blank" rel="noopener" href="http://daringfireball.net/projects/markdown/syntax">Markdown: Syntax</a></p>
 

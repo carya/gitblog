@@ -273,10 +273,9 @@
                 </div>
                 <div class="postShorten-excerpt" itemprop="articleBody">
                     
-                        <p>
-                            在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。
-那么如何来监听呢？
-方法1，使用 mutableArrayValueForKey: 代理，这样，我们在获取定义的数组属性时不再使用其 getter 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例<br>
+                        <p>在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
+<p>那么如何来监听呢？</p>
+<p>方法1，使用 <code>mutableArrayValueForKey:</code> 代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code> 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
                     
                     
                         
@@ -284,8 +283,6 @@
                             
                         
                     
-                    
-                        </p>
                     
                 </div>
             </div>

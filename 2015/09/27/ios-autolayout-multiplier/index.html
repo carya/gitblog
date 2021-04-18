@@ -240,36 +240,46 @@
 <li>限定View的宽高比</li>
 <li>以 Superview.Width 宽度的某一百分比为 View 之间的间隔</li>
 </ul>
-<p>&lt;!-- more --&gt;</p>
+<span id="more"></span>
 <p>在 <a href="/2015/08/11/ios-autolayout-priority/" title="iOS NSLayoutConstraint priority">iOS NSLayoutConstraint priority</a> 一文中提到过 multiplier, 上述提到的百分比布局都是基于 multiplier 实现的，下面来一一查看其实现。</p>
-<h4>View.Width 占其 Superview.Width 的百分比</h4>
+<h4 id="view.width-占其-superview.width-的百分比">View.Width 占其 Superview.Width 的百分比</h4>
 <p>该功能实现很简单，以一个居中的按钮 Button 为例，首先将按钮相对于父容器添加 <code>Equal Width</code> 的 constraint，然后将它的 multiplier 设成 0.2，这样就可实现 Button1 的宽度为父容器宽度的 0.2 倍。操作步骤如下:</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/widthpercent.gif" alt="View宽度占父视图宽度百分比"></p>
-<h4>View.Leading 与 Superview.Leading 间距占 Superview.Width 的百分比</h4>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/widthpercent.gif" alt="View宽度占父视图宽度百分比" /><figcaption>View宽度占父视图宽度百分比</figcaption>
+</figure>
+<h4 id="view.leading-与-superview.leading-间距占-superview.width-的百分比">View.Leading 与 Superview.Leading 间距占 Superview.Width 的百分比</h4>
 <p>该功能实现其实是使 View.Leading 相对于 Superview.Trailing 布局，然后再调整 multiplier 参数实现，如下操作步骤实现了将 Button 的左边距离父视图左边界的距离站父视图宽度的0.2倍，如下:</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/leadingpercent.gif" alt="View.Leading与Superview.Leading间距占Superview.Width的百分比"></p>
-<h4>View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比</h4>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/leadingpercent.gif" alt="View.Leading与Superview.Leading间距占Superview.Width的百分比" /><figcaption>View.Leading与Superview.Leading间距占Superview.Width的百分比</figcaption>
+</figure>
+<h4 id="view.trailing-与-superview.trailing-间距占-superview.width-的百分比">View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比</h4>
 <p>该需求实现是使 View.Trailing 相对于 Superview.Trailing 布局，然后再调整 multiplier 参数，需要注意的是使用 <code>Reverse First And Second Item</code> 调整如下表达式中 item1 和 item2 在等式中两边的位置。</p>
 <p><code>item1.attribute1 = multiplier × item2.attribute2 + constant</code></p>
 <p>以下步骤实现 Button 的 Trailing 距离父视图右边距为父视图宽度的0.2倍，需要注意的是，此时的 multiplier 是 (1-0.2=0.8)，在修改 Button 约束值时，可以从顶部导航中看到约束表达式的变化:</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/trailingpercent.gif" alt="View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比"></p>
-<h4>View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比</h4>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/trailingpercent.gif" alt="View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比" /><figcaption>View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比</figcaption>
+</figure>
+<h4 id="view.leading-与-superview.centerx-间距占父视图-superview.width-的百分比">View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比</h4>
 <p>有时间需要将 UI 组件相对于父视图的中线进行布局，比如将 View.Leading 与父视图中线的距离设定为父视图宽度20%, 即相对于父视图 CenterX 的 multiplier 值为 1.4</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/centerpercent.gif" alt="View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比"></p>
-<h4>限定View的宽高比</h4>
+<figure>
+<img src="http://7jpr4u.com1.z0.glb.clouddn.com/git/autolayout/centerpercent.gif" alt="View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比" /><figcaption>View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比</figcaption>
+</figure>
+<h4 id="限定view的宽高比">限定View的宽高比</h4>
 <p>有时候我们需要保持视图的宽高比不变进行缩放，此时可以设定其 Aspect Ratio 保持其在进行缩放时宽高比固定。</p>
-<h4>以 Superview.Width 宽度的某一百分比为 View 之间的间隔</h4>
+<h4 id="以-superview.width-宽度的某一百分比为-view-之间的间隔">以 Superview.Width 宽度的某一百分比为 View 之间的间隔</h4>
 <p>要实现这个需求就没有之前那么简单了，这需要添加一个间距视图，设置每个视图与相邻间距视图的边缘间距约束，然后给所有的间距视图添加相对于其父视图的等宽约束，设置合适的比例即可。这里借用 <a target="_blank" rel="noopener" href="http://www.cocoachina.com/ios/20141020/9978.html">为iPhone 6设计自适应布局</a> 文中一图:</p>
-<p><img src="http://cdn.cocimg.com/cms/uploads/allimg/141020/4196_141020155715_1.jpg" alt="以 Superview.Width 宽度的某一百分比为 View 之间的间隔"></p>
+<figure>
+<img src="http://cdn.cocimg.com/cms/uploads/allimg/141020/4196_141020155715_1.jpg" alt="以 Superview.Width 宽度的某一百分比为 View 之间的间隔" /><figcaption>以 Superview.Width 宽度的某一百分比为 View 之间的间隔</figcaption>
+</figure>
 <p>关于文中所涉及到的方法，可在 <a target="_blank" rel="noopener" href="https://github.com/carya/AutoLayoutMultiplier">AutoLayoutMultiplier</a> 工程中查看。</p>
 <p>参考:</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="http://www.cocoachina.com/ios/20141020/9978.html">为iPhone 6设计自适应布局</a></li>
 <li><a target="_blank" rel="noopener" href="http://maogm.com/blog/percentage-width-in-autolayout.html">Autolayout 中的百分比宽度</a></li>
 </ul>
-<hr>
+<hr />
 <p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<p><div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div></p>
+<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div>
 
             
                 
