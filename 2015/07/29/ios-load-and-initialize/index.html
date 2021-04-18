@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>iOS初探+load和+initialize - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS初探+load和+initialize - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"+ initialize 和 + load 是 NSObject 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。\n可以先思考如下示例控制台应该输出什么:\n1234567891011121314151617&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initialize &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;@end&#x2F;&#x2F;子类@interface Student : People@end@implementation Student+ (void)load &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;@end\n启动并运行程序，控制台应输出什么呢，见结尾处。\n\n本文主要从以下几个方面来记录:\n\ninitialize初探\nload初探\nload使用示例\n\ninitialize初探\n先看看 NSObject Class Reference 中关于 +initialize 的说明:\n\nInitializes the class before it receives its first message.\nThe runtime sends initialize to each class in a program just before the class, or any class that inherits from it, is sent its first message from within the program. The runtime sends the initialize message to classes in a thread-safe manner. Superclasses receive this message before their subclasses. The superclass implementation may be called multiple times if subclasses do not implement initialize—the runtime will call the inherited implementation—or if subclasses explicitly call [super initialize]. If you want to protect yourself from being run multiple times, you can structure your implementation along these lines:\n12345+ (void)initialize &#123;  if (self &#x3D;&#x3D; [ClassName self]) &#123;    &#x2F;&#x2F; ... do the initialization ...  &#125;&#125;\ninitialize is invoked only once per class. If you want to perform independent initialization for the class and for categories of the class, you should implement load methods.\n\n从上面的说明可以看出:\n\n+ (void)initialize 消息是在该类接收到其第一个消息之前调用。关于这里的第一个消息需要特别说明一下，对于 NSObject 的 runtime 机制而言，其在调用 NSObject 的 + (void)load 消息不被视为第一个消息，但是，如果像普通函数调用一样直接调用 NSObject 的 + (void)load 消息，则会引起 + (void)initialize 的调用。反之，如果没有向 NSObject 发送第一个消息，+ (void)initialize 则不会被自动调用。\n在应用程序的生命周期中，runtime 只会向每个类发送一次 + (void)initialize 消息，如果该类是子类，且该子类中没有实现 + (void)initialize 消息，或者子类显示调用父类实现 [super initialize], 那么则会调用其父类的实现。也就是说，父类的 + (void)initialize 可能会被调用多次。\n如果类包含分类，且分类重写了initialize方法，那么则会调用分类的 initialize 实现，而原类的该方法实现不会被调用，这个机制同 NSObject 的其他方法(除 + (void)load 方法) 一样，即如果原类同该类的分类包含有相同的方法实现，那么原类的该方法被隐藏而无法被调用。\n父类的 initialize 方法先于子类的 initialize 方法调用。\n\n做做下面的练习:\n123456789101112131415161718192021222324252627282930@interface People : NSObject@end@implementation People+ (void)initialize &#123;    NSLog(@&quot;%s&quot;, __FUNCTION__);&#125;@end@interface Student : People@end@implementation Student+ (void)initialize &#123;    NSLog(@&quot;%s&quot;, __FUNCTION__);&#125;@end@implementation ViewController- (void)viewDidLoad &#123;    [super viewDidLoad];    Student *student &#x3D; [[Student alloc] init];&#125;@end\n运行程序会输出什么? 答案如下:\n12+[People initialize]+[Student initialize]\n上面示例可以看出子类会调用父类的 + initialize 方法。\n如果 ViewController 内的调用换成如下的方式, 控制台输出又会是什么呢?\n1234567891011@implementation ViewController- (void)viewDidLoad &#123;    [super viewDidLoad];    Student *student &#x3D; [[Student alloc] init];    NSLog(@&quot;viewDidLoad finished.&quot;);&#125;- (void)viewWillAppear:(BOOL)animated &#123;    [super viewWillAppear:animated];    Student *student &#x3D; [[Student alloc] init];&#125;@end\n输出如下:\n123+[People initialize]+[Student initialize]viewDidLoad finished.\n上面示例可以看出，对于 runtime 而言，+ initialize 方法在程序生命周期内只会调用一次。\n为 Student 添加分类如下:\n12345678910@interface Student (Score)@end@implementation Student (Score)+ (void)initialize &#123;    NSLog(@&quot;%s&quot;, __FUNCTION__);&#125;@end\n调用的地方修改如下:\n123456@implementation ViewController- (void)viewDidLoad &#123;    [super viewDidLoad];    Student *student &#x3D; [[Student alloc] init];&#125;@end\n那么输出是什么呢? 如下:\n12+[People initialize]+[Student(Score) initialize]\n从该实例可以看出，分类的 +initialize 方法会覆盖原类中 +initialize 方法。\nload初探\n先看看 NSObject Class Reference 中关于 + (void)load 的说明:\n\nInvoked whenever a class or category is added to the Objective-C runtime; implement this method to perform class-specific behavior upon loading.\nThe load message is sent to classes and categories that are both dynamically loaded and statically linked, but only if the newly loaded class or category implements a method that can respond.\nThe order of initialization is as follows:\n\nAll initializers in any framework you link to.\nAll +load methods in your image.\nAll C++ static initializers and C/C++ attribute(constructor) functions in your image.\nAll initializers in frameworks that link to you.\n\nIn addition:\n\nA class’s +load method is called after all of its superclasses’ +load methods.\nA category +load method is called after the class’s own +load method.\n\nIn a custom implementation of load you can therefore safely message other unrelated classes from the same image, but any load methods implemented by those classes may not have run yet.\n\n从上面的描述可以看出:\n\n+ (void)load 会在类或者类的分类添加到 Objective-c runtime 时调用，该调用发生在 application:willFinishLaunchingWithOptions: 调用之前调用。\n父类的 +load 方法先于子类的 +load 方法调用，类本身的 +load 方法先于分类的 +load 方法调用。\n\n看看下面的示例:\n示例1:\n12345678910111213141516171819202122232425262728293031323334&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initialize &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;+ (void)load &#123;    NSLog(@&quot;%@, %s&quot;, [self class], __FUNCTION__);&#125;@end&#x2F;&#x2F;子类@interface Student : People@end@implementation Student+ (void)initialize &#123;    NSLog(@&quot;%@, %s&quot;, [self class], __FUNCTION__);&#125;+ (void)load &#123;    NSLog(@&quot;%@, %s&quot;, [self class], __FUNCTION__);&#125;@end&#x2F;&#x2F;子类分类@interface Student (Score)@end@implementation Student (Score)+ (void)initialize &#123;    NSLog(@&quot;%@, %s&quot;, [self class], __FUNCTION__);&#125;+ (void)load &#123;    NSLog(@&quot;%@ %s&quot;, [self class], __FUNCTION__);&#125;@end\n控制台输出为:\n12345People , +[People initialize]People, +[People load]Student, +[Student(Score) initialize]Student, +[Student load]Student +[Student(Score) load]\n示例2:\n12345678910111213141516&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initialize &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;@end&#x2F;&#x2F;子类@interface Student : People@end@implementation Student+ (void)load &#123;    NSLog(@&quot;%@, %s&quot;, [self class], __FUNCTION__);&#125;@end\n控制台输出为:\n123People , +[People initialize]Student , +[People initialize]Student, +[Student load]\n当子类没有实现 +initialize 而父类有其实现时，父类的实现调用了两次，且 +initialize 的调用在 +load 调用之前，这是因为我们在 +load 实现中包含 [self class] 的调用。\n另外， 重写 +initialize 和 +load 方法时，没有必要显示调用其父类的方法。\nload使用示例\nload使用示例1, 见 @sunnyxx 大神的博客 Notification Once, 用于给 AppDelegate 瘦身。\nload使用示例2, 见博客 Method Swizzling 和 AOP 实践, 在UIViewController的 +load 时期执行IMP替换，实现AOP。\n\n本文开始出示例控制台输出:\n123People , +[People initialize]Student , +[People initialize]Student , +[Student load]\n参考:\nObjective C类方法load和initialize的区别\nObjective-C中的+initialize和+load\n\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n","dateCreated":"2015-07-29T21:24:59+08:00","dateModified":"2017-12-02T10:54:29+08:00","datePublished":"2015-07-29T21:24:59+08:00","description":"+ initialize 和 + load 是 NSObject 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。\n可以先思考如下示例控制台应该输出什么:\n1234567891011121314151617&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initialize &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;@end&#x2F;&#x2F;子类@interface Student : People@end@implementation Student+ (void)load &#123;    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);&#125;@end\n启动并运行程序，控制台应输出什么呢，见结尾处。","headline":"iOS初探+load和+initialize","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/07/29/ios-load-and-initialize/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/07/29/ios-load-and-initialize/","keywords":"iOS"}</script>
     <meta name="description" content="+ initialize 和 + load 是 NSObject 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。 可以先思考如下示例控制台应该输出什么: 1234567891011121314151617&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initial">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS初探+load和+initialize">
 <meta property="og:url" content="http://liumh.com/2015/07/29/ios-load-and-initialize/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="+ initialize 和 + load 是 NSObject 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。 可以先思考如下示例控制台应该输出什么: 1234567891011121314151617&#x2F;&#x2F;父类@interface People : NSObject@end@implementation People+ (void)initial">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
@@ -29,186 +33,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             iOS初探+load和+initialize
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Wed Jul 29 2015 21:24:59 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2015-07-29T21:24:59+08:00">
 	
 		    Jul 29, 2015
     	
@@ -221,9 +245,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p><code>+ initialize</code> 和 <code>+ load</code> 是 <code>NSObject</code> 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。</p>
 <p>可以先思考如下示例控制台应该输出什么:</p>
@@ -314,15 +341,14 @@
 <p><a target="_blank" rel="noopener" href="http://zhangbuhuai.com/2015/04/28/initialize-and-load-in-Objective-C/">Objective-C中的+initialize和+load</a></p>
 <hr />
 <p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div>
+<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117;height:174;"alt=""></div>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -331,60 +357,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/04/ios-init-window-rootviewcontroller/"  data-tooltip="iOS代码初始化window的rootViewController">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/04/ios-init-window-rootviewcontroller/"
+                    data-tooltip="iOS代码初始化window的rootViewController"
+                    aria-label="PREVIOUS: iOS代码初始化window的rootViewController"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/26/ios-get-color-of-uiview/" data-tooltip="iOS获取UIView上某点的颜色值">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/26/ios-get-color-of-uiview/"
+                    data-tooltip="iOS获取UIView上某点的颜色值"
+                    aria-label="NEXT: iOS获取UIView上某点的颜色值"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -392,24 +456,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-ios-load-and-initialize" data-title="iOS初探+load和+initialize" data-url="http://liumh.com/2015/07/29/ios-load-and-initialize/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -424,61 +472,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/04/ios-init-window-rootviewcontroller/"  data-tooltip="iOS代码初始化window的rootViewController">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/04/ios-init-window-rootviewcontroller/"
+                    data-tooltip="iOS代码初始化window的rootViewController"
+                    aria-label="PREVIOUS: iOS代码初始化window的rootViewController"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/26/ios-get-color-of-uiview/" data-tooltip="iOS获取UIView上某点的颜色值">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/26/ios-get-color-of-uiview/"
+                    data-tooltip="iOS获取UIView上某点的颜色值"
+                    aria-label="NEXT: iOS获取UIView上某点的颜色值"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -486,68 +571,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2015/07/29/ios-load-and-initialize/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

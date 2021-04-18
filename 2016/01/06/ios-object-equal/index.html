@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>iOS中的对象等同性 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS中的对象等同性 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:\n123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA &#x3D; (str &#x3D;&#x3D; strCopy);BOOL equalB &#x3D; (str &#x3D;&#x3D; str1);BOOL equalC &#x3D; [str isEqualToString:str1];  &#x2F;**&lt; equalC is YES *&#x2F;BOOL equalD &#x3D; [str isEqual:str1]; &#x2F;**&lt; equalD is YES *&#x2F;\n\nequalA 的值会是 YES, 而 equalB 的值会是 NO，虽然 str、str1、strCopy 指针所指的对象的值都是 origin1。\n比较对象时，我们应该使用 NSObject 协议中声明的 isEqual: 方法来判断两个对象的等同性。一般来说，两个类型不同的对象总是不相等的。\nNSObject 协议中有两个判断对象等同性的关键方法:\n12- (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;\nNSObject 对这两个类的默认实现是:当且仅当其 “指针值” 完全相等时，这两个对象才相等。若想在自定义对象中正确覆写这两个方法，那么就必须先理解其约定: 如果 isEqual: 方法判断两个对象相等，那么其 hash 方法必须返回同一个值，但是如果两个对象的 hash 方法返回同一个值，isEqual: 方法未必会认为二者相等。\n假如有如下类:\n1234567@interface ACLStudent : NSObject@property (nonatomic, assign, readonly) NSUInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;@end\n对于这样的自定义对象，可以像 NSString 的 - (BOOL)isEqualToString:(NSString *)aString 方法一样，创建一个属于该类的特定等同性方法。同时需要注意该类对象的使用场景，例如这里，我们在判定两个类对象是否相等时，不需要对象中的所有字段都判定相等，只需要其 studentId 相等就可判定两个对象表示的是同一个学生对象。方法实现像下面这样:\n12345678910- (BOOL)isEqualToStudent:(ACLStudent *)student &#123;    if (self &#x3D;&#x3D; student) &#123;        return YES;    &#125;        if (self.studentId &#x3D;&#x3D; student.studentId) &#123;        return YES;    &#125;    return NO;&#125;\n建议同时实现其 isEqual: 方法，像下面这样:\n1234567891011- (BOOL)isEqual:(id)object &#123;    if (self &#x3D;&#x3D; object) &#123;        return YES;    &#125;        if ([self class] &#x3D;&#x3D; [object class]) &#123;        return [self isEqualToStudent:object];    &#125; else &#123;        return [super isEqual:object];    &#125;&#125;\n首先比较其指针值，假如指针值相等，则对象相等，然后判断传入对象的类型，如果是类的类型，则调用类特定的等同性方法，否则交由父类来判断。\n同时不要忘记覆写 - (NSUInteger)hash 方法:\n123- (NSUInteger)hash &#123;    return self.studentId;&#125;\n在覆写类的 hash 方法时，要注意其有较高的执行效率，又能使生成的哈希码至少位于一定的范围内，不至于频繁的重复。编写 hash 方法时，可用当前的对象做实验，以便在减少哈希码碰撞频度与降低其运算复杂度之间取舍。\n\n假如类的 hash 方法计算值过于频繁的重复，在 collection 中使用这种对象将会产生性能问题，因为 collection 在检索哈希表时，会用对象的哈希码做索引。假如某个 collection 是用 set 实现的，那么 set 可能会根据哈希码把对象分装到不同的数组中。在向 set 中添加新对象时，要根据哈希码找到与之相关的那个数组，依次检查其中的各个元素，看数组中已有的对象是否和将要添加的对象相等。如果相等，那就说明要添加的对象已经在 set 中了。由此可知，如果令每个对象的都返回相同的哈希码，那么在 set 中已有 1000000 个对象的情况下，若是继续向其中添加对象，则需要将这 1000000 个对象全部扫描一遍。\n\n例如下面两种实现方法, 方法1：\n12345- (NSUInteger)hash &#123;    NSString *stringToHash &#x3D; [NSString stringWithFormat:@&quot;%@:%@:%@&quot;, @(self.studentId), self.firstName, self.lastName];    return [stringToHash hash];&#125;\n方法2：\n12345- (NSUInteger)hash &#123;    NSUInteger firstNameHash &#x3D; [self.firstName hash];    NSUInteger lastNameHash &#x3D; [self.lastName hash];    return firstNameHash ^ lastNameHash ^ self.studentId;&#125;\n方法2 比 方法1 更好，减少了创建字符串的开销，同时其哈希值不至于频繁重复。\n注意，我们把对象放入 collection 之后，就不应再改变其哈希码了。前面讲过，collection 会把各个对象按照其哈希码分装到不同的&quot;箱子数组&quot;中。如果某个对象在放入&quot;箱子&quot;之后哈希码又变了，那么其现在所处的箱子对它来说是&quot;错误&quot;的。要解决这个问题，需要确保哈希码不是根据对象的“可变部分”(mutable portion)计算出来的，或者保证放入 collection 之后就不再改变对象的内容了。\n本文来自 &lt;&lt;Effective Objective-C 2.0 编写高质量iOS与OS X代码的52个有效方法&gt;&gt;\n\n","dateCreated":"2016-01-06T22:23:20+08:00","dateModified":"2016-01-14T22:37:57+08:00","datePublished":"2016-01-06T22:23:20+08:00","description":"使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:\n123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA &#x3D; (str &#x3D;&#x3D; strCopy);BOOL equalB &#x3D; (str &#x3D;&#x3D; str1);BOOL equalC &#x3D; [str isEqualToString:str1];  &#x2F;**&lt; equalC is YES *&#x2F;BOOL equalD &#x3D; [str isEqual:str1]; &#x2F;**&lt; equalD is YES *&#x2F;","headline":"iOS中的对象等同性","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/01/06/ios-object-equal/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/01/06/ios-object-equal/","keywords":"iOS"}</script>
     <meta name="description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS中的对象等同性">
 <meta property="og:url" content="http://liumh.com/2016/01/06/ios-object-equal/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2016-01-06T14:23:20.000Z">
@@ -27,186 +31,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             iOS中的对象等同性
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Wed Jan 06 2016 22:23:20 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2016-01-06T22:23:20+08:00">
 	
 		    Jan 06, 2016
     	
@@ -219,9 +243,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>使用 <code>==</code> 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSString *str &#x3D; @&quot;origin1&quot;;</span><br><span class="line">NSString *strCopy &#x3D; [str copy];</span><br><span class="line">NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];</span><br><span class="line">    </span><br><span class="line">BOOL equalA &#x3D; (str &#x3D;&#x3D; strCopy);</span><br><span class="line">BOOL equalB &#x3D; (str &#x3D;&#x3D; str1);</span><br><span class="line"></span><br><span class="line">BOOL equalC &#x3D; [str isEqualToString:str1];  &#x2F;**&lt; equalC is YES *&#x2F;</span><br><span class="line">BOOL equalD &#x3D; [str isEqual:str1]; &#x2F;**&lt; equalD is YES *&#x2F;</span><br></pre></td></tr></table></figure>
@@ -254,12 +281,11 @@
 <hr />
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -268,60 +294,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/05/22/use-xcconfig-config-specific-variable/"  data-tooltip="Xcode使用xcconfig文件配置环境">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2016/05/22/use-xcconfig-config-specific-variable/"
+                    data-tooltip="Xcode使用xcconfig文件配置环境"
+                    aria-label="PREVIOUS: Xcode使用xcconfig文件配置环境"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/01/summarize-of-2015/" data-tooltip="我的2015">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2016/01/01/summarize-of-2015/"
+                    data-tooltip="我的2015"
+                    aria-label="NEXT: 我的2015"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -329,24 +393,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-ios-object-equal" data-title="iOS中的对象等同性" data-url="http://liumh.com/2016/01/06/ios-object-equal/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -361,61 +409,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/05/22/use-xcconfig-config-specific-variable/"  data-tooltip="Xcode使用xcconfig文件配置环境">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2016/05/22/use-xcconfig-config-specific-variable/"
+                    data-tooltip="Xcode使用xcconfig文件配置环境"
+                    aria-label="PREVIOUS: Xcode使用xcconfig文件配置环境"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/01/summarize-of-2015/" data-tooltip="我的2015">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2016/01/01/summarize-of-2015/"
+                    data-tooltip="我的2015"
+                    aria-label="NEXT: 我的2015"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -423,68 +508,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2016/01/06/ios-object-equal/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2016/01/06/ios-object-equal/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2016/01/06/ios-object-equal/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

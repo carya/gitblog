@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>Java类中启动长时间运行的进程 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>Java类中启动长时间运行的进程 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"项目中有时需要在Java类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在tomcat启动时启动，在tomcat停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。\n\nServletContextListener接口能够接收到web context初始化和销毁的消息事件，因此我们可以在该接口中事件长时间运行进程的启动和停止。代码如下:\n1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859public class MyContextListener implements ServletContextListener &#123;    @Override    public void contextInitialized(ServletContextEvent sce) &#123;        ClassLoader classLoader &#x3D; Thread.currentThread()                .getContextClassLoader();        String scriptPath &#x3D; classLoader.getResource(&quot;daemon.sh&quot;)                .getPath();        List&lt;String&gt; commandsList &#x3D; new ArrayList&lt;String&gt;();        commandsList.add(&quot;sh&quot;);        commandsList.add(scriptPath);        commandsList.add(&quot;start&quot;);        ProcessBuilder processBuilder &#x3D; new ProcessBuilder(commandsList);        try &#123;            Process process &#x3D; processBuilder.start();            &#x2F;&#x2F;以下两行代码是关键            ServletContext servletContext &#x3D; sce.getServletContext();            servletContext.setAttribute(&quot;daemon&quot;, process);            int exitValue &#x3D; process.waitFor();            if (0 &#x3D;&#x3D; exitValue) &#123;                System.out.println(&quot;start daemon success.&quot;);            &#125; else &#123;                System.out.println(&quot;start daemon failed, exitValue: &quot; + exitValue);            &#125;        &#125; catch (IOException e) &#123;            &#x2F;&#x2F; TODO Auto-generated catch block            e.printStackTrace();        &#125; catch (InterruptedException e) &#123;            &#x2F;&#x2F; TODO Auto-generated catch block            e.printStackTrace();        &#125;    &#125;    @Override    public void contextDestroyed(ServletContextEvent sce) &#123;        ClassLoader classLoader &#x3D; Thread.currentThread()                .getContextClassLoader();        String scriptPath &#x3D; classLoader.getResource(&quot;daemon.sh&quot;)                .getPath();        List&lt;String&gt; commandsList &#x3D; new ArrayList&lt;String&gt;();        commandsList.add(&quot;sh&quot;);        commandsList.add(scriptPath);        commandsList.add(&quot;stop&quot;);        ProcessBuilder processBuilder &#x3D; new ProcessBuilder(commandsList);        try &#123;            Process process &#x3D; processBuilder.start();            int exitValue &#x3D; process.waitFor();            if (0 &#x3D;&#x3D; exitValue) &#123;                System.out.println(&quot;stop daemon success.&quot;);            &#125; else &#123;                System.out.println(&quot;stop daemon failed, exitValue: &quot; + exitValue);            &#125;        &#125; catch (IOException e) &#123;            &#x2F;&#x2F; TODO Auto-generated catch block            e.printStackTrace();        &#125; catch (InterruptedException e) &#123;            &#x2F;&#x2F; TODO Auto-generated catch block            e.printStackTrace();        &#125;    &#125;&#125;\n然后需要在web.xml的所有filters和servlets定义之前定义:\n123&lt;listener&gt;    &lt;listener-class&gt;org.readus.executescript.MyContextListener&lt;&#x2F;listener-class&gt;&lt;&#x2F;listener&gt;\n如果使用Spring，则可使用如下设置代替上面的listener-class:\n123&lt;listener&gt;    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;&#x2F;listener-class&gt;&lt;&#x2F;listener&gt;\n在上述的实现中，最重要的概括为两点:\n\n实现了ServletContextListener的接口\n将生成的长时间运行的进程写入ServletContext的属性中\n\nJava中使用ServletContextListener接口来监听web应用的生命周期变化。其中包含的两个接口:\n1public void contextInitialized(ServletContextEvent sce);\n该接口文档说明如下:\n\nReceives notification that the web application initialization process is starting.All ServletContextListeners are notified of context initialization before any filters or servlets in the web application are initialized. @param sce the ServletContextEvent containing the ServletContext that is being initialized.\n\n1public void contextDestroyed(ServletContextEvent sce);\n该接口的文档说明如下:\n\nReceives notification that the ServletContext is about to be shut down. All servlets and filters will have been destroyed before any ServletContextListeners are notified of context destruction. @param sce the ServletContextEvent containing the ServletContext that is being destroyed.\n\n本文所涉及的代码托管在了GitHub上ExecuteScriptDemo.\n","dateCreated":"2014-05-27T21:47:58+08:00","dateModified":"2014-06-25T17:07:23+08:00","datePublished":"2014-05-27T21:47:58+08:00","description":"项目中有时需要在Java类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在tomcat启动时启动，在tomcat停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。","headline":"Java类中启动长时间运行的进程","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/05/27/java-start-long-running-process/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/05/27/java-start-long-running-process/","keywords":"shell, Java"}</script>
     <meta name="description" content="项目中有时需要在Java类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在tomcat启动时启动，在tomcat停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="Java类中启动长时间运行的进程">
 <meta property="og:url" content="http://liumh.com/2014/05/27/java-start-long-running-process/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="项目中有时需要在Java类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在tomcat启动时启动，在tomcat停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2014-05-27T13:47:58.000Z">
@@ -28,186 +32,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             Java类中启动长时间运行的进程
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Tue May 27 2014 21:47:58 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2014-05-27T21:47:58+08:00">
 	
 		    May 27, 2014
     	
@@ -220,9 +244,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>项目中有时需要在<code>Java</code>类中启动一个长时间运行的服务进程(监听进程、监控进程等)，且该进程需要在<code>tomcat</code>启动时启动，在<code>tomcat</code>停止时退出。在项目开发的过程中，我需要在Java类中启动一个监听进程，而在该进程成功启动后，一调用该监听服务进程时，该进程就挂掉(退出)，现将解决方法记录如下。</p>
 <span id="more"></span>
@@ -251,12 +278,11 @@
 <p>本文所涉及的代码托管在了GitHub上<a target="_blank" rel="noopener" href="https://github.com/carya/ExecuteScriptDemo">ExecuteScriptDemo</a>.</p>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -265,60 +291,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/06/23/java-close-chained-stream/"  data-tooltip="Java中Close Stream的问题">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/06/23/java-close-chained-stream/"
+                    data-tooltip="Java中Close Stream的问题"
+                    aria-label="PREVIOUS: Java中Close Stream的问题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/22/java-running-executable-script/" data-tooltip="Java类中调用外部可执行脚本">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/05/22/java-running-executable-script/"
+                    data-tooltip="Java类中调用外部可执行脚本"
+                    aria-label="NEXT: Java类中调用外部可执行脚本"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -326,24 +390,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-java-start-long-running-process" data-title="Java类中启动长时间运行的进程" data-url="http://liumh.com/2014/05/27/java-start-long-running-process/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -358,61 +406,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/06/23/java-close-chained-stream/"  data-tooltip="Java中Close Stream的问题">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/06/23/java-close-chained-stream/"
+                    data-tooltip="Java中Close Stream的问题"
+                    aria-label="PREVIOUS: Java中Close Stream的问题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/05/22/java-running-executable-script/" data-tooltip="Java类中调用外部可执行脚本">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/05/22/java-running-executable-script/"
+                    data-tooltip="Java类中调用外部可执行脚本"
+                    aria-label="NEXT: Java类中调用外部可执行脚本"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -420,68 +505,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2014/05/27/java-start-long-running-process/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

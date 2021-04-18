@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>iOS获取UIView上某点的颜色值 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS获取UIView上某点的颜色值 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"项目需求中遇到获取UIView上某个坐标点的RGB颜色值的需求，现在把自己找到的解决方案简单总结记录一下，遇到了下面的情况:\n\n\n不可移动的UIView\n旋转式的UIView\n滑条式的UIView\n\n不可移动的UIView\n如下图所示，有一个圆形的颜色板，当手指在颜色板上移动时，UIViewController的backgroundColor将会设置成手指在颜色板上触点的颜色值:\n\n不可移动的颜色板\n\n实现该功能的方案搜索至stackoverflow, 出处点击这里.\n核心代码如下:\n123456789101112131415161718192021#import &quot;UIView+ColorOfPoint.h&quot;#import &lt;QuartzCore&#x2F;QuartzCore.h&gt;@implementation UIView (ColorOfPoint)- (UIColor *)colorOfPoint:(CGPoint)point &#123;    unsigned char pixel[4] &#x3D; &#123;0&#125;;    CGColorSpaceRef colorSpace &#x3D; CGColorSpaceCreateDeviceRGB();    CGContextRef context &#x3D; CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedLast);        CGContextTranslateCTM(context, -point.x, -point.y);        [self.layer renderInContext:context];        CGContextRelease(context);    CGColorSpaceRelease(colorSpace);        UIColor *color &#x3D; [UIColor colorWithRed:pixel[0]&#x2F;255.0 green:pixel[1]&#x2F;255.0 blue:pixel[2]&#x2F;255.0 alpha:pixel[3]&#x2F;255.0];        return color;&#125;\n该功能封装成UIView的一个Category了，主要注意头文件QuartzCore.h的引入以及坐标系的转换.\n最终，当手指在颜色板上滑动时，获取ColorPanel中颜色值的调用如下:\n12345678910111213#import &quot;ImmovableColorPanel.h&quot;#import &quot;UIView+ColorOfPoint.h&quot;@implementation ImmovableColorPanel- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event &#123;    CGPoint location &#x3D; [touch locationInView:self];    self.color &#x3D; [self colorOfPoint:location];    [self sendActionsForControlEvents:UIControlEventValueChanged];    return YES;&#125;@end\n旋转式的UIView\n现在假设上图所示的颜色板是可旋转的，获取颜色值的方式修改为获取色环中间正上方某点的颜色值，如下图所示，获取的是下三角所指某点的颜色值(下三角不会随着颜色板的旋转而旋转).\n\n可旋转的颜色板\n\n先看看颜色板随着手指的滑动而旋转是如何实现的:\n12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455#import &quot;RoundColorPanel.h&quot;@interface RoundColorPanel ()&#x2F;** *  ColorPanel中心点的坐标值 *&#x2F;@property (nonatomic) CGPoint centerPoint;@end@implementation RoundColorPanel- (void)awakeFromNib &#123;    [super awakeFromNib];        self.centerPoint &#x3D; CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));&#125;- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event &#123;        CGPoint previousLocation &#x3D; [touch previousLocationInView:self];    CGPoint location &#x3D; [touch locationInView:self];    CGFloat previousRadian &#x3D; [self radianToCenterPoint:self.centerPoint withPoint:previousLocation];    CGFloat curRadian &#x3D; [self radianToCenterPoint:self.centerPoint withPoint:location];    CGFloat changedRadian &#x3D; curRadian - previousRadian;    [self rotateByRadian:changedRadian];        [self sendActionsForControlEvents:UIControlEventValueChanged];    return YES;&#125;&#x2F;** *  以ColorPanel的anchorPoint为坐标原点建立坐标系，计算坐标点|point|与坐标原点的连线距离x轴正方向的夹角 * *  @param centerPoint 坐标原点坐标 *  @param point       某坐标点 * *  @return 坐标点|point|与坐标原点的连线距离x轴正方向的夹角 *&#x2F;- (CGFloat)radianToCenterPoint:(CGPoint)centerPoint withPoint:(CGPoint)point &#123;    CGVector vector &#x3D; CGVectorMake(point.x - centerPoint.x, point.y - centerPoint.y);    return atan2f(vector.dy, vector.dx);&#125;&#x2F;** *  将图层旋转radian弧度 * *  @param radian 旋转的弧度 *&#x2F;- (void)rotateByRadian:(CGFloat)radian &#123;    CGAffineTransform transform &#x3D; self.layer.affineTransform;    transform &#x3D; CGAffineTransformRotate(transform, radian);    self.layer.affineTransform &#x3D; transform;&#125;\n核心代码就是rotateByRadian:消息，使用CALayer的仿射变换完成。\n可能你会发现，在continueTrackingWithTouch:消息中没有看到UIView的分类消息colorOfPoint:的发送，其实如果你尝试这样做，会发现这样取出的颜色值是旋转开始时下三角所指点referPoint的颜色值，随着ColorPanel的旋转，该颜色值不会改变，这是因为我们对ColorPanel的旋转是通过仿射变换实现，而仿射变换会改变图层的坐标系，也就是说，referPoint现在所处的坐标系是已做过仿射变换的坐标系，而不再是以图层左上角为坐标原点，向右为x轴正方向，向下为y轴正方向的坐标系。当然你可以计算ColorPanel总的旋转角度totalChangedRadian，然后通过使referPoint旋转-totalChangedRadian角度来计算该点在新坐标系中的坐标值，如下代码所示:\n123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566#import &quot;RoundColorPanel.h&quot;#import &quot;UIView+ColorOfPoint.h&quot;@interface RoundColorPanel ()&#x2F;** *  颜色板中心点坐标 *&#x2F;@property (nonatomic) CGPoint centerPoint;&#x2F;** *  获取颜色值参考点与|centerPoint|的连线与x轴正方向的夹角 *&#x2F;@property (nonatomic) CGFloat referRadian;&#x2F;** *  获取颜色值参考点与|centerPoint|的连线长度 *&#x2F;@property (nonatomic) CGFloat referRadius;&#x2F;** *  颜色板在整个旋转过程中的总和 *&#x2F;@property (nonatomic) CGFloat totalChangedRadian;@end@implementation RoundColorPanel- (void)awakeFromNib &#123;    [super awakeFromNib];        self.centerPoint &#x3D; CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));    &#x2F;&#x2F;|referPoint|获取该点的颜色值    CGPoint referPoint &#x3D; CGPointMake(CGRectGetMidX(self.bounds), 2);    CGVector vector &#x3D; CGVectorMake(referPoint.x - self.centerPoint.x, referPoint.y - self.centerPoint.y);    self.referRadian &#x3D; atan2(vector.dy, vector.dx);    self.referRadius &#x3D; sqrt(vector.dx * vector.dx + vector.dy * vector.dy);    self.layer.cornerRadius &#x3D; CGRectGetWidth(self.bounds) &#x2F; 2;&#125;- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event &#123;        CGPoint previousLocation &#x3D; [touch previousLocationInView:self];    CGPoint location &#x3D; [touch locationInView:self];    CGFloat previousRadian &#x3D; [self radianToCenterPoint:self.centerPoint withPoint:previousLocation];    CGFloat curRadian &#x3D; [self radianToCenterPoint:self.centerPoint withPoint:location];    CGFloat changedRadian &#x3D; curRadian - previousRadian;    [self rotateByRadian:changedRadian];        self.totalChangedRadian +&#x3D; changedRadian;    CGFloat radian &#x3D; self.referRadian - self.totalChangedRadian;    CGPoint referPoint1 &#x3D; CGPointMake(self.centerPoint.x + self.referRadius * cos(radian), self.centerPoint.y + self.referRadius * sin(radian));    self.color &#x3D; [self colorOfPoint:referPoint1];    [self sendActionsForControlEvents:UIControlEventValueChanged];        return YES;&#125;- (CGFloat)radianToCenterPoint:(CGPoint)centerPoint withPoint:(CGPoint)point &#123;    CGVector vector &#x3D; CGVectorMake(point.x - centerPoint.x, point.y - centerPoint.y);    return atan2f(vector.dy, vector.dx);&#125;- (void)rotateByRadian:(CGFloat)radian &#123;    CGAffineTransform transform &#x3D; self.layer.affineTransform;    transform &#x3D; CGAffineTransformRotate(transform, radian);    self.layer.affineTransform &#x3D; transform;&#125;\n不过，我更趋向于使用接下来使用的方法，更加简单和理解。\n将RoundColorPanel放入一个容器视图RotaryColorPanel中，RoundColorPanel的旋转改变的是自身视图的坐标系，而不会改变其父视图的坐标系，因此我们可以在其父视图的坐标系中定义需要取颜色值的坐标点，代码如下:\n12345678910111213141516171819202122232425262728293031323334353637383940#import &quot;RotaryColorPanel.h&quot;#import &quot;RoundColorPanel.h&quot;#import &quot;UIView+ColorOfPoint.h&quot;#import &quot;XXNibBridge.h&quot;@interface RotaryColorPanel () &lt;XXNibBridge&gt;&#x2F;** *  可旋转的颜色板 *&#x2F;@property (weak, nonatomic) IBOutlet RoundColorPanel *roundColorPanel;&#x2F;** *  下三角指示标识 *&#x2F;@property (weak, nonatomic) IBOutlet UIImageView *indicator;&#x2F;** *  获取该点的颜色值 *&#x2F;@property (nonatomic) CGPoint referPoint;@end@implementation RotaryColorPanel- (void)awakeFromNib &#123;    [super awakeFromNib];        self.referPoint &#x3D; CGPointMake(CGRectGetMidX(self.indicator.frame), CGRectGetMaxY(self.indicator.frame));    [self.roundColorPanel addTarget:self action:@selector(colorPanelRotated:) forControlEvents:UIControlEventValueChanged];&#125;- (void)colorPanelRotated:(id)sender &#123;    UIColor *color &#x3D; [self colorOfPoint:self.referPoint];    if (self.colorChangedHandler) &#123;        self.colorChangedHandler(color);    &#125;&#125;@end\n获取颜色值的调用变成如下:\n1234567891011121314151617181920212223242526#import &quot;RotaryColorPanelViewController.h&quot;#import &quot;RotaryColorPanel.h&quot;@interface RotaryColorPanelViewController ()@property (weak, nonatomic) IBOutlet RotaryColorPanel *rotaryColorPanel;@end@implementation RotaryColorPanelViewController- (void)viewDidLoad &#123;    [super viewDidLoad];        __weak typeof(self) weakSelf &#x3D; self;    self.rotaryColorPanel.colorChangedHandler &#x3D; ^(UIColor *color) &#123;        weakSelf.view.backgroundColor &#x3D; color;    &#125;;&#125;- (void)didReceiveMemoryWarning &#123;    [super didReceiveMemoryWarning];    &#x2F;&#x2F; Dispose of any resources that can be recreated.&#125;@end\n滑条式UIView\n该样式与上面的区别是，在颜色条上有遮挡物滑块，获取颜色值的点坐标是滑块中心点的坐标, 如下图所示:\n\n滑条式颜色板\n\n解决方案同第2中情况类似，就是让滑块和颜色板处在并列的层级，它们同时直属于同一superview中。\n上述所有代码已上传github，可点击此处获取.\n\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n","dateCreated":"2015-07-26T21:51:05+08:00","dateModified":"2017-12-02T10:51:27+08:00","datePublished":"2015-07-26T21:51:05+08:00","description":"项目需求中遇到获取UIView上某个坐标点的RGB颜色值的需求，现在把自己找到的解决方案简单总结记录一下，遇到了下面的情况:","headline":"iOS获取UIView上某点的颜色值","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/07/26/ios-get-color-of-uiview/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/07/26/ios-get-color-of-uiview/","keywords":"iOS"}</script>
     <meta name="description" content="项目需求中遇到获取UIView上某个坐标点的RGB颜色值的需求，现在把自己找到的解决方案简单总结记录一下，遇到了下面的情况:">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS获取UIView上某点的颜色值">
 <meta property="og:url" content="http://liumh.com/2015/07/26/ios-get-color-of-uiview/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="项目需求中遇到获取UIView上某个坐标点的RGB颜色值的需求，现在把自己找到的解决方案简单总结记录一下，遇到了下面的情况:">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-color-panel/ios-immovable-color-panel.png">
@@ -32,186 +36,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             iOS获取UIView上某点的颜色值
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Sun Jul 26 2015 21:51:05 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2015-07-26T21:51:05+08:00">
 	
 		    Jul 26, 2015
     	
@@ -224,9 +248,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>项目需求中遇到获取<code>UIView</code>上某个坐标点的<code>RGB</code>颜色值的需求，现在把自己找到的解决方案简单总结记录一下，遇到了下面的情况:</p>
 <span id="more"></span>
@@ -270,15 +297,14 @@
 <p>上述所有代码已上传<code>github</code>，可点击<a target="_blank" rel="noopener" href="https://github.com/carya/ColorPanel.git">此处</a>获取.</p>
 <hr />
 <p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div>
+<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117;height:174;"alt=""></div>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -287,60 +313,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/29/ios-load-and-initialize/"  data-tooltip="iOS初探+load和+initialize">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/29/ios-load-and-initialize/"
+                    data-tooltip="iOS初探+load和+initialize"
+                    aria-label="PREVIOUS: iOS初探+load和+initialize"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/21/tranquilpeak-add-duoshuo/" data-tooltip="为tranquilpeak主题添加多说评论">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/21/tranquilpeak-add-duoshuo/"
+                    data-tooltip="为tranquilpeak主题添加多说评论"
+                    aria-label="NEXT: 为tranquilpeak主题添加多说评论"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -348,24 +412,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-ios-get-color-of-uiview" data-title="iOS获取UIView上某点的颜色值" data-url="http://liumh.com/2015/07/26/ios-get-color-of-uiview/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -380,61 +428,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/29/ios-load-and-initialize/"  data-tooltip="iOS初探+load和+initialize">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/29/ios-load-and-initialize/"
+                    data-tooltip="iOS初探+load和+initialize"
+                    aria-label="PREVIOUS: iOS初探+load和+initialize"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/07/21/tranquilpeak-add-duoshuo/" data-tooltip="为tranquilpeak主题添加多说评论">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/07/21/tranquilpeak-add-duoshuo/"
+                    data-tooltip="为tranquilpeak主题添加多说评论"
+                    aria-label="NEXT: 为tranquilpeak主题添加多说评论"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -442,68 +527,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2015/07/26/ios-get-color-of-uiview/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

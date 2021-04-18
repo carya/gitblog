@@ -3,20 +3,26 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>绘制UML类图 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>绘制UML类图 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
+        <meta name="keywords" content="UML,class diagram">
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\nUML属性的表示方式\nUML的属性有两种表示方式：属性文本和关联线.\n属性文本表示属性的完整格式是：\nvisibility name : type multiplicity = default &#123;property-string&#125;\n可见性      属性名: 属性类型              默认值     特性字符串\n\n其中属性的可见性常分为三种, 若没有标志可见性，则默认是私有的:\n\npublic: +\nprivate: -\nprotected: #\n\n ___\n ___\n如上图所示是关联线表示属性的例子，其格式详细描述如下:\n\n导航性箭头由源对象指向目标对象，表示源对象Store的一个属性是目标对象Address\n多重性放置在目标对象Address一端\n角色名放置在目标对象Address一端，用以表示属性名称address\n\n多重性可用*表示0或者更多，1..*表示1或者更多，1..40表示1-40，3,5,8精确地为3,5,8，等诸如此类的表示方式. 多重性的值表示的是特定时刻有效关联的实例数量，而不是一段时间内有效关联的实例数量.\n那么，在表示UML属性时，何时使用属性文本，何时使用关联线呢？通常情况下，对数据类型对象使用属性文本表示法，对其他自定义对象使用关联线. 其中，数据类型对象指的是其唯一标识不具有意义的对象，常见的数据类型都是原始类型，例如: 布尔型、日期、数字、字符、字符串(文本)、时间、地址、颜色、几何形状、电话号码、邮政编码、枚举类型等. 两种表示方法在语义上是等价的，但是在绘制UML类图时，图中展示与另一个类框的关联线能够在视觉上强调图中对象之间的链接. 在代码中，它们归结为同一事物，例如Java代码：\npublic class Store &#123;\n    private int id;\n    private String phoneNum;\n    private Address address;\n    private List&lt;SaleItem&gt; saleItems = new ArrayList&lt;SaleItem&gt;();\n    //TODO: operator\n&#125;\n在上面的代码中，我们看到类Store中还具有一个集合属性saleItems，那么，怎么使用属性文本和关联线表示集合属性呢？\n如下图所示，显示了UML类图中表示集合属性的两种方式.\n ____\nUML注解/操作/方法\nUML注解符号显示为摺角矩形，并使用虚线连接到要注解的元素上, 这从上面的图中可以看到.\nUML表示操作的语法形式为:\nvisibility name (parameter-list) : return-type &#123;property-string&#125;\n若没有标志其可见性，则默认该操作是公有的. 特性字符串可包含任何附件信息，例如可能产生的异常、操作是否抽象&#123;abstract&#125;，等等.\n操作不是方法. UML中操作是声明，其中包含名称、参数、返回类型、异常列表、可能的前置和后置条件约束等. 操作不是实现，方法是实现. 在UML类图中，使用构造性为&lt;&lt;method&gt;&gt;的UML注解符号表示方法实现. 如下图所示:\n ____\n在绘制UML类图的过程中，通常忽略访问属性的操作(getter&amp;setter)，在写构造函数的操作时，可在前加&lt;&lt;constructor&gt;&gt;标识.\n关键字\nUML关键字是对模型元素分类的文本修饰，常用的UML关键字有:\n\n&lt;&lt;actor&gt;&gt;, 类元为参与者，在类图中，置于类元名称之上\n&lt;&lt;interface&gt;&gt;, 类元为接口，在类图中，置于类元名称之上\n&#123;abstract&#125;, 抽象元素，不能实例化，在类图中，置于类元名称或者操作名称之后\n&#123;leaf&#125;, 标识终止类(final class)和不能够被子类复写的操作\n&#123;ordered&#125;, 具有强制顺序的一组对象，在类图中，置于关联的端点\n\n泛化、依赖、组合\n泛化，意为从超类到子类的OOPL继承，用由子类到超类的实线和空心三角箭头表示，如下图所示. 抽象类(abstract class)和操作既可以采用&#123;abstract&#125;标记表示，也可以采用斜体名称来表示. 与之相反，终止类(final class)和不能够被子类复写的操作以&#123;leaf&#125;标记表示.\n ____\n依赖，可以视为耦合的另一个版本，耦合意味着某元素(客户元素)耦合或依赖于另一个元素(提供者元素)，使用从客户到提供者的虚线箭头线表示.在类图中，使用依赖线描述对象之间的全局变量、参数变量、局部变量和静态方法(对其他类的静态方法加以调用)的依赖.对于如下Java代码:\npublic class Sale\n&#123;\n    public void updatePriceFor(Product product) &#123;\n        Money basePrice = product.getPrice();\n    &#125;\n&#125;\nupdatePriceFor方法接收参数Product对象作为参数，然后向其发送getPrice消息。由此可见，Sale对象对Product具有参数可见性，并且有发送消息的耦合，因此对Product有依赖，这种依赖在类图中表示为:\n ___\n为表示依赖的类型，可以给依赖线附加关键字或者构造型，如&lt;&lt;call&gt;&gt;, &lt;&lt;create&gt;&gt;等.\n组合，也称为组成聚合，是一种很强的整体-部分聚合关系，组合关系有以下含义: 1. 在某一时刻，部分的实例(如Finger)只属于一个组成实例(如Hand) 2. 部分必须总是属于组成 3. 组成要负责创建和删除其部分，既可以自己来创建/删除部分，也可以与其他对象协作来创建/删除部分.如果组成被销毁，其部分也必须被销毁.\nUML中，用带有实心菱形箭头的关联线来表示组合，箭头指向组成类，如下图所示:\n ___\n限定关联\n限定关联具有限定符，限定符用户从规模较大的相关对象集合中，依据限定符的键选择一个或者多个对象. 一般来说，限定关联暗示了基于键对事物进行查找，如HashMap中的对象.例如，如果ProductCatalog中含有许多Product，并且每个Product中都能够通过itemID来选择，那么使用UML的限定关联的示例如下图所示.\n ___\n对于限定关联，需要注意的是多重性的变化，限定关联减少了在关联目标端的多重性，通常由多变为一，因为限定关联通常暗示从较大集合中选择一个实例.\n关联类\n关联类允许将关联本身作为类，并且使用属性、操作和其他特性对齐建模. 例如，如果Company雇佣了许多Person，建模时使用了Employ关联，则可以将关联本身建模为Employment类，并拥有startDate这样的属性. UML中，用从关联到关联类的虚线表示关联类，如下图所示:\n ___\n单实例类\n面向对象设计的世界中，有一种极为常见的模式-单实例类(Singleton)模式，其含义是类实例化后只存在一个实例，永远不会有第二个，这就是&quot;单实例类&quot;的实例. 在UML类图中，可以在类框中名称分栏的右上角标记&quot;1&quot;来表示这种类, 如下图所示:\n ___\n主动类\n主动对象(active object)运行于自己控制的执行线程之上，主动对象的类即为主动类(active class). 在UML中，主动类使用左右两边为双竖线的类框来表示，如下图所示:\n ___\n","dateCreated":"2013-10-29T21:07:00+08:00","dateModified":"2018-05-26T17:20:53+08:00","datePublished":"2013-10-29T21:07:00+08:00","description":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\nUML属性的表示方式\nUML的属性有两种表示方式：属性文本和关联线.\n属性文本表示属性的完整格式是：\nvisibility name : type multiplicity = default &#123;property-string&#125;\n可见性      属性名: 属性类型              默认值     特性字符串","headline":"绘制UML类图","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/29/uml-class-diagram/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/29/uml-class-diagram/","keywords":"UML"}</script>
     <meta name="description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式 UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &amp;#123;property-string&amp;#125; 可见性      属性名: 属性">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="绘制UML类图">
 <meta property="og:url" content="http://liumh.com/2013/10/29/uml-class-diagram/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式 UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &amp;#123;property-string&amp;#125; 可见性      属性名: 属性">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png">
@@ -39,186 +45,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             绘制UML类图
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Tue Oct 29 2013 21:07:00 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2013-10-29T21:07:00+08:00">
 	
 		    Oct 29, 2013
     	
@@ -231,9 +257,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.</p>
 <h3 id="uml属性的表示方式">UML属性的表示方式</h3>
@@ -316,12 +345,11 @@
 <p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/active-class.png" alt="UML中的主动类" /> ___</p>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -330,60 +358,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/11/04/uml-interaction-diagrams/"  data-tooltip="绘制UML交互图">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/11/04/uml-interaction-diagrams/"
+                    data-tooltip="绘制UML交互图"
+                    aria-label="PREVIOUS: 绘制UML交互图"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/10/26/markdown-tutorial/" data-tooltip="Markdown简明教程">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/10/26/markdown-tutorial/"
+                    data-tooltip="Markdown简明教程"
+                    aria-label="NEXT: Markdown简明教程"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -391,24 +457,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-uml-class-diagram" data-title="绘制UML类图" data-url="http://liumh.com/2013/10/29/uml-class-diagram/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -423,61 +473,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/11/04/uml-interaction-diagrams/"  data-tooltip="绘制UML交互图">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/11/04/uml-interaction-diagrams/"
+                    data-tooltip="绘制UML交互图"
+                    aria-label="PREVIOUS: 绘制UML交互图"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/10/26/markdown-tutorial/" data-tooltip="Markdown简明教程">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/10/26/markdown-tutorial/"
+                    data-tooltip="Markdown简明教程"
+                    aria-label="NEXT: Markdown简明教程"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -485,68 +572,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/10/29/uml-class-diagram/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/10/29/uml-class-diagram/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2013/10/29/uml-class-diagram/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

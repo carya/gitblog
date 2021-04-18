@@ -3,20 +3,26 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>在ubuntu上安装net-snmp5.7.2 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>在ubuntu上安装net-snmp5.7.2 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
+        <meta name="keywords" content="snmp,snmpd">
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上net-snmp官方网站下载。\n\n如果系统自带有低版本的snmp，则可用如下方法卸载:\n\n12cloud@cloud:~$ sudo apt-get purge snmpd snmpcloud@cloud:~$ sudo apt-get autoremove\n\n\n创建snmp目录用于存放下载的snmp源码包:\n\n1234cloud@cloud:~$ pwd&#x2F;home&#x2F;cloudcloud@cloud:~$ mkdir snmpcloud@cloud:~$ cd snmp&#x2F;\n\n下载snmp源码包:\n\n1cloud@cloud:~&#x2F;snmp$ wget http:&#x2F;&#x2F;nchc.dl.sourceforge.net&#x2F;project&#x2F;net-snmp&#x2F;net-snmp&#x2F;5.7.2&#x2F;net-snmp-5.7.2.zip\n\n解压源码包使用zip工具，使用make命令编译源码包，libperl-dev是安装snmp所依赖的包\n\n12cloud@cloud:~&#x2F;snmp$ sudo apt-get updatecloud@cloud:~&#x2F;snmp$ sudo apt-get install zip make libperl-dev\n\n解压、编译、安装snmp:\n\n1234567cloud@cloud:~&#x2F;snmp$ pwd&#x2F;home&#x2F;cloud&#x2F;snmpcloud@cloud:~&#x2F;snmp$ unzip net-snmp-5.7.2.zip cloud@cloud:~&#x2F;snmp$ cd net-snmp-5.7.2&#x2F;cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ .&#x2F;configure --with-default-snmp-version&#x3D;&quot;2&quot; --with-sys-contact&#x3D;&quot;@@no.where&quot; --with-sys-location&#x3D;&quot;Unknown&quot; --with-logfile&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;snmpd.log&quot; --with-persistent-directory&#x3D;&quot;&#x2F;var&#x2F;net-snmp&quot;cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ makecloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo make install\nconfigure时，可自定义相应参数，编译成功后，会在最后出现如下所示信息:\n123456789101112131415161718------------------------------------------------------------              Net-SNMP configuration summary------------------------------------------------------------  SNMP Versions Supported:    1 2c 3  Building for:               linux  Net-SNMP Version:           5.7.2  Network transport support:  Callback Unix Alias TCP UDP IPv4Base SocketBase TCPBase UDPIPv4Base UDPBase  SNMPv3 Security Modules:     usm  Agent MIB code:             default_modules &#x3D;&gt;  snmpv3mibs mibII ucd_snmp notification notification-log-mib target agent_mibs agentx disman&#x2F;event disman&#x2F;schedule utilities host  MYSQL Trap Logging:         unavailable  Embedded Perl support:      enabled  SNMP Perl modules:          building -- embeddable  SNMP Python modules:        disabled  Crypto support from:        internal  Authentication support:     MD5 SHA1  Encryption support:         DES AES  Local DNSSEC validation:    disabled------------------------------------------------------------\n\n对snmpd进行简单配置，这里使用里源码包里的EXAMPLE.conf文件, 将其拷贝到snmp的安装目录，这里是/usr/local/share/snmp/, 并重命名为snmpd.conf:\n\n1cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo cp EXAMPLE.conf &#x2F;usr&#x2F;local&#x2F;share&#x2F;snmp&#x2F;snmpd.conf\n\n修改snmpd的配置文件:\n\n1cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo vim &#x2F;usr&#x2F;local&#x2F;share&#x2F;snmp&#x2F;snmpd.conf\n将其内容替换为如下:\n123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201################################################################################# EXAMPLE.conf:#   An example configuration file for configuring the Net-SNMP agent (&#39;snmpd&#39;)#   See the &#39;snmpd.conf(5)&#39; man page for details##  Some entries are deliberately commented out, and will need to be explicitly activated##################################################################################  AGENT BEHAVIOUR##begin updated by Carya#  Listen for connections from the local system only#agentAddress  udp:127.0.0.1:161#  Listen for connections on all interfaces (both IPv4 *and* IPv6)#agentAddress udp:161,udp6:[::1]:161agentAddress  udp:161#################################################################################  SNMPv3 AUTHENTICATION##  Note that these particular settings don&#39;t actually belong here.#  They should be copied to the file &#x2F;var&#x2F;net-snmp&#x2F;snmpd.conf#     and the passwords changed, before being uncommented in that file *only*.#  Then restart the agent#  createUser authOnlyUser  MD5 &quot;remember to change this password&quot;#  createUser authPrivUser  SHA &quot;remember to change this one too&quot;  DES#  createUser internalUser  MD5 &quot;this is only ever used internally, but still change the password&quot;#  If you also change the usernames (which might be sensible),#  then remember to update the other occurances in this example config file to match.#################################################################################  ACCESS CONTROL#                                                 #  system + hrSystem groups only#view   systemonly  included   .1.3.6.1.2.1.1#view   systemonly  included   .1.3.6.1.2.1.25.1view    all         included   .1                                                 #  Full access from the local host#rocommunity public  localhost                                                 #  Default access to basic system info#rocommunity public  default    -V systemonly rocommunity public  default    -V all#end updated by Carya                                                 #  Full access from an example network                                                 #     Adjust this network address to match your local                                                 #     settings, change the community string,                                                 #     and check the &#39;agentAddress&#39; setting above#rocommunity secret  10.0.0.0&#x2F;16                                                 #  Full read-only access for SNMPv3 rouser   authOnlyUser                                                 #  Full write access for encrypted requests                                                 #     Remember to activate the &#39;createUser&#39; lines above#rwuser   authPrivUser   priv#  It&#39;s no longer typically necessary to use the full &#39;com2sec&#x2F;group&#x2F;access&#39; configuration#  r[ou]user and r[ow]community, together with suitable views, should cover most requirements#################################################################################  SYSTEM INFORMATION##  Note that setting these values here, results in the corresponding MIB objects being &#39;read-only&#39;#  See snmpd.conf(5) for more detailssysLocation    Sitting on the Dock of the BaysysContact     Me &lt;me@example.org&gt;                                                 # Application + End-to-End layerssysServices    72##  Process Monitoring#                               # At least one  &#39;mountd&#39; processproc  mountd                               # No more than 4 &#39;ntalkd&#39; processes - 0 is OKproc  ntalkd    4                               # At least one &#39;sendmail&#39; process, but no more than 10proc  sendmail 10 1#  Walk the UCD-SNMP-MIB::prTable to see the resulting output#  Note that this table will be empty if there are no &quot;proc&quot; entries in the snmpd.conf file##  Disk Monitoring#                               # 10MBs required on root disk, 5% free on &#x2F;var, 10% free on all other disksdisk       &#x2F;     10000disk       &#x2F;var  5%includeAllDisks  10%#  Walk the UCD-SNMP-MIB::dskTable to see the resulting output#  Note that this table will be empty if there are no &quot;disk&quot; entries in the snmpd.conf file##  System Load#                               # Unacceptable 1-, 5-, and 15-minute load averagesload   12 10 5#  Walk the UCD-SNMP-MIB::laTable to see the resulting output#  Note that this table *will* be populated, even without a &quot;load&quot; entry in the snmpd.conf file#################################################################################  ACTIVE MONITORING#                                    #   send SNMPv1  traps trapsink     localhost public                                    #   send SNMPv2c traps#trap2sink    localhost public                                    #   send SNMPv2c INFORMs#informsink   localhost public#  Note that you typically only want *one* of these three lines#  Uncommenting two (or all three) will result in multiple copies of each notification.##  Event MIB - automatically generate alerts#                                   # Remember to activate the &#39;createUser&#39; lines aboveiquerySecName   internalUser       rouser          internalUser                                   # generate traps on UCD error conditionsdefaultMonitors          yes                                   # generate traps on linkUp&#x2F;DownlinkUpDownNotifications  yes#################################################################################  EXTENDING THE AGENT###  Arbitrary extension commands# extend    test1   &#x2F;bin&#x2F;echo  Hello, world! extend-sh test2   echo Hello, world! ; echo Hi there ; exit 35#extend-sh test3   &#x2F;bin&#x2F;sh &#x2F;tmp&#x2F;shtest#  Note that this last entry requires the script &#39;&#x2F;tmp&#x2F;shtest&#39; to be created first,#    containing the same three shell commands, before the line is uncommented#  Walk the NET-SNMP-EXTEND-MIB tables (nsExtendConfigTable, nsExtendOutput1Table#     and nsExtendOutput2Table) to see the resulting output#  Note that the &quot;extend&quot; directive supercedes the previous &quot;exec&quot; and &quot;sh&quot; directives#  However, walking the UCD-SNMP-MIB::extTable should still returns the same output,#     as well as the fuller results in the above tables.##  &quot;Pass-through&quot; MIB extension command##pass .1.3.6.1.4.1.8072.2.255  &#x2F;bin&#x2F;sh       PREFIX&#x2F;local&#x2F;passtest#pass .1.3.6.1.4.1.8072.2.255  &#x2F;usr&#x2F;bin&#x2F;perl PREFIX&#x2F;local&#x2F;passtest.pl# Note that this requires one of the two &#39;passtest&#39; scripts to be installed first,#    before the appropriate line is uncommented.# These scripts can be found in the &#39;local&#39; directory of the source distribution,#     and are not installed automatically.#  Walk the NET-SNMP-PASS-MIB::netSnmpPassExamples subtree to see the resulting output##  AgentX Sub-agents#                                           #  Run as an AgentX master agent master          agentx                                           #  Listen for network connections (from localhost)                                           #    rather than the default named socket &#x2F;var&#x2F;agentx&#x2F;master#agentXSocket    tcp:localhost:705\n注意使用begin updated by Carya和end updated by Carya之间的改动内容。\n\n使用snmpconf命令生成snmp.conf配置文件:\n\n1cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ snmpconf\n其操作过程如下所示:\n123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ snmpconfThe following installed configuration files were found:   1:  &#x2F;usr&#x2F;local&#x2F;share&#x2F;snmp&#x2F;snmpd.confWould you like me to read them in?  Their content will be merged with theoutput files created by this session.Valid answer examples: &quot;all&quot;, &quot;none&quot;,&quot;3&quot;,&quot;1,2,5&quot;Read in which (default &#x3D; all): noneI can create the following types of configuration files for you.Select the file type you wish to create:(you can create more than one as you run this program)   1:  snmpd.conf   2:  snmptrapd.conf   3:  snmp.confOther options: quitSelect File: 3The configuration information which can be put into snmp.conf is dividedinto sections.  Select a configuration section for snmp.confthat you wish to create:   1:  Debugging output options   2:  Output style options   3:  Textual mib parsing   4:  Default Authentication OptionsOther options: finishedSelect section: 4Section: Default Authentication OptionsDescription:  This section defines the default authentication  information.  Setting these up properly in your  ~&#x2F;.snmp&#x2F;snmp.conf file will greatly reduce the amount of  command line arguments you need to type (especially for snmpv3).Select from:   1:  The default port number to use   2:  The default snmp version number to use.   3:  The default snmpv1 and snmpv2c community name to use when needed.   4:  The default snmpv3 security name to use when using snmpv3   5:  The default snmpv3 context name to use   6:  The default snmpv3 security level to use   7:  The default snmpv3 authentication type name to use   8:  The default snmpv3 authentication pass phrase to use   9:  The default snmpv3 privacy (encryption) type name to use  10:  The default snmpv3 privacy pass phrase to useOther options: finished, listSelect section: 1Configuring: defaultportDescription:  The default port number to use    This token specifies the default port number you want packets to     be sent to and received from.    override: with -p on the command line.    arguments: portnumEnter the default port number to use: 161Finished Output: defaultport  161Section: Default Authentication OptionsDescription:  This section defines the default authentication  information.  Setting these up properly in your  ~&#x2F;.snmp&#x2F;snmp.conf file will greatly reduce the amount of  command line arguments you need to type (especially for snmpv3).Select from:   1:  The default port number to use   2:  The default snmp version number to use.   3:  The default snmpv1 and snmpv2c community name to use when needed.   4:  The default snmpv3 security name to use when using snmpv3   5:  The default snmpv3 context name to use   6:  The default snmpv3 security level to use   7:  The default snmpv3 authentication type name to use   8:  The default snmpv3 authentication pass phrase to use   9:  The default snmpv3 privacy (encryption) type name to use  10:  The default snmpv3 privacy pass phrase to useOther options: finished, listSelect section: 2Configuring: defversionDescription:  The default snmp version number to use.    override: with -v on the command line.    arguments: 1|2c|3Enter the default snmp version number to use (1|2c|3): 2cFinished Output: defversion  2cSection: Default Authentication OptionsDescription:  This section defines the default authentication  information.  Setting these up properly in your  ~&#x2F;.snmp&#x2F;snmp.conf file will greatly reduce the amount of  command line arguments you need to type (especially for snmpv3).Select from:   1:  The default port number to use   2:  The default snmp version number to use.   3:  The default snmpv1 and snmpv2c community name to use when needed.   4:  The default snmpv3 security name to use when using snmpv3   5:  The default snmpv3 context name to use   6:  The default snmpv3 security level to use   7:  The default snmpv3 authentication type name to use   8:  The default snmpv3 authentication pass phrase to use   9:  The default snmpv3 privacy (encryption) type name to use  10:  The default snmpv3 privacy pass phrase to useOther options: finished, listSelect section: 3Configuring: defcommunityDescription:  The default snmpv1 and snmpv2c community name to use when needed.    If this is specified, you don&#39;t need to include the community    name as an argument to the snmp applications.      override: with -c on the command line.    arguments: communitynameEnter the default community name to use: publicFinished Output: defcommunity  publicSection: Default Authentication OptionsDescription:  This section defines the default authentication  information.  Setting these up properly in your  ~&#x2F;.snmp&#x2F;snmp.conf file will greatly reduce the amount of  command line arguments you need to type (especially for snmpv3).Select from:   1:  The default port number to use   2:  The default snmp version number to use.   3:  The default snmpv1 and snmpv2c community name to use when needed.   4:  The default snmpv3 security name to use when using snmpv3   5:  The default snmpv3 context name to use   6:  The default snmpv3 security level to use   7:  The default snmpv3 authentication type name to use   8:  The default snmpv3 authentication pass phrase to use   9:  The default snmpv3 privacy (encryption) type name to use  10:  The default snmpv3 privacy pass phrase to useOther options: finished, listSelect section: finishedThe configuration information which can be put into snmp.conf is dividedinto sections.  Select a configuration section for snmp.confthat you wish to create:   1:  Debugging output options   2:  Output style options   3:  Textual mib parsing   4:  Default Authentication OptionsOther options: finishedSelect section: finishedI can create the following types of configuration files for you.Select the file type you wish to create:(you can create more than one as you run this program)   1:  snmpd.conf   2:  snmptrapd.conf   3:  snmp.confOther options: quitSelect File: quitThe following files were created:  snmp.conf  These files should be moved to &#x2F;usr&#x2F;local&#x2F;share&#x2F;snmp if youwant them used by everyone on the system.  In the future, if you add the -i option to the command line I&#39;ll copy them there automatically for you.Or, if you want them for your personal use only, copy them to&#x2F;home&#x2F;cloud&#x2F;.snmp .  In the future, if you add the -p option to thecommand line I&#39;ll copy them there automatically for you.cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ \n\n将生成的snmp.conf文件拷贝到snmp的安装目录下:\n\n1cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo cp snmp.conf &#x2F;usr&#x2F;local&#x2F;share&#x2F;snmp&#x2F;\n\n启动snmp，注意需要使用是root用户:\n\n1cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo snmpd\n可能会出现如下错误，对应的解决方案如下:\n1234567891011cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo snmpdsnmpd: error while loading shared libraries: libnetsnmpagent.so.30: cannot open shared object file: No such file or directorycloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo cp &#x2F;usr&#x2F;local&#x2F;lib&#x2F;libnetsnmpagent.so.30 &#x2F;usr&#x2F;lib&#x2F;cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo snmpdsnmpd: error while loading shared libraries: libnetsnmpmibs.so.30: cannot open shared object file: No such file or directorycloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo cp &#x2F;usr&#x2F;local&#x2F;lib&#x2F;libnetsnmpmibs.so.30 &#x2F;usr&#x2F;lib&#x2F;cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo snmpdsnmpd: error while loading shared libraries: libnetsnmp.so.30: cannot open shared object file: No such file or directorycloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo cp &#x2F;usr&#x2F;local&#x2F;lib&#x2F;libnetsnmp.so.30 &#x2F;usr&#x2F;lib&#x2F;cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ sudo snmpdcloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ \n\n检测snmpd是否启动成功:\n\n12cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ netstat -an | grep 161udp        0      0 0.0.0.0:161             0.0.0.0:*\n\n最终测试snmp:\n\n12345678cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ snmpwalk -v2c -c public localhost UCD-SNMP-MIB::dskTotalUCD-SNMP-MIB::dskTotalLow.1 &#x3D; Gauge32: 14332332UCD-SNMP-MIB::dskTotalLow.2 &#x3D; Gauge32: 0UCD-SNMP-MIB::dskTotalLow.3 &#x3D; Gauge32: 14332332UCD-SNMP-MIB::dskTotalLow.4 &#x3D; Gauge32: 203908UCD-SNMP-MIB::dskTotalLow.5 &#x3D; Gauge32: 5120UCD-SNMP-MIB::dskTotalLow.6 &#x3D; Gauge32: 509768UCD-SNMP-MIB::dskTotalLow.7 &#x3D; Gauge32: 233191\n","dateCreated":"2014-02-12T21:58:18+08:00","dateModified":"2014-06-24T18:11:10+08:00","datePublished":"2014-02-12T21:58:18+08:00","description":"本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上net-snmp官方网站下载。\n\n如果系统自带有低版本的snmp，则可用如下方法卸载:\n\n12cloud@cloud:~$ sudo apt-get purge snmpd snmpcloud@cloud:~$ sudo apt-get autoremove","headline":"在ubuntu上安装net-snmp5.7.2","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/02/12/install-snmp-on-ubuntu/","keywords":"snmp, snmpd"}</script>
     <meta name="description" content="本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上net-snmp官方网站下载。  如果系统自带有低版本的snmp，则可用如下方法卸载:  12cloud@cloud:~$ sudo apt-get purge snmpd snmpcloud@cloud:~$ sudo apt-get autoremove">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="在ubuntu上安装net-snmp5.7.2">
 <meta property="og:url" content="http://liumh.com/2014/02/12/install-snmp-on-ubuntu/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上net-snmp官方网站下载。  如果系统自带有低版本的snmp，则可用如下方法卸载:  12cloud@cloud:~$ sudo apt-get purge snmpd snmpcloud@cloud:~$ sudo apt-get autoremove">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2014-02-12T13:58:18.000Z">
@@ -28,186 +34,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             在ubuntu上安装net-snmp5.7.2
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Wed Feb 12 2014 21:58:18 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2014-02-12T21:58:18+08:00">
 	
 		    Feb 12, 2014
     	
@@ -220,9 +246,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/%5D(http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
 <ol type="1">
@@ -285,12 +314,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cloud@cloud:~&#x2F;snmp&#x2F;net-snmp-5.7.2$ snmpwalk -v2c -c public localhost UCD-SNMP-MIB::dskTotal</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.1 &#x3D; Gauge32: 14332332</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.2 &#x3D; Gauge32: 0</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.3 &#x3D; Gauge32: 14332332</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.4 &#x3D; Gauge32: 203908</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.5 &#x3D; Gauge32: 5120</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.6 &#x3D; Gauge32: 509768</span><br><span class="line">UCD-SNMP-MIB::dskTotalLow.7 &#x3D; Gauge32: 233191</span><br></pre></td></tr></table></figure>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -299,60 +327,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/13/calculate-size-of-linux-disk/"  data-tooltip="利用64bit的mibs计算Linux设备的存储大小">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/02/13/calculate-size-of-linux-disk/"
+                    data-tooltip="利用64bit的mibs计算Linux设备的存储大小"
+                    aria-label="PREVIOUS: 利用64bit的mibs计算Linux设备的存储大小"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/01/14/get-path-of-file-with-java/" data-tooltip="Java获取文件的路径">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/01/14/get-path-of-file-with-java/"
+                    data-tooltip="Java获取文件的路径"
+                    aria-label="NEXT: Java获取文件的路径"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -360,24 +426,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-install-snmp-on-ubuntu" data-title="在ubuntu上安装net-snmp5.7.2" data-url="http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -392,61 +442,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/13/calculate-size-of-linux-disk/"  data-tooltip="利用64bit的mibs计算Linux设备的存储大小">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/02/13/calculate-size-of-linux-disk/"
+                    data-tooltip="利用64bit的mibs计算Linux设备的存储大小"
+                    aria-label="PREVIOUS: 利用64bit的mibs计算Linux设备的存储大小"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/01/14/get-path-of-file-with-java/" data-tooltip="Java获取文件的路径">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/01/14/get-path-of-file-with-java/"
+                    data-tooltip="Java获取文件的路径"
+                    aria-label="NEXT: Java获取文件的路径"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -454,68 +541,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2014/02/12/install-snmp-on-ubuntu/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

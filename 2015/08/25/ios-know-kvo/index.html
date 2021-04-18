@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>iOS初探KVO - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS初探KVO - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。\n监听属性变化需要以下几步:\n\n使用函数 addObserver:forKeyPath:options:context: 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\n为了响应被观察者对象的变化通知，观察者必须实现 observeValueForKeyPath:ofObject:change:context: 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context: 方法会自动调用。\n调用 – removeObserver:forKeyPath:context: 取消注册。\n\n\n本文内容如下:\n\n注册KVO\n实现KVO反馈\n移除KVO观察者\n自动化及手动的属性通知\n注册对依赖键路径的KVO\n\n注册KVO\n任意一个对象都可以订阅以便被通知到其他对象状态的改变。这个过程大部分是内建的，自动的，透明的。KVO 的机制可以很方便的使用多个监听者监听同一属性的变化。\n注册通知使用 addObserver:forKeyPath:options:context: 方法实现，接下来看看各个参数的含义。参考文档 NSKeyValueObserving Protocol Reference , 注册 KVO 的函数定义如下:\n1234- (void)addObserver:(NSObject *)anObserver         forKeyPath:(NSString *)keyPath            options:(NSKeyValueObservingOptions)options            context:(void *)context\n其中\n\nanObserver 指注册 KVO 通知的对象。观察者必须实现 observeValueForKeyPath:ofObject:change:context: 以对被观察对象的改变做出响应。\nkeyPath 指相对于被观察者的属性，此值必须不能为 nil。\noptions 是 NSKeyValueObservingOptions 定义的常量值的组合，这些值指定了在发出的观察通知中会包含哪些东西。不同的指定值会导致观察通知中包含的值不同。\ncontext 该值可以是任一数据值，会在 observeValueForKeyPath:ofObject:change:context: 中传递给 anObserver，也就是这个参数值与 observeValueForKeyPath:ofObject:change:context: 的 context 参数的值相等。\n\n关于keyPath\n关于 keyPath, 如果直接传入字符串值，对于拼写错误这种不能由编译器检查到的错误，会导致 KVO 不会执行。可使用 NSStringFromSelector 和 一个 @selector 字面值的组合来避免，例如:\nNSStringFromSelector(@selector(isFinished))\n由于 @selector 检查目标中的所有可用 selector，这并不能阻止所有的错误，但它可用捕获大部分-包括捕获 Xcode 自动重构带来的改变。\n关于options\n上面的参数 options 的值决定了传向 observeValueForKeyPath:ofObject:change:context: 的 change 字典包含的值。如果传值 0 表示没有 change 字典值。 NSKeyValueObservingOptions 的定义如下:\n123456typedef NS_OPTIONS(NSUInteger, NSKeyValueObservingOptions) &#123;    NSKeyValueObservingOptionNew &#x3D; 0x01,    NSKeyValueObservingOptionOld &#x3D; 0x02,    NSKeyValueObservingOptionInitial NS_ENUM_AVAILABLE(10_5, 2_0) &#x3D; 0x04,    NSKeyValueObservingOptionPrior NS_ENUM_AVAILABLE(10_5, 2_0) &#x3D; 0x08&#125;;\n\nNSKeyValueObservingOptionNew 表示 change 字典中应该包含监听对象的新属性值。\nNSKeyValueObservingOptionOld 表示 change 字典中应该包含监听对象的旧属性值，即改变前的值。\nNSKeyValueObservingOptionInitial 如果设定了该值，在注册观察者的方法返回之前就会发送通知给观察者。在注册观察者时，如果同时指定了 NSKeyValueObservingOptionNew，那么在发出的通知中， change 字典中会包含 NSKeyValueChangeNewKey 及被观察对象的当前值，但是却不会包含 NSKeyValueChangeOldKey，且 NSKeyValueChangeKindKey 对应的值是 NSKeyValueChangeSetting。\nNSKeyValueObservingOptionPrior 使得被观察对象的值在改变之前和改变之后都会发送通知，而不仅仅是在改变之后发送一个通知。在被观察对象的值发生改变之前(和- willChange...:被触发的时间相对应)发送的通知中，change 字典中包含 NSKeyValueChangeNotificationIsPriorKey，其值是 [NSNumber numberWithBool:YES]。指定该值后，想要知道被观察对象改变前后的值，还是需要指定 NSKeyValueObservingOptionNew 和 NSKeyValueObservingOptionOld。我们可以像以下这样区分通知是在改变之前还是之后被触发的:\n\n1234567if ([change[NSKeyValueChangeNotificationIsPriorKey] boolValue]) &#123;    &#x2F;&#x2F; 改变之前&#125; else &#123;    &#x2F;&#x2F; 改变之后&#125;\n关于context\n关于 context 参数，其作用可用来标识观察者的身份，在多个观察者观察同一键值时，尤其在处理父类和子类都观察同一键值时非常有用。\n那么如何正确声明一个 context 呢? 建议如下:\nstatic void * XXContext = &amp;XXContext;\n其值就是一个存储自身指针的静态变量值，使用示例如下:\n1234567- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;    if (context &#x3D;&#x3D; XXContext) &#123;            &#125; else &#123;        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];    &#125;&#125;\n实现KVO反馈\n注册 KVO 之后，观察者需要实现 - observeValueForKeyPath:ofObject:change:context:，其实现类似于:\n1234567- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;    if (context &#x3D;&#x3D; XXContext) &#123;            &#125; else &#123;        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];    &#125;&#125;\n其中:\n\nkeyPath 指相对于被监听对象 object 的键路径\nobject 指键路径 keyPath 所属对象，即被监听对象\nchange 描述被监听属性的变化信息\ncontext 注册 KVO 时由监听者提供，见上节关于 context 的描述\n\nchange 字典中包含的 key 值包括:\n\nNSKeyValueChangeKindKey\n\n其值是 NSNumber 对象，与 NSKeyValueChange 定义的枚举值之一对应，指示发生了哪种类型的变化。\nNSKeyValueChangeSetting 指示被观察者接收到了 setValue:forKey: 消息，或者其 set 方法被调用，或者调用了 willChangeValueForKey: or didChangeValueForKey: 系列方法。\nNSKeyValueChangeInsertion, NSKeyValueChangeRemoval, 或者 NSKeyValueChangeReplacement 表示向集合代理发送了改变集合值的消息，或者发送了其他符合 key-value-coding-compliant 规则的集合操作消息。\n可以使用 NSNumber 的 intValue 方法获取监控对象发生的改变类型。\n\nNSKeyValueChangeNewKey\n\n如果 NSKeyValueChangeKindKey 的值是 NSKeyValueChangeSetting，且在注册观察者时指定了 NSKeyValueObservingOptionNew 值，那么该键所对应的值就是监测对象的新值。\n对于 NSKeyValueChangeInsertion 或者 NSKeyValueChangeReplacement，如果注册观察者时指定了 NSKeyValueObservingOptionNew, 那么该键所对应的值是一个 NSArray 实例，里面分别对应被插入和替换后的值。\n\nNSKeyValueChangeOldKey\n\n如果 NSKeyValueChangeKindKey 的值是 NSKeyValueChangeSetting，且在注册时指定了 NSKeyValueObservingOptionOld，那么该键所对应的值就是被监测对象改变前的值。\n对于 NSKeyValueChangeRemoval 或者 NSKeyValueChangeReplacement，如果注册观察者时指定了 NSKeyValueObservingOptionOld，该键所对应的值是 NSArray 实例，里面分别对应的是检测对象中已被移除和被替换前的值。\n\nNSKeyValueChangeIndexesKey\n\n如果 NSKeyValueChangeKindKey 的值是 NSKeyValueChangeInsertion、NSKeyValueChangeRemoval 或者 NSKeyValueChangeReplacement，那么该键所对应的值是 NSIndexSet 实例，里面包含了被插入、被移除或者被替换的值。\n\nNSKeyValueChangeNotificationIsPriorKey\n\n当注册观察者时指定了 NSKeyValueObservingOptionPrior，那么该消息会在检测对象发生改变前发送通知，该键对应的值是 [NSNumber numberWithBool:YES] 对象。\n移除KVO观察者\n当一个观察者完成了监听一个对象的改变，需要调用 –removeObserver:forKeyPath:context:。它经常在 -observeValueForKeyPath:ofObject:change:context:，或者 -dealloc 中被调用。\n如果你调用 –removeObserver:forKeyPath:context: 移除一个观察者对象，但这个对象没有被注册为观察者(因为它已经解注册了或者开始没有注册)，则会抛出一个异常。Objective-C 中，没有一个内建的方式来检查对象是否注册，这会导致我们需要用一种相当不好的方式 @try 和一个没有处理的 @catch,如下所示:\n1234567891011121314- (void)observeValueForKeyPath:(NSString *)keyPath                      ofObject:(id)object                        change:(NSDictionary *)change                       context:(void *)context&#123;    if ([keyPath isEqualToString:NSStringFromSelector(@selector(isFinished))]) &#123;        if ([object isFinished]) &#123;          @try &#123;              [object removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished))];          &#125;          @catch (NSException * __unused exception) &#123;&#125;        &#125;    &#125;&#125;\n自动化及手动的属性通知\nKVO 的自动通知，对于非集合对象，直接使用属性的 set 方法即可自动触发 KVO；对于集合对象，可使用如下代理方法:\n123- mutableArrayValueForKey:- mutableSetValueForKey:- mutableOrderedSetValueForKey:\n关于如何为 NSMutableArray 添加 KVO，可参考如何为NSMutableArray添加KVO.\nKVO 很有用并且被广泛采用，正是因为这样，大部分需要得到正确绑定的工作自动被编译和进行时接管。Class 可以通过重写 +automaticallyNotifiesObserversForKey: ,使需要关闭自动 KVO 的键路径返回 NO，如下所示，关闭 openingBalance 路径的自动 KVO 通知:\n1234567891011+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey &#123;     BOOL automatic &#x3D; NO;    if ([theKey isEqualToString:@&quot;openingBalance&quot;]) &#123;        automatic &#x3D; NO;    &#125;    else &#123;        automatic &#x3D; [super automaticallyNotifiesObserversForKey:theKey];    &#125;    return automatic;&#125;\n那么，关闭键路径的自动 KVO 通知后，如何手动触发一个观察对象的 KVO 呢？你需要在改变值之前调用 willChangeValueForKey:, 在改变值之后调用 didChangeValueForKey:, 以下示例实现了 openingBalance 属性的手动触发:\n1234567- (void)setOpeningBalance:(double)theBalance &#123;    if (theBalance !&#x3D; _openingBalance) &#123;        [self willChangeValueForKey:@&quot;openingBalance&quot;];        _openingBalance &#x3D; theBalance;        [self didChangeValueForKey:@&quot;openingBalance&quot;];    &#125;&#125;\n如果一个单一操作引发多个键路径值的改变，那么你可以使用嵌套的 KVO 来通知观察者，如下所示:\n12345678- (void)setOpeningBalance:(double)theBalance &#123;    [self willChangeValueForKey:@&quot;openingBalance&quot;];    [self willChangeValueForKey:@&quot;itemChanged&quot;];    _openingBalance &#x3D; theBalance;    _itemChanged &#x3D; _itemChanged+1;    [self didChangeValueForKey:@&quot;itemChanged&quot;];    [self didChangeValueForKey:@&quot;openingBalance&quot;];&#125;\n对于有序多元素的集合，手动触发 KVO 时，不仅需要指定哪个键值改变了，还需要指出发生改变的类型以及这种改变影响到的对象在集合中的索引，改变的类型由 NSKeyValueChange 定义，包括 NSKeyValueChangeInsertion, NSKeyValueChangeRemoval, NSKeyValueChangeReplacement。发生改变的元素在集合中的索引以 NSIndexSet 对象的形式传递给观察者。以下代码展示了移除 transactions 中元素时手动触发 KVO 通知:\n123456789- (void)removeTransactionsAtIndexes:(NSIndexSet *)indexes &#123;    [self willChange:NSKeyValueChangeRemoval        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];     &#x2F;&#x2F; Remove the transaction objects at the specified indexes.     [self didChange:NSKeyValueChangeRemoval        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];&#125;\n注册对依赖键路径的KVO\n考虑如下情形：一个属性A值依赖于另外一个或者多个其他的属性，如果依赖的属性值发生了改变，那么属性A也应该相应的发生改变，并且向观察者发出 KVO 通知，这种情况如何处理呢？\n有两种方法:\n\n重写 keyPathsForValuesAffectingValueForKey:\n为注册依赖键实现符合一定规则的方法 keyPathsForValuesAffecting&lt;Key&gt;\n\n\n重写 keyPathsForValuesAffectingValueForKey:\n\n举个例子，一个人的全名有其姓和名组成，那么返回全名的方法会如下所示:\n123- (NSString *)fullName &#123;    return [NSString stringWithFormat:@&quot;%@ %@&quot;, _firstName, _lastName];&#125;\n观察者观察 fullName 属性的变化时，应该在改变 firstName 和 lastName 时都得到通知以更新 fullName 的值，下面重写 keyPathsForValuesAffectingValueForKey: 来实现此目的:\n12345678910+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;        NSSet *keyPaths &#x3D; [super keyPathsForValuesAffectingValueForKey:key];        if ([key isEqualToString:NSStringFromSelector(@selector(firstName))]) &#123;        NSArray *affectingKeys &#x3D; @[NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName))];        keyPaths &#x3D; [keyPaths setByAddingObjectsFromArray:affectingKeys];    &#125;    return keyPaths;&#125;\n需要注意需调用父类的方法以处理其余的 key 值。\n\n实现服从 +keyPathsForValuesAffecting&lt;Key&gt; 规则的类方法\n\n另外，你也可以通过实现服从 +keyPathsForValuesAffecting&lt;Key&gt; 规则的类方法来达到监测复合属性的变化，其中 key 指的是需要监测的属性名(其首字母需大写)。对于上述示例，需要监测 fullName 的变化，是实现 + (NSSet *)keyPathsForValuesAffectingFullName 类方法:\n123+ (NSSet *)keyPathsForValuesAffectingFullName &#123;    return [NSSet setWithObjects:NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName)), nil];&#125;\n参考:\n\nKey-Value Observing Programming Guide\nKey-Value Coding Programming Guide\nKey-Value Observing\niOS下KVO使用过程中的陷阱\n\n\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n","dateCreated":"2015-08-25T22:00:27+08:00","dateModified":"2017-12-02T10:52:53+08:00","datePublished":"2015-08-25T22:00:27+08:00","description":"KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。\n监听属性变化需要以下几步:\n\n使用函数 addObserver:forKeyPath:options:context: 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\n为了响应被观察者对象的变化通知，观察者必须实现 observeValueForKeyPath:ofObject:change:context: 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context: 方法会自动调用。\n调用 – removeObserver:forKeyPath:context: 取消注册。\n","headline":"iOS初探KVO","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/25/ios-know-kvo/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/25/ios-know-kvo/","keywords":"iOS, KVO"}</script>
     <meta name="description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS初探KVO">
 <meta property="og:url" content="http://liumh.com/2015/08/25/ios-know-kvo/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
@@ -30,186 +34,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             iOS初探KVO
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Tue Aug 25 2015 22:00:27 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2015-08-25T22:00:27+08:00">
 	
 		    Aug 25, 2015
     	
@@ -222,9 +246,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。</p>
 <p>监听属性变化需要以下几步:</p>
@@ -355,15 +382,14 @@
 </ul>
 <hr />
 <p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117" height="174" alt=""></div>
+<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117;height:174;"alt=""></div>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -372,60 +398,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/09/04/ios-kvc-collection-operators/"  data-tooltip="iOS KVC 集合操作">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/09/04/ios-kvc-collection-operators/"
+                    data-tooltip="iOS KVC 集合操作"
+                    aria-label="PREVIOUS: iOS KVC 集合操作"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/22/ios-nsmutablearray-kvo/" data-tooltip="iOS如何为NSMutableArray添加KVO">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/22/ios-nsmutablearray-kvo/"
+                    data-tooltip="iOS如何为NSMutableArray添加KVO"
+                    aria-label="NEXT: iOS如何为NSMutableArray添加KVO"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -433,24 +497,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-ios-know-kvo" data-title="iOS初探KVO" data-url="http://liumh.com/2015/08/25/ios-know-kvo/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -465,61 +513,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/09/04/ios-kvc-collection-operators/"  data-tooltip="iOS KVC 集合操作">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/09/04/ios-kvc-collection-operators/"
+                    data-tooltip="iOS KVC 集合操作"
+                    aria-label="PREVIOUS: iOS KVC 集合操作"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/22/ios-nsmutablearray-kvo/" data-tooltip="iOS如何为NSMutableArray添加KVO">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/22/ios-nsmutablearray-kvo/"
+                    data-tooltip="iOS如何为NSMutableArray添加KVO"
+                    aria-label="NEXT: iOS如何为NSMutableArray添加KVO"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -527,68 +612,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/25/ios-know-kvo/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/25/ios-know-kvo/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2015/08/25/ios-know-kvo/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

@@ -3,20 +3,26 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>Java获取文件的路径 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>Java获取文件的路径 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
+        <meta name="keywords" content="Java,getResource,getResourceAsStream,getClassLoader">
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是如何获取资源文件的路径.\n先看看我设置的文件目录结构，如下图所示:\n ___\n\nJava Build Path的设置如下图所示, 主要看build project之后的文件输出目录:\n ___\n在Java中有两种方式可以获取到文件的路径，通过下面的测试代码看看它们的不同:\n12345String resPath &#x3D; this.getClass().getResource(&quot;&quot;).getPath();System.out.println(&quot;resPath: &quot; + resPath);    String resPath1 &#x3D; this.getClass().getClassLoader().getResource(&quot;&quot;).getPath();System.out.println(&quot;resPath1: &quot; + resPath1);\n控制台中输出结果如下:\n12resPath: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;edu&#x2F;cugb&#x2F;tester&#x2F;resPath1: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;\n从结果中可以看到，使用this.getClass().getResource()获得的是代码所在类编译成class文件之后输出文件所在目录位置，而this.getClass().getClassLoader().getResource()获得的是class loader所在路径，该函数查看Java doc解释如下:\n\nFinds the resource with the given name. A resource is some data (images, audio, text, etc) that can be accessed by class code in a way that is independent of the location of the code. The name of a resource is a '/'-separated path name that identifies the resource.\n\n\nThis method will first search the parent class loader for the resource; if the parent is null the path of the class loader built-in to the virtual machine is searched. That failing, this method will invoke findResource(String) to find the resource.\n\n使用this.getClass().getResource(String name)函数时，name参数可以使用文件的绝对路径，也可以使用相对路径，如下所示:\n12345String resPath2 &#x3D; this.getClass().getResource(&quot;..&#x2F;..&#x2F;..&#x2F;jdbc.properties&quot;).getPath();System.out.println(&quot;resPath2: &quot; + resPath2);    String resPath3 &#x3D; this.getClass().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();System.out.println(&quot;resPath3: &quot; + resPath3);\n上述事例控制台的输出是:\n12resPath2: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;jdbc.propertiesresPath3: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;hbm&#x2F;setting.txt\n而使用this.getClass().getClassLoader().getResource(String name)函数时，name参数则只能使用相对于class loader目录的路径，即相对路径，看下面的事例:\n12345String resPath4 &#x3D; this.getClass().getClassLoader().getResource(&quot;.&#x2F;hbm&#x2F;setting.txt&quot;).getPath();System.out.println(&quot;resPath4: &quot; + resPath4);    String resPath5 &#x3D; this.getClass().getClassLoader().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();System.out.println(&quot;resPath5: &quot; + resPath5);\n控制台输出如下, resPath4使用的是相对路径，能够得到正确结果，而resPath5使用的是绝对路径，抛出Exception:\n1234resPath4: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;hbm&#x2F;setting.txtException in thread &quot;main&quot; java.lang.NullPointerException  at edu.cugb.tester.PropertiesPath.getFilePath(PropertiesPath.java:39)  at edu.cugb.tester.PropertiesPath.main(PropertiesPath.java:54)\n另外，Thread.currentThread().getContextClassLoader().getResource()也可以获取资源文件路径，在获取资源路径方面其使用与this.getClass().getClassLoader().getResource()相似:\n12345String resPath6 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;&quot;).getPath();System.out.println(&quot;resPath6: &quot; + resPath6);    String resPath7 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;.&#x2F;jdbc.properties&quot;).getPath();System.out.println(&quot;resPath7: &quot; + resPath7);\n控制台的输出如下:\n12resPath6: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;resPath7: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;jdbc.properties\n","dateCreated":"2014-01-14T20:48:46+08:00","dateModified":"2014-07-01T08:42:35+08:00","datePublished":"2014-01-14T20:48:46+08:00","description":"本文记录的是如何获取资源文件的路径.\n先看看我设置的文件目录结构，如下图所示:\n ___","headline":"Java获取文件的路径","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/01/14/get-path-of-file-with-java/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/01/14/get-path-of-file-with-java/","keywords":"Java"}</script>
     <meta name="description" content="本文记录的是如何获取资源文件的路径. 先看看我设置的文件目录结构，如下图所示:  ___">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="Java获取文件的路径">
 <meta property="og:url" content="http://liumh.com/2014/01/14/get-path-of-file-with-java/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="本文记录的是如何获取资源文件的路径. 先看看我设置的文件目录结构，如下图所示:  ___">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://readus-org.qiniudn.com/img/get-path-of-file-with-java/structure-of-file.png">
@@ -30,186 +36,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             Java获取文件的路径
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Tue Jan 14 2014 20:48:46 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2014-01-14T20:48:46+08:00">
 	
 		    Jan 14, 2014
     	
@@ -222,9 +248,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>本文记录的是如何获取资源文件的路径.</p>
 <p>先看看我设置的文件目录结构，如下图所示:</p>
@@ -233,7 +262,7 @@
 <p>Java Build Path的设置如下图所示, 主要看build project之后的文件输出目录:</p>
 <p><img src="http://readus-org.qiniudn.com/img/get-path-of-file-with-java/java-build-path.png" alt="Java-Build-Path" /> ___</p>
 <p>在Java中有两种方式可以获取到文件的路径，通过下面的测试代码看看它们的不同:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath &#x3D; this.getClass().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath: &quot; + resPath);</span><br><span class="line">		</span><br><span class="line">String resPath1 &#x3D; this.getClass().getClassLoader().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath1: &quot; + resPath1);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath &#x3D; this.getClass().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath: &quot; + resPath);</span><br><span class="line">    </span><br><span class="line">String resPath1 &#x3D; this.getClass().getClassLoader().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath1: &quot; + resPath1);</span><br></pre></td></tr></table></figure>
 <p>控制台中输出结果如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resPath: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;edu&#x2F;cugb&#x2F;tester&#x2F;</span><br><span class="line">resPath1: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;</span><br></pre></td></tr></table></figure>
 <p>从结果中可以看到，使用<code>this.getClass().getResource()</code>获得的是代码所在类编译成class文件之后输出文件所在目录位置，而<code>this.getClass().getClassLoader().getResource()</code>获得的是class loader所在路径，该函数查看Java doc解释如下:</p>
@@ -244,25 +273,24 @@
 <p>This method will first search the parent class loader for the resource; if the parent is null the path of the class loader built-in to the virtual machine is searched. That failing, this method will invoke findResource(String) to find the resource.</p>
 </blockquote>
 <p>使用<code>this.getClass().getResource(String name)</code>函数时，<code>name</code>参数可以使用文件的绝对路径，也可以使用相对路径，如下所示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath2 &#x3D; this.getClass().getResource(&quot;..&#x2F;..&#x2F;..&#x2F;jdbc.properties&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath2: &quot; + resPath2);</span><br><span class="line">		</span><br><span class="line">String resPath3 &#x3D; this.getClass().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath3: &quot; + resPath3);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath2 &#x3D; this.getClass().getResource(&quot;..&#x2F;..&#x2F;..&#x2F;jdbc.properties&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath2: &quot; + resPath2);</span><br><span class="line">    </span><br><span class="line">String resPath3 &#x3D; this.getClass().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath3: &quot; + resPath3);</span><br></pre></td></tr></table></figure>
 <p>上述事例控制台的输出是:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resPath2: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;jdbc.properties</span><br><span class="line">resPath3: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;hbm&#x2F;setting.txt</span><br></pre></td></tr></table></figure>
 <p>而使用<code>this.getClass().getClassLoader().getResource(String name)</code>函数时，<code>name</code>参数则只能使用相对于class loader目录的路径，即相对路径，看下面的事例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath4 &#x3D; this.getClass().getClassLoader().getResource(&quot;.&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath4: &quot; + resPath4);</span><br><span class="line">		</span><br><span class="line">String resPath5 &#x3D; this.getClass().getClassLoader().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath5: &quot; + resPath5);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath4 &#x3D; this.getClass().getClassLoader().getResource(&quot;.&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath4: &quot; + resPath4);</span><br><span class="line">    </span><br><span class="line">String resPath5 &#x3D; this.getClass().getClassLoader().getResource(&quot;&#x2F;hbm&#x2F;setting.txt&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath5: &quot; + resPath5);</span><br></pre></td></tr></table></figure>
 <p>控制台输出如下, <code>resPath4</code>使用的是相对路径，能够得到正确结果，而<code>resPath5</code>使用的是绝对路径，抛出<code>Exception</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">resPath4: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;hbm&#x2F;setting.txt</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.NullPointerException</span><br><span class="line">	at edu.cugb.tester.PropertiesPath.getFilePath(PropertiesPath.java:39)</span><br><span class="line">	at edu.cugb.tester.PropertiesPath.main(PropertiesPath.java:54)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">resPath4: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;hbm&#x2F;setting.txt</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.NullPointerException</span><br><span class="line">  at edu.cugb.tester.PropertiesPath.getFilePath(PropertiesPath.java:39)</span><br><span class="line">  at edu.cugb.tester.PropertiesPath.main(PropertiesPath.java:54)</span><br></pre></td></tr></table></figure>
 <p>另外，<code>Thread.currentThread().getContextClassLoader().getResource()</code>也可以获取资源文件路径，在获取资源路径方面其使用与<code>this.getClass().getClassLoader().getResource()</code>相似:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath6 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath6: &quot; + resPath6);</span><br><span class="line">		</span><br><span class="line">String resPath7 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;.&#x2F;jdbc.properties&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath7: &quot; + resPath7);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resPath6 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath6: &quot; + resPath6);</span><br><span class="line">    </span><br><span class="line">String resPath7 &#x3D; Thread.currentThread().getContextClassLoader().getResource(&quot;.&#x2F;jdbc.properties&quot;).getPath();</span><br><span class="line">System.out.println(&quot;resPath7: &quot; + resPath7);</span><br></pre></td></tr></table></figure>
 <p>控制台的输出如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resPath6: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;</span><br><span class="line">resPath7: &#x2F;Users&#x2F;carya&#x2F;dev&#x2F;RwProperties&#x2F;target&#x2F;classes&#x2F;jdbc.properties</span><br></pre></td></tr></table></figure>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -271,60 +299,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/12/install-snmp-on-ubuntu/"  data-tooltip="在ubuntu上安装net-snmp5.7.2">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/02/12/install-snmp-on-ubuntu/"
+                    data-tooltip="在ubuntu上安装net-snmp5.7.2"
+                    aria-label="PREVIOUS: 在ubuntu上安装net-snmp5.7.2"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/01/09/summarize-of-2013/" data-tooltip="我的2013">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/01/09/summarize-of-2013/"
+                    data-tooltip="我的2013"
+                    aria-label="NEXT: 我的2013"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -332,24 +398,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-get-path-of-file-with-java" data-title="Java获取文件的路径" data-url="http://liumh.com/2014/01/14/get-path-of-file-with-java/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -364,61 +414,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/02/12/install-snmp-on-ubuntu/"  data-tooltip="在ubuntu上安装net-snmp5.7.2">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/02/12/install-snmp-on-ubuntu/"
+                    data-tooltip="在ubuntu上安装net-snmp5.7.2"
+                    aria-label="PREVIOUS: 在ubuntu上安装net-snmp5.7.2"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2014/01/09/summarize-of-2013/" data-tooltip="我的2013">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2014/01/09/summarize-of-2013/"
+                    data-tooltip="我的2013"
+                    aria-label="NEXT: 我的2013"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -426,68 +513,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2014/01/14/get-path-of-file-with-java/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

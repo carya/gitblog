@@ -3,20 +3,26 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>使用HttpURLConnection发送Get和Post请求示例 - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>使用HttpURLConnection发送Get和Post请求示例 - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
+        <meta name="keywords" content="Java,Get请求,Post请求,Http请求示例">
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: JDK中URLConnection使用详解.\n这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类:\n123456import java.io.BufferedReader;import java.io.DataOutputStream;import java.io.IOException;import java.io.InputStreamReader;import java.net.HttpURLConnection;import java.net.URL;\n\n其中， 发送Get请求的方法如下:\n1234567891011121314151617181920212223242526272829public static String sendGet(String url) &#123;    String responseBody &#x3D; null;    try &#123;        URL getUrl &#x3D; new URL(url);        HttpURLConnection urlConnection &#x3D; (HttpURLConnection)getUrl                    .openConnection();        urlConnection.setRequestMethod(&quot;GET&quot;);        urlConnection.connect();        int respCode &#x3D; urlConnection.getResponseCode();        if (HttpURLConnection.HTTP_OK &#x3D;&#x3D; respCode) &#123;            BufferedReader bufferedReader &#x3D; new BufferedReader(                    new InputStreamReader(urlConnection.getInputStream(), &quot;UTF-8&quot;));            String readLine &#x3D; null;            StringBuffer response &#x3D; new StringBuffer();            while (null !&#x3D; (readLine &#x3D; bufferedReader.readLine())) &#123;                response.append(readLine);            &#125;            bufferedReader.close();            responseBody &#x3D; response.toString();        &#125;    &#125; catch (IOException e) &#123;        &#x2F;&#x2F; TODO Auto-generated catch block        e.printStackTrace();    &#125;    return responseBody;&#125;\n其中传入的参数String url是发送Get请求的URL，若发送带请求参数的Get请求，那么该url是已拼接好的带请求参数的字符串。\n发送Post请求的方法如下:\n1234567891011121314151617181920212223242526272829303132333435363738394041424344454647public static String sendPost(String url, String params) &#123;        String responseBody &#x3D; null;    try &#123;        URL postUrl &#x3D; new URL(url);        HttpURLConnection urlConnection &#x3D; (HttpURLConnection)postUrl                    .openConnection();        urlConnection.setRequestMethod(&quot;POST&quot;);        urlConnection.setRequestProperty(&quot;Content-Type&quot;,                    &quot;application&#x2F;x-www-form-urlencoded;charset&#x3D;utf-8&quot;);        urlConnection.setRequestProperty(&quot;Content-Length&quot;,                    String.valueOf(params.length()));        urlConnection.setDoOutput(true);        urlConnection.setUseCaches(false);        urlConnection.setConnectTimeout(30000);        urlConnection.setReadTimeout(30000);        urlConnection.connect();        DataOutputStream outputStream &#x3D; new DataOutputStream(                    urlConnection.getOutputStream());        outputStream.writeBytes(params);        outputStream.flush();        outputStream.close();        int respCode &#x3D; urlConnection.getResponseCode();        if (HttpURLConnection.HTTP_OK &#x3D;&#x3D; respCode) &#123;                BufferedReader bufferedReader &#x3D; new BufferedReader(                        new InputStreamReader(urlConnection.getInputStream(),                                &quot;UTF-8&quot;));            String inputLine &#x3D; null;            StringBuffer response &#x3D; new StringBuffer();            while (null !&#x3D; (inputLine &#x3D; bufferedReader.readLine())) &#123;                response.append(inputLine);            &#125;            bufferedReader.close();            responseBody &#x3D; response.toString();        &#125; else &#123;            &#x2F;&#x2F;TODO:        &#125;    &#125; catch (IOException e) &#123;        &#x2F;&#x2F; TODO Auto-generated catch block        e.printStackTrace();    &#125;    return responseBody;&#125;\n可使用如下的方式调用上面的sendGet和sendPost方法:\n1234567891011121314151617181920212223public static void main(String[] agrs) &#123;    String urlString &#x3D; &quot;http:&#x2F;&#x2F;localhost:8080&#x2F;HttpRequestProcessor&#x2F;weixin&quot;;    try &#123;        String params &#x3D; URLEncoder.encode(&quot;vobser&quot;, &quot;UTF-8&quot;);        String getURL &#x3D; urlString + &quot;?action&#x3D;sendGet&amp;params&#x3D;&quot;+params;        String response &#x3D; HttpRequest.sendGet(getURL);        System.out.println(&quot;get response &#x3D; &quot; + response);                    String postUrl &#x3D; urlString;        StringBuffer paramsBuffer &#x3D; new StringBuffer();        paramsBuffer.append(&quot;action&#x3D;&quot;);        &#x2F;&#x2F;使用URLEncoder.encode对特殊和不可见字符进行编码        paramsBuffer.append(URLEncoder.encode(&quot;get info&quot;, &quot;UTF-8&quot;));        paramsBuffer.append(&quot;&amp;param&#x3D;&quot;);        paramsBuffer.append(URLEncoder.encode(&quot;云竹&quot;, &quot;UTF-8&quot;));        response &#x3D; HttpRequest.sendPost(postUrl, paramsBuffer.toString());        System.out.println(&quot;post response &#x3D; &quot; + response);    &#125; catch (UnsupportedEncodingException e) &#123;        &#x2F;&#x2F; TODO Auto-generated catch block        e.printStackTrace();    &#125;        &#125;\n","dateCreated":"2013-12-20T23:28:32+08:00","dateModified":"2015-09-30T23:44:41+08:00","datePublished":"2013-12-20T23:28:32+08:00","description":"本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: JDK中URLConnection使用详解.\n这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类:\n123456import java.io.BufferedReader;import java.io.DataOutputStream;import java.io.IOException;import java.io.InputStreamReader;import java.net.HttpURLConnection;import java.net.URL;","headline":"使用HttpURLConnection发送Get和Post请求示例","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/12/20/example-of-get-and-post/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/12/20/example-of-get-and-post/","keywords":"Java, HttpRequest"}</script>
     <meta name="description" content="本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: JDK中URLConnection使用详解. 这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类: 123456import java.io.BufferedReade">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="使用HttpURLConnection发送Get和Post请求示例">
 <meta property="og:url" content="http://liumh.com/2013/12/20/example-of-get-and-post/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: JDK中URLConnection使用详解. 这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类: 123456import java.io.BufferedReade">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2013-12-20T15:28:32.000Z">
@@ -28,186 +34,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             使用HttpURLConnection发送Get和Post请求示例
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Fri Dec 20 2013 23:28:32 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2013-12-20T23:28:32+08:00">
 	
 		    Dec 20, 2013
     	
@@ -220,9 +246,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: <a href="/2013/12/12/usage-of-jdk-urlconnection/">JDK中URLConnection使用详解</a>.</p>
 <p>这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类:</p>
@@ -237,12 +266,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] agrs) &#123;</span><br><span class="line">    String urlString &#x3D; &quot;http:&#x2F;&#x2F;localhost:8080&#x2F;HttpRequestProcessor&#x2F;weixin&quot;;</span><br><span class="line">    try &#123;</span><br><span class="line">        String params &#x3D; URLEncoder.encode(&quot;vobser&quot;, &quot;UTF-8&quot;);</span><br><span class="line">        String getURL &#x3D; urlString + &quot;?action&#x3D;sendGet&amp;params&#x3D;&quot;+params;</span><br><span class="line">        String response &#x3D; HttpRequest.sendGet(getURL);</span><br><span class="line">        System.out.println(&quot;get response &#x3D; &quot; + response);</span><br><span class="line">            </span><br><span class="line">        String postUrl &#x3D; urlString;</span><br><span class="line">        StringBuffer paramsBuffer &#x3D; new StringBuffer();</span><br><span class="line">        paramsBuffer.append(&quot;action&#x3D;&quot;);</span><br><span class="line">        &#x2F;&#x2F;使用URLEncoder.encode对特殊和不可见字符进行编码</span><br><span class="line">        paramsBuffer.append(URLEncoder.encode(&quot;get info&quot;, &quot;UTF-8&quot;));</span><br><span class="line">        paramsBuffer.append(&quot;&amp;param&#x3D;&quot;);</span><br><span class="line">        paramsBuffer.append(URLEncoder.encode(&quot;云竹&quot;, &quot;UTF-8&quot;));</span><br><span class="line">        response &#x3D; HttpRequest.sendPost(postUrl, paramsBuffer.toString());</span><br><span class="line">        System.out.println(&quot;post response &#x3D; &quot; + response);</span><br><span class="line">    &#125; catch (UnsupportedEncodingException e) &#123;</span><br><span class="line">        &#x2F;&#x2F; TODO Auto-generated catch block</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -251,60 +279,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/12/21/get-request-params/"  data-tooltip="获取HttpRequest中的请求参数">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/12/21/get-request-params/"
+                    data-tooltip="获取HttpRequest中的请求参数"
+                    aria-label="PREVIOUS: 获取HttpRequest中的请求参数"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/12/12/usage-of-jdk-urlconnection/" data-tooltip="JDK中URLConnection使用详解">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/12/12/usage-of-jdk-urlconnection/"
+                    data-tooltip="JDK中URLConnection使用详解"
+                    aria-label="NEXT: JDK中URLConnection使用详解"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -312,24 +378,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-example-of-get-and-post" data-title="使用HttpURLConnection发送Get和Post请求示例" data-url="http://liumh.com/2013/12/20/example-of-get-and-post/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -344,61 +394,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/12/21/get-request-params/"  data-tooltip="获取HttpRequest中的请求参数">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/12/21/get-request-params/"
+                    data-tooltip="获取HttpRequest中的请求参数"
+                    aria-label="PREVIOUS: 获取HttpRequest中的请求参数"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2013/12/12/usage-of-jdk-urlconnection/" data-tooltip="JDK中URLConnection使用详解">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2013/12/12/usage-of-jdk-urlconnection/"
+                    data-tooltip="JDK中URLConnection使用详解"
+                    aria-label="NEXT: JDK中URLConnection使用详解"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -406,68 +493,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2013/12/20/example-of-get-and-post/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>

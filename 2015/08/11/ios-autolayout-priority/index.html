@@ -3,20 +3,24 @@
 <html lang="en,zh-CN,default">
     
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="刘茂华的博客">
-    <title>iOS NSLayoutConstraint priority - 刘茂华的博客</title>
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS NSLayoutConstraint priority - CaryaLiu&#39;s blog</title>
     <meta name="author" content="CaryaLiu">
     
     
-        <link rel="alternative" type="application/atom+xml" title="RSS" href="/atom.xml">
     
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。\n\nNSLayoutConstraint priority 示例\n\n如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。\n\n本文内容如下:\n\nNSLayoutConstraint priority\nIntrinsic Content Size\nContent Compression Resistance 与 Content Hugging\n\nNSLayoutConstraint priority\n了解约束优先级之前，先来了解一下约束，看看 NSLayoutConstraint Class Reference 的描述。\n\nA constraint defines a relationship between two user interface objects that must be satisfied by the constraint-based layout system. Each constraint is a linear equation with the following format:\nitem1.attribute1 = multiplier × item2.attribute2 + constant\nIn this equation, attribute1 and attribute2 are the variables that Auto Layout can adjust when solving these constraints. The other values are defined when you create the constraint.\n\n约束可以理解为，两个界面元素之间必须满足的基于约束布局系统的关系。每个约束都是以下方式的线性表达式:\nitem1.attribute1 = multiplier × item2.attribute2 + constant\n其中 item1, item2 表示两个界面元素，attribute1, attribute2 是两个界面的布局属性，是自动布局系统在满足这些约束的过程中可以调整的变量，由 NSLayoutAttribute 定义，包括 left, right, top, bottom, leading, trailing, width, height, centerX, centerY 和 baseline等. 对于诸如英语这种从左至右阅读的语言，leading 和 trailing 与 left 和 right 完全一样，但是对于诸如 Hebrew 或者 Arabic 这种从右往左阅读的语言，leading 与 right 相同，trailing 与 left 相同，通常情况下，我们使用 leading 和 trailing 较多。\nconstant: The physical size or offset, in points, of the constraint.\nmultiplier: The multiplier applied to the second attribute participating in the constraint.\n\nA valid layout is defined as a set constraints with one and only one possible solution. Valid layouts are also referred to as a nonambiguous, nonconflicting layouts. Constraints with more than one solution are ambiguous. Constraints with no valid solutions are conflicting.\n\n一个有效的约束是指有且仅有一种方案满足所有约束。如果有多种方案或者没有一个方案满足所有约束，则这些自动布局都无效。对于 view 上的约束都是累加的，对于同一类型的约束不会覆盖，例如，如果你已对 view 添加了一个宽度约束，再次对该 view 添加宽度约束并不会将之前的宽度约束移除或者将之前的宽度约束值修改为新的约束值，你必须将之前添加的宽度约束值手动移除。对于在Storyboard中添加的约束，可以像 UIView 一样在 Class 中声明 IBOutlet 属性进行连接，从而对约束值进行修改。\n\nAdditionally, constraints are not limited to equality relationships. They can also use greater than or equal to (&gt;=) or less than or equal to (&lt;=) to describe the relationship between the two attributes. Constraints also have priorities between 1 and 1,000. Constraints with a priority of 1,000 are required. All priorities less than 1,000 are optional. By default, all constraints are required (priority = 1,000).\nAfter solving for the required constraints, Auto Layout tries to solve all the optional constraints in priority order from highest to lowest. If it cannot solve for an optional constraint, it tries to come as close as possible to the desired result, and then moves on to the next constraint.\n\n另外，约束不仅限于等量关系，它还可以是(&gt;=)或者(&lt;=)来描述两个属性之间的关系，由 NSLayoutRelation 定义。约束还有 1 ~ 1000 的优先级，优先级为1000的约束为必须满足，优先级为 1 ~ 999 的约束为可选约束，数字越大其优先级越高，其满足的可能性越高，自动布局系统在满足了所有优先级为 1000 的约束后，会按照优先级从高到低的顺序满足可选约束。默认情况下，所有约束优先级都是 1000，即必须满足。\nIntrinsic Content Size\n要理解内容压缩阻力和内容吸附性这两个概念，首先要理解内部内容尺寸Intrinsic Content Size这一概念。\n每个视图都有内容压缩阻力优先级Content Compression Resistance Priority和内容吸附性优先级Content Hugging Priority。但只有当视图定义了内部内容尺寸后，这两种优先级才会起作用；否则如果都没有定义内容尺寸大小，又如何知道应该抗压缩或者吸附至什么大小呢。\n那么，内部内容尺寸是指的什么，有什么作用呢？\n引用自苹果官方Auto Layout指南里面对内部内容尺寸的描述：\n\nLeaf-level views such as buttons typically know more about what size they should be than does the code that is positioning them. This is communicated through the intrinsic content size, which tells the layout system that a view contains some content that it doesn’t natively understand, and indicates how large that content is, intrinsically.\nFor elements such as text labels, you should typically set the element to be its intrinsic size (select Editor &gt; Size To Fit Content). This means that the element will grow and shrink appropriately with different content for different languages.\n\n什么意思呢？\n简单来说就是，像按钮、文本标签这类视图控件，在布局的时候，它们自己内部比外部布局代码更清楚自己需要多大的尺寸来显示自己的内容。而这个尺寸就是由内部内容尺寸intrinsic content size来传达的。这就相当于，内部内容尺寸告诉布局系统：这个视图里面包含了一些你不能理解的内容，但是我给你指出了那些内容有多大。\n由此可见，内部内容尺寸是为了实现视图自适应大小而准备的。\nContent Compression Resistance 与 Content Hugging\n关于这两个概念，最容易理解的文档说明在UIView Class Reference文档里面：\n\n- contentCompressionResistancePriorityForAxis:\nReturns the priority with which a view resists being made smaller than its intrinsic size.\nThe constraint-based layout system uses these priorities when determining the best layout for views that are encountering constraints that would require them to be smaller than their intrinsic size.\nSubclasses should not override this method. Instead, custom views should set default values for their content on creation, typically to NSLayoutPriorityDefaultLow or NSLayoutPriorityDefaultHigh.\n\nContentCompressionResistancePriority: 内容压缩阻力优先级, 是指 view 阻止其视图大小被压缩到小于其内部内容尺寸的优先级, 即视图反压缩的优先级，优先级越大，视图就越不容易被压小。当自动布局系统为所有视图布局时，遇到约束要求该 view 的尺寸需要小于其内部内容尺寸会用到。\n\n- contentHuggingPriorityForAxis:\nReturns the priority with which a view resists being made larger than its intrinsic size.\nThe constraint-based layout system uses these priorities when determining the best layout for views that are encountering constraints that would require them to be larger than their intrinsic size.\n\nContentHuggingPriority:内容吸附性优先级, 是指 view 阻止其视图大小被拉伸到大于其内部内容尺寸的优先级，即视图反拉伸的优先级，优先级越大，视图就越不容易被拉大。\n回到本文开头的约束冲突问题，在同一水平线上添加了两个定义了内部内容尺寸的视图 UILabel 和 UIButton，并为其添加了5个优先级为 UILayoutPriorityRequired 的约束，且此时 UILabel 和 UIButton x 轴方向的 ContentCompressionResistancePriority 优先级都是750, 自动布局系统在解决所有约束满足的时候，发现不知道如何处理优先满足 UILabel 不压缩 还是 优先满足 UIButton 不压缩，由此约束冲突产生。需求中，我们需要 UIButton 的 title 不压缩，而 UILabel 的内容可以尾部截断，由此我们可以将 UILabel 的 ContentCompressionResistancePriority 优先级调整到低于 750，此时 UIButton 的 ContentCompressionResistancePriority 750 大于 UILbael 的该值，自动布局系统在满足所有约束的过程中优先满足 UIButton 的该约束，即不压缩 UIButton 的内部内容尺寸，由此冲突解决。\n参考:Content Compression Resistance和Content Hugging，该文中有一个很好的示例说明。\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n","dateCreated":"2015-08-11T23:16:26+08:00","dateModified":"2017-12-02T10:49:29+08:00","datePublished":"2015-08-11T23:16:26+08:00","description":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。\n\nNSLayoutConstraint priority 示例\n\n如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。","headline":"iOS NSLayoutConstraint priority","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/11/ios-autolayout-priority/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/11/ios-autolayout-priority/","keywords":"iOS, AutoLayout"}</script>
     <meta name="description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。  NSLayoutConstraint priority 示例  如上所示，我们期望 UILabel 显示字符串较短时，以内容">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS NSLayoutConstraint priority">
 <meta property="og:url" content="http://liumh.com/2015/08/11/ios-autolayout-priority/index.html">
-<meta property="og:site_name" content="刘茂华的博客">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。  NSLayoutConstraint priority 示例  如上所示，我们期望 UILabel 显示字符串较短时，以内容">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-autolayout-priority/iOS-NSLayoutConstraint-priority.png">
@@ -31,186 +35,206 @@
     
     
         
-            <meta property="fb:admins" content="100002986778881" />
-        
     
     
-        <meta property="og:image" content="/assets/images/header.png"/>
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
     
     
     
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style.min.css">
-<link rel="stylesheet" href="/.css" src="/.js">
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
 
     <!--STYLES END-->
     
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-45123163-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
 
     
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-		(function() {
-		  var hm = document.createElement("script");
-		  hm.src = "//hm.baidu.com/hm.js?330cb4e3831a7fe9448ec563c630b97d";
-		  var s = document.getElementsByTagName("script")[0]; 
-		  s.parentNode.insertBefore(hm, s);
-		})();
-    </script>
 
+    
+        
+    
 </head>
 
     <body>
         <div id="blog">
-            <header id="header" data-behavior="3">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <h1 class="header-title">
-        <a class="header-title-link" href="/%20">刘茂华的博客</a>
-    </h1>
+            <!-- Define author's picture -->
+
+
     
-        <a class="header-right-picture" href="/#about">
-            <img class="header-picture" src="/assets/images/header.png"/>
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
         </a>
     
 </header>
-            <nav id="sidebar" data-behavior="3">
+
+            <!-- Define author's picture -->
+
+
+
+        
     
-        <div class="sidebar-profile">
-            <a href="/#about">
-                
-                    <img class="sidebar-profile-picture" src="/assets/images/header.png"/>
-                
-            </a>
-            <span class="sidebar-profile-name">CaryaLiu</span>
-        </div>
-    
-    
-        <ul class="sidebar-buttons">
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/%20"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-home"></i>
-                    <span class="sidebar-button-desc">Home</span>
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
                 </a>
-        </li>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</h5>
+                
+            </div>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-categories"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-                    <span class="sidebar-button-desc">Categories</span>
-                </a>
-        </li>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-tags"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
-                    <span class="sidebar-button-desc">Tags</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/all-archives"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-                    <span class="sidebar-button-desc">Archive</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link st-search-show-outputs"
-                         href="#search"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-                    <span class="sidebar-button-desc">Search</span>
-                </a>
-        </li>
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
         
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="#about"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-question"></i>
-                    <span class="sidebar-button-desc">About</span>
-                </a>
-        </li>
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-    </ul>
-    
-        <ul class="sidebar-buttons">
-        
-            <li class="sidebar-button">
-                
-                    <a  class="sidebar-button-link "
-                         href="/atom.xml"
-                        
-                    >
-                
-                    <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-                    <span class="sidebar-button-desc">RSS</span>
-                </a>
-        </li>
-        
-    </ul>
-    
+    </div>
 </nav>
 
             
-            <div id="main" data-behavior="3"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+<article class="post">
     
     
         <div class="post-header main-content-wrap text-left">
     
-        <h1 class="post-title" itemprop="headline">
+        <h1 class="post-title">
             iOS NSLayoutConstraint priority
         </h1>
     
-    <div class="post-meta">
-    <time itemprop="datePublished" content="Tue Aug 11 2015 23:16:26 GMT+0800">
+    
+        <div class="post-meta">
+    <time datetime="2015-08-11T23:16:26+08:00">
 	
 		    Aug 11, 2015
     	
@@ -223,9 +247,12 @@
 
     
 </div>
-</div>
+
     
-    <div class="post-content markdown" itemprop="articleBody">
+</div>
+
+    
+    <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。</p>
 <figure>
@@ -290,15 +317,14 @@
 <p>回到本文开头的约束冲突问题，在同一水平线上添加了两个定义了内部内容尺寸的视图 UILabel 和 UIButton，并为其添加了5个优先级为 <em>UILayoutPriorityRequired</em> 的约束，且此时 UILabel 和 UIButton <em>x</em> 轴方向的 <em>ContentCompressionResistancePriority</em> 优先级都是750, 自动布局系统在解决所有约束满足的时候，发现不知道如何处理优先满足 UILabel 不压缩 还是 优先满足 UIButton 不压缩，由此约束冲突产生。需求中，我们需要 UIButton 的 title 不压缩，而 UILabel 的内容可以尾部截断，由此我们可以将 UILabel 的 <em>ContentCompressionResistancePriority</em> 优先级调整到低于 750，此时 UIButton 的 <em>ContentCompressionResistancePriority</em> 750 大于 UILbael 的该值，自动布局系统在满足所有约束的过程中优先满足 UIButton 的该约束，即不压缩 UIButton 的内部内容尺寸，由此冲突解决。</p>
 <p>参考:<a target="_blank" rel="noopener" href="http://codingobjc.com/blog/2015/01/28/autolayoutzhong-de-content-compression-resistancehe-content-huggingdao-di-shi-shi-yao-yi-si">Content Compression Resistance和Content Hugging</a>，该文中有一个很好的示例说明。</p>
 <p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117px;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" width="117px" height="174px" alt=""></div>
+<div class="figure " style="width:117px;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117px;height:174px;"alt=""></div>
 
             
-                
 
-            
+
         </div>
     </div>
-    <div class="post-footer main-content-wrap">
+    <div id="post-footer" class="post-footer main-content-wrap">
         
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
@@ -307,60 +333,98 @@
 
             </div>
         
-        <div class="post-actions-wrap">
+        
+            <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/19/tranquilpeak-add-baidu-analytics/"  data-tooltip="为tranquilpeak主题添加百度统计">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/19/tranquilpeak-add-baidu-analytics/"
+                    data-tooltip="为tranquilpeak主题添加百度统计"
+                    aria-label="PREVIOUS: 为tranquilpeak主题添加百度统计"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/09/ios-get-current-network-info/" data-tooltip="iOS获取当前SSID">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/09/ios-get-current-network-info/"
+                    data-tooltip="iOS获取当前SSID"
+                    aria-label="NEXT: iOS获取当前SSID"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -368,24 +432,8 @@
 
 
         
-            <section id="comments">
-    <!-- 多说评论框 start -->
-    <div class="ds-thread" data-thread-key="post-ios-autolayout-priority" data-title="iOS NSLayoutConstraint priority" data-url="http://liumh.com/2015/08/11/ios-autolayout-priority/"></div>
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name:'readus'};
-      (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-      })();
-      </script>
-    <!-- 多说公共JS代码 end -->
-</section>
+        
+            
         
     </div>
 </article>
@@ -400,61 +448,98 @@
 
             </div>
             
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="3">
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
                     <div class="post-actions-wrap">
     <nav>
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/19/tranquilpeak-add-baidu-analytics/"  data-tooltip="为tranquilpeak主题添加百度统计">
-                
-                    <i class="fa fa-angle-left"></i>
-                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/19/tranquilpeak-add-baidu-analytics/"
+                    data-tooltip="为tranquilpeak主题添加百度统计"
+                    aria-label="PREVIOUS: 为tranquilpeak主题添加百度统计"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2015/08/09/ios-get-current-network-info/" data-tooltip="iOS获取当前SSID">
-                
-                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/09/ios-get-current-network-info/"
+                    data-tooltip="iOS获取当前SSID"
+                    aria-label="NEXT: iOS获取当前SSID"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
             </li>
         </ul>
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
-                <i class="fa fa-share-alt"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-google-plus"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-facebook-official"></i>
-            </a>
-        </li>
-        <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-twitter"></i>
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
         
-            <li class="post-action">
-                <a class="post-action-btn btn btn--default" href="#disqus_thread">
-                    <i class="fa fa-comment-o"></i>
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
             
-                <i class="fa fa-list"></i>
+                <i class="fa fa-list" aria-hidden="true"></i>
             </a>
         </li>
     </ul>
@@ -462,68 +547,108 @@
 
 
                 </div>
-                <div id="share-options-bar" class="share-options-bar" data-behavior="3">
-    <ul class="share-options">
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-google-plus"></i><span class="">Share on Google Plus</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
-            </a>
-        </li>
-        <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/">
-                <i class="fa fa-twitter"></i><span>Share on Twitter</span>
-            </a>
-        </li>
-    </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2015/08/11/ios-autolayout-priority/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
-        <div id="about">
+        
+
+
+    
+        
+    
+
+<div id="about">
     <div id="about-card">
         <div id="about-btn-close">
-            <i class="fa fa-remove"></i>
+            <i class="fa fa-times"></i>
         </div>
         
-            <img id="about-card-picture" src="/assets/images/header.png"/>
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <h5 id="about-card-bio"><p>宅男一枚, 在前进的道路上.</p>
-</h5>
+            <div id="about-card-bio"><p><span class="citation" data-cites="Chengdu">@Chengdu</span></p>
+</div>
         
         
-            <h5 id="about-card-job">
+            <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS开发工程师</p>
+                <p>iOS Developer</p>
 
-            </h5>
+            </div>
         
         
-            <h5 id="about-card-location">
-                <i class="fa fa-map-marker"></i>
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
                 <br/>
-                成都
-            </h5>
+                Chengdu
+            </div>
         
     </div>
 </div>
 
-        <div id="cover" style="background-image:url('http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg');"></div>
-    </body>
-    <!--SCRIPTS-->
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
 
-<script src="/assets/js/script.min.js"></script>
-<script href="/.css" src="/.js"></script>
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
 
 <!--SCRIPTS END-->
 
 
+    
 
+
+
+
+    </body>
 </html>
