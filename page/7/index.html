@@ -224,6 +224,223 @@
                     
                         <a
                             class="link-unstyled"
+                            href="/2014/03/17/snmp-vacm-configuration/"
+                            aria-label=": Net-SNMP VACM配置"
+                        >
+                            Net-SNMP VACM配置
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2014-03-17T22:34:38+08:00">
+	
+		    Mar 17, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <p>本文记录是如何配置 Net-SNMP VACM. VACM，即 View Based Access Control.分为两部分: 1. VACM的快速配置 2. VACM的综合配置，该配置能够更加精细地配置用户的访问控制权限.</p>
+<p>###一、VACM的快速配置###</p>
+<p>####1. SNMPv1 and SNMPv2 rocommunity/rwcommunity#### 对于SNMPv1和SNMPv2c，对基于<code>COMMUNITY</code>的请求，能够将其访问权限限定在特定的OID树，且将访问来源限定在特定的IP访问内，通常采用如下格式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rocommunity6 COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity6 COMMUNITY [SOURCE [OID]]</span><br></pre></td></tr></table></figure>
+<p>对于SNMP 5.3及其以上的版本，该指示符也能够将其访问权限限定在特定的视图VIEW中，语法如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rocommunity6 COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity6 COMMUNITY SOURCE -V VIEW</span><br></pre></td></tr></table></figure>
+                    
+                        <a
+                            href="/2014/03/17/snmp-vacm-configuration/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": Net-SNMP VACM配置"
+                        >
+                            Continue reading
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/2014/03/14/snmp-vacm-mask/"
+                            aria-label=": 对Net-SNMP访问权限控制VACM中mask的理解"
+                        >
+                            对Net-SNMP访问权限控制VACM中mask的理解
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2014-03-14T23:41:11+08:00">
+	
+		    Mar 14, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
+<p>在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:</p>
+                    
+                        <a
+                            href="/2014/03/14/snmp-vacm-mask/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": 对Net-SNMP访问权限控制VACM中mask的理解"
+                        >
+                            Continue reading
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/2014/02/25/install-snmp-on-windows/"
+                            aria-label=": Windows上安装Net-SNMP5.7"
+                        >
+                            Windows上安装Net-SNMP5.7
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2014-02-25T20:16:45+08:00">
+	
+		    Feb 25, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <p>本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
+<p>安装net-snmp 5.7.1之前需要先安装</p>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="http://xoyozo.me/blog/vs2010.html">VS2010</a></li>
+<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32 OpenSSL v1.0.1f</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl 5.16.3</a></li>
+</ol>
+                    
+                        <a
+                            href="/2014/02/25/install-snmp-on-windows/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": Windows上安装Net-SNMP5.7"
+                        >
+                            Continue reading
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
+                            href="/2014/02/13/calculate-size-of-linux-disk/"
+                            aria-label=": 利用64bit的mibs计算Linux设备的存储大小"
+                        >
+                            利用64bit的mibs计算Linux设备的存储大小
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time datetime="2014-02-13T21:44:59+08:00">
+	
+		    Feb 13, 2014
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%B3%BB%E7%BB%9F%E8%BF%90%E7%BB%B4/">系统运维</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-excerpt">
+                    <p>本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。</p>
+<p>为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 <code>(UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh)</code>,<code>(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh)</code>,<code>(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh)</code>, 那么如何利用64bit的mibs计算存储大小呢?</p>
+                    
+                        <a
+                            href="/2014/02/13/calculate-size-of-linux-disk/"
+                            class="postShorten-excerpt_link link"
+                            aria-label=": 利用64bit的mibs计算Linux设备的存储大小"
+                        >
+                            Continue reading
+                        </a>
+                        
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-right">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title">
+                    
+                        <a
+                            class="link-unstyled"
                             href="/2014/02/12/install-snmp-on-ubuntu/"
                             aria-label=": 在ubuntu上安装net-snmp5.7.2"
                         >
@@ -529,219 +746,6 @@
                             href="/2013/12/12/usage-of-jdk-urlconnection/"
                             class="postShorten-excerpt_link link"
                             aria-label=": JDK中URLConnection使用详解"
-                        >
-                            Continue reading
-                        </a>
-                        
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-right">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2013/12/04/send-email-with-attachments/"
-                            aria-label=": 使用JavaMail发送带附件的邮件"
-                        >
-                            使用JavaMail发送带附件的邮件
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2013-12-04T22:35:12+08:00">
-	
-		    Dec 04, 2013
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-excerpt">
-                    <p>在<a href="/2013/11/27/send-email-with-java/">使用JavaMail发送邮件</a>一文中，记录了使用JavaMail发送普通文本给多个链接人。这里记录如何使用JavaMail发送带附件的邮件,只是在SendMail类中添加一个新的方法:</p>
-<p><code>public void sendMail(List&lt;String&gt; recipients, String subject, String sendContent, List&lt;String&gt; filePaths)</code></p>
-<p><code>recipients</code>表示联系人列表，<code>subject</code>代表邮件主题，<code>sendContent</code>代表发送的邮件正文，<code>filePaths</code>代表添加为邮件附件的文件地址列表, 其代码如下:</p>
-                    
-                        <a
-                            href="/2013/12/04/send-email-with-attachments/"
-                            class="postShorten-excerpt_link link"
-                            aria-label=": 使用JavaMail发送带附件的邮件"
-                        >
-                            Continue reading
-                        </a>
-                        
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-right">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2013/11/27/send-email-with-java/"
-                            aria-label=": 使用JavaMail发送邮件"
-                        >
-                            使用JavaMail发送邮件
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2013-11-27T22:37:18+08:00">
-	
-		    Nov 27, 2013
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用java实现发送简单文本内容邮件给一个或者多个联系人。邮件服务 Java API 支持使用 JavaMail(javax.mail)接口来发送电子邮件。</p>
-<p>在使用javax.mail接口时，需要设置发件人，涉及到发件人的授权认证，于是创建了MailAuthenticator类，其代码如下：</p>
-                    
-                        <a
-                            href="/2013/11/27/send-email-with-java/"
-                            class="postShorten-excerpt_link link"
-                            aria-label=": 使用JavaMail发送邮件"
-                        >
-                            Continue reading
-                        </a>
-                        
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-right">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2013/11/04/uml-interaction-diagrams/"
-                            aria-label=": 绘制UML交互图"
-                        >
-                            绘制UML交互图
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2013-11-04T20:55:00+08:00">
-	
-		    Nov 04, 2013
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/">软件工程</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-excerpt">
-                    <p>开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.</p>
-<p>静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生. 分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论. 因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.</p>
-                    
-                        <a
-                            href="/2013/11/04/uml-interaction-diagrams/"
-                            class="postShorten-excerpt_link link"
-                            aria-label=": 绘制UML交互图"
-                        >
-                            Continue reading
-                        </a>
-                        
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-right">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2013/10/29/uml-class-diagram/"
-                            aria-label=": 绘制UML类图"
-                        >
-                            绘制UML类图
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2013-10-29T21:07:00+08:00">
-	
-		    Oct 29, 2013
-    	
-    </time>
-    
-        <span>in </span>
-        
-    <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/">软件工程</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-excerpt">
-                    <p>类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.</p>
-<h3 id="uml属性的表示方式">UML属性的表示方式</h3>
-<p>UML的属性有两种表示方式：属性文本和关联线.</p>
-<p>属性文本表示属性的完整格式是：</p>
-<pre><code>visibility name : type multiplicity = default &#123;property-string&#125;
-可见性      属性名: 属性类型              默认值     特性字符串</code></pre>
-                    
-                        <a
-                            href="/2013/10/29/uml-class-diagram/"
-                            class="postShorten-excerpt_link link"
-                            aria-label=": 绘制UML类图"
                         >
                             Continue reading
                         </a>
