@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+<html lang="en,zh-CN,default">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="CaryaLiu&#39;s blog">
+    <title>iOS KVC 集合操作 - CaryaLiu&#39;s blog</title>
+    <meta name="author" content="CaryaLiu">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\nKVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符串, 也可理解为: KVC集合操作符允许在 valueForKeyPath: 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:\n![Operator key path format][]\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。\n\n\n除了 @count 外的所有集合操作，都要求在集合操作右边有一键路径(keypathToProperty)。\n集合操作返回的对象值决定于集合操作的类型:\n\n简单类型的集合操作符，返回 strings, numbers, dates, 其值由右侧的键路径决定(见简单集合操作符)\n对象操作符，返回 NSArray 对象实例(见 对象操作符)\n数组和集合操作符，返回的是一个 array 或者 set 对象(见 数组和集合操作符)\n\n示例数据","dateCreated":"2015-09-04T14:51:30+08:00","dateModified":"2017-12-02T10:55:15+08:00","datePublished":"2015-09-04T14:51:30+08:00","description":"进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\nKVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符串, 也可理解为: KVC集合操作符允许在 valueForKeyPath: 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:\n![Operator key path format][]\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。","headline":"iOS KVC 集合操作","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/","keywords":"iOS, KVC"}</script>
+    <meta name="description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="iOS KVC 集合操作">
+<meta property="og:url" content="http://liumh.com/2015/09/04/ios-kvc-collection-operators/index.html">
+<meta property="og:site_name" content="CaryaLiu&#39;s blog">
+<meta property="og:description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-09-04T06:51:30.000Z">
+<meta property="article:modified_time" content="2017-12-02T02:55:15.000Z">
+<meta property="article:author" content="CaryaLiu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="KVC">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://liumh.com/assets/images/header.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            CaryaLiu&#39;s blog
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="Read more about the author"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+                </a>
+                <h4 class="sidebar-profile-name">CaryaLiu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>@Chengdu</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            iOS KVC 集合操作
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2015-09-04T14:51:30+08:00">
+	
+		    Sep 04, 2015
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>进一步阅读之前，可以先思考这个问题: 存在数组 <code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
+<p>KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
+<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 <em>@</em> 开始的字符串, 也可理解为: KVC集合操作符允许在 <code>valueForKeyPath:</code> 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:</p>
+<p>![Operator key path format][]</p>
+<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
+<span id="more"></span>
+
+<p>除了 <code>@count</code> 外的所有集合操作，都要求在集合操作右边有一键路径(<em>keypathToProperty</em>)。</p>
+<p>集合操作返回的对象值决定于集合操作的类型:</p>
+<ul>
+<li>简单类型的集合操作符，返回 strings, numbers, dates, 其值由右侧的键路径决定(见<a href="#simple-collection-operators">简单集合操作符</a>)</li>
+<li>对象操作符，返回 NSArray 对象实例(见 <a href="#object-operators">对象操作符</a>)</li>
+<li>数组和集合操作符，返回的是一个 array 或者 set 对象(见 <a href="#array-set-operators">数组和集合操作符</a>)</li>
+</ul>
+<h1 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h1>
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/KVC/" rel="tag">KVC</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/iOS/" rel="tag">iOS</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/09/07/grand-central-dispatch-in-depth-part-1/"
+                    data-tooltip="GCD 深入理解：第一部分"
+                    aria-label="PREVIOUS: GCD 深入理解：第一部分"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/25/ios-know-kvo/"
+                    data-tooltip="iOS初探KVO"
+                    aria-label="NEXT: iOS初探KVO"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2024 CaryaLiu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/09/07/grand-central-dispatch-in-depth-part-1/"
+                    data-tooltip="GCD 深入理解：第一部分"
+                    aria-label="PREVIOUS: GCD 深入理解：第一部分"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2015/08/25/ios-know-kvo/"
+                    data-tooltip="iOS初探KVO"
+                    aria-label="NEXT: iOS初探KVO"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://liumh.com/2015/09/04/ios-kvc-collection-operators/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/header.png" alt="Author&#39;s picture"/>
+        
+            <h4 id="about-card-name">CaryaLiu</h4>
+        
+            <div id="about-card-bio"><p>@Chengdu</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>iOS Developer</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Chengdu
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
