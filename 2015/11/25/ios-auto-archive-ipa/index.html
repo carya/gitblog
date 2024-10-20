@@ -15,7 +15,7 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。\n\n\n\nxcodebuild 简介\n使用xcodebuild和xcrun打包签名\n将打包过程脚本化\n\nxcodebuild 简介","dateCreated":"2015-11-25T21:38:11+08:00","dateModified":"2021-04-18T11:46:08+08:00","datePublished":"2015-11-25T21:38:11+08:00","description":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。","headline":"iOS自动打包并发布脚本","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/","keywords":"iOS"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。\n\n\n\nxcodebuild 简介\n使用xcodebuild和xcrun打包签名\n将打包过程脚本化\n\nxcodebuild 简介","dateCreated":"2015-11-25T21:38:11+08:00","dateModified":"2024-10-20T14:21:41+08:00","datePublished":"2015-11-25T21:38:11+08:00","description":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。","headline":"iOS自动打包并发布脚本","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/","keywords":"iOS"}</script>
     <meta name="description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS自动打包并发布脚本">
@@ -24,7 +24,7 @@
 <meta property="og:description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-11-25T13:38:11.000Z">
-<meta property="article:modified_time" content="2021-04-18T03:46:08.000Z">
+<meta property="article:modified_time" content="2024-10-20T06:21:41.547Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
@@ -40,7 +40,7 @@
     
     <!--STYLES-->
     
-<link rel="stylesheet" href="/assets/css/style-m6nivvurtlevuhwfo3cagj3wjhzynetfsx9hangffcjz4rld46wsu1znmnqb.min.css">
+<link rel="stylesheet" href="/assets/css/style-zpenvh5cbgb1vzzlq3akzblrroxrej3zx0naeyxu1vn9s3kx3bsq9s1rbqce.min.css">
 
     <!--STYLES END-->
     
@@ -108,7 +108,7 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu</p>
+                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -318,45 +318,6 @@
             </a>
         </li>
         
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Facebook"
-                    aria-label="Share on Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Twitter"
-                    aria-label="Share on Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Google+"
-                    aria-label="Share on Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
         
             
         
@@ -433,45 +394,6 @@
             </a>
         </li>
         
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Facebook"
-                    aria-label="Share on Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Twitter"
-                    aria-label="Share on Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                    title="Share on Google+"
-                    aria-label="Share on Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
         
             
         
@@ -488,52 +410,6 @@
 
                 </div>
                 
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                        aria-label="Share on Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                        aria-label="Share on Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=http://liumh.com/2015/11/25/ios-auto-archive-ipa/"
-                        aria-label="Share on Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
-    </div>
-
 
             
         </div>
@@ -554,14 +430,14 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu</p>
+            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
 </div>
         
         
             <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>iOS Developer</p>
+                <p>Teacher</p>
 
             </div>
         
@@ -580,7 +456,7 @@
 <div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
         <!--SCRIPTS-->
 
-<script src="/assets/js/script-0cj71mixkkwdp0vs8wjjkzbxkqkvcb59caculu32e29euc2z9epm5lizux6e.min.js"></script>
+<script src="/assets/js/script-cs5ywvosncuchmfbylvxzu6rf0pcfv37ilsjrqcvnjbcjeqx9g2hzm1ygmp1.min.js"></script>
 
 <!--SCRIPTS END-->
 
