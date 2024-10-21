@@ -17,38 +17,19 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.\n静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生. 分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论. 因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.\n\n\nUML使用交互图来描述对象间通过消息的交互. 交互图可以用于动态建模. 交互图有两种类型: 顺序图和通信图. 这里主要介绍一下顺序图.\n顺序图以一种栅栏格式描述交互，其中在右侧添加新创建的对象, 它能够清晰表示消息的顺序和时间排序, 如下图所示:\n\n\n以上图形映射成代码可能的情形是，类A具有名为doOne的方法和类型为B的属性，同时类B具有名为doTwo和doThree的方法. 由此，类A的定义片段可能如下:\n1234567891011public class A&#123;  private B myB = new B();    public void doOne() &#123;    myB.doTwo();    myB.doThree();  &#125;    //...&#125;\n\n常用的UML交互图表示法这一节所说的表示法适用于顺序图和通信图，包括如下几种.\n使用生命线框图表示参与者在UML中，生命线框图使用方框图表示，通俗地讲，它们是交互的参与者，并且将生命线框图等同于类的实例. 下图所示是UML中生命线框图的常用表示法.\n\n\n消息表达式的基本语法交互图展示了对象之间的消息，UML对于这些消息表达式具有标准语法:\nreturn = message(parameter : parameterType) : returnType\n没有参数时可以省略圆括号，这是合法的. 如果明显或者不重要，消息表达式中可以不包含类型信息，例如:\n12345initialize(code)initialized = getProductDescription(id)d = getProductDescription(id : ItemID)d = getProductDescription(id : ItemId) : ProductDescription\n\n单实例类对象在OO设计模式中，有一种特别常见的模式称为单实例类模式(Singleton). 该模式所暗含的意思是，对类进行实例化时，只能存在一个实例，而决不能是两个. 在UML交互图(顺序图或者通讯图)中，遇到此类对象时，需再生命线框图右上角标识 “1”. 单实例类的例子如下图所示.\n\n\n顺序图的基本表示法生命线框图和生命线与通信图相比，顺序图中的生命线框图包括框图之下的垂直延伸线，这是实例的生命线. 尽管实际中所有UML示例都用虚线表示生命线(源于UML1的影响), 但事实上UML2规范中定义的生命线可以是实线也可以是虚线.\n消息在垂直生命线之间，用带实心箭头的实线并附以消息表达式的方式表示对象间的每个消息(同步消息), 如下图所示，其中生命线自上而下表示时间顺序.\n\n\n上图中，最开始的消息在UML中成为创始消息(found message), 以实心圆作为起点来表示此类消息. 创始消息表示没有特定发送者、发送者不明确或消息源众多的消息. 然而，小组或者工具可以忽略这一点，而是使用常规的消息连线表示，约定其表示的是创始消息.\n控制期和执行规格条如图消息和控制期的执行规格条中，顺序图中可以使用执行规格条(UML1中称为活动条或者简称为活动)来表示控制期(focus of control, 在常规阻塞调用中，将操作置于调用堆栈中)，通常在使用UML CASE工具时会经常绘制执行规格条，但是在墙上绘制草图时往往不会绘制执行规格条, 绘制执行控制条是可选的.\n表示应答或返回可以用以下两种方式表示消息的返回结果:\n\n使用消息语法 returnVar = message(parameter)\n在活动条末端使用应答(或返回)消息线\n\n上述两种方法都很常见，建议在草图中使用第一种方法，因为这种方法比较简单. 如果使用应答线，一般要在线上加以标记描述返回值, 如下图所示.\n\n\n发送给”自身”的消息可以使用嵌套的活动条表示对象发送给自身的消息，如下图所示:\n\n\n实例的创建下图展示的是创建对象的表示法. 需要注意的是UML使用的是虚线(许多作者采用了使用实线的示例，而且规范的早期草案中也是如此). 实心箭头表示常规的同步消息，开放箭头表示异步调用. 消息名称中的create不是必需的，这只是UML的习惯用法.带有实心箭头的虚线上的create消息通常可以解释为”调用操作符new并调用其构造器”.\n\n\n对象生命线和对象的销毁在某些情况下，需要显示地表示对象的销毁，例如，当使用没有自动垃圾回收机制的C++时，或者当需要特别指明对象不再使用时(例如关闭数据库连接)，都需要如此表示. UML生命线表示法提供了表示销毁的方式，如上图 实例的创建和对象的生命线 所示.\nUML顺序图中的图框为了支持有条件和循环的构造，UML使用了图框，图框是图的区域或者片段，在图框中具有操作符或标签(例如loop)和保护信息(条件子句), 如下图所示.\n\n\n下列是一些常用的图框操作符:\n\nalt: 选择性的片段，用于表示保护信息所表达的互斥条件逻辑\nloop: 用于表示保护信息为真的循环片段，也可以写为loop(n)以指明循环的次数，用loop(i, 1, 10)表示for循环\nopt: 当保护信息为真时执行的可选片段\npar: 并行执行的并行片段\nregion: 只能执行一个线程的临界片段\n\n有条件消息opt图框位于一个或多个消息周围. 注意，其中的保护信息要置于相关的生命线之上. 如下图所示.\n\n\n在UML 2.x表示法中，对单一的有条件消息的表示需要在一个消息周围放置完整OPT图框，如上图所示. 在UML 1.x的顺序图中，对这种情况可使用如下图所示的表示法, 在绘制UML草图时，可对这种简单的单一消息使用UML 1风格.\n\n\n互斥的有条件消息使用ALT图框放置于互斥的可选条件周围，如下图所示.\n\n\n对集合的迭代对集合(例如list或map)中所有成员进行迭代的常用算法是向每个成员发送同一条消息。在这种情况下，通常会使用某种迭代器(iterator)对象，例如java.util.Iterator或C++标准库迭代器的实现. 下图中给出了对集合迭代的一种表现方式.\n\n\n需要注意上图中生命线上的选择器表达式lineItem[i]. 选择器表达式用于在一组对象中选择一个对象. 生命线参与者应该表示一个对象，而不是集合. 下图表示了对集合进行迭代的另一种表现方式.\n\n\n图框的嵌套UML中图框是可以嵌套的，如下图所示.\n\n\n如何关联交互图交互具体值(interaction occurrence, 也称为交互使用, interaction user)是在交互中引用另一交互. 当想要简化图时，将其中的一部分分解到另一个图中，或者存在可复用的交互具体值时，这种做法十分有效. UML工具利用了这一做法，以助于关联和链接图形.\n可以使用两种图框来创建交互图的关联:\n\n在整个顺序图的周围放置图框，并加上sd标记和诸如AuthenticateUser这样的名称.\n标记为ref的图框称为引用，该引用指另一个已命名顺序图. 所指的顺序图是实际的交互具体值.\n\n交互总览图包含了一系列引用框图(交互具体值). 总览图将这些引用组织为更大规模的逻辑和过程流的结构. 任何顺序图都可以使用sd图框围绕起来，并对其命名. 当需要引用响应名字的sd图框时，可以使用ref图框. 关联交互图的示例如下:\n\n\n对类调用静态(或类)方法的消息可以通过使用生命线框图标记来表示对类或静态方法的调用，其中的生命线框图表示接受消息的对象是类，或者更准确地说是元类(meta-class)的示例，如下图所示:\n\n\n多态消息和案例多态性是OO设计的基础, 在UML的顺序图中表示多态性，一种方法是使用多个顺序图，其中一个表示到抽象超类或接口对象的多态消息，其余的顺序图分别详细表示每一种多态案例，其中每个顺序图都以创始的多态消息作为起点，如下图描述所示:\n\n\n异步和同步调用异步消息调用不等待响应，不会阻塞. 异步消息可以在多线程坏境中使用，因此能够创建和初始化新的执行线程. UML中利用刺形箭头消息表示异步调用，常规同步(阻塞)调用用实心箭头表示，如下图所示.\n\n\n","dateCreated":"2013-11-04T20:55:00+08:00","dateModified":"2017-12-29T22:44:40+08:00","datePublished":"2013-11-04T20:55:00+08:00","description":"开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.\n静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生. 分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论. 因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.","headline":"绘制UML交互图","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/11/04/uml-interaction-diagrams/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/11/04/uml-interaction-diagrams/","keywords":"UML"}</script>
-    <meta name="description" content="开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图. 静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型:\r\n动态和静态.\r\n动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图).\r\n静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.\r\n静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型:\r\n花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.\r\nUML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生.\r\n分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论.\r\n因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.\r\n\r\nUML使用交互图来描述对象间通过消息的交互. 交互图可以用于动态建模.\r\n交互图有两种类型: 顺序图和通信图. 这里主要介绍一下顺序图.\r\n顺序图以一种栅栏格式描述交互，其中在右侧添加新创建的对象,\r\n它能够清晰表示消息的顺序和时间排序, 如下图所示:\r\n ___\r\n以上图形映射成代码可能的情形是，类A具有名为doOne的方法和类型为B的属性，同时类B具有名为doTwo和doThree的方法.\r\n由此，类A的定义片段可能如下:\r\n1234567891011public class A&#123;  private B myB = new B();    public void doOne() &#123;    myB.doTwo();    myB.doThree();  &#125;    //...&#125;\r\n常用的UML交互图表示法\r\n这一节所说的表示法适用于顺序图和通信图，包括如下几种. ####\r\n使用生命线框图表示参与者\r\n在UML中，生命线框图使用方框图表示，通俗地讲，它们是交互的参与者，并且将生命线框图等同于类的实例.\r\n下图所示是UML中生命线框图的常用表示法.\r\n ___\r\n消息表达式的基本语法\r\n交互图展示了对象之间的消息，UML对于这些消息表达式具有标准语法:\r\nreturn = message(parameter : parameterType) : returnType\r\n没有参数时可以省略圆括号，这是合法的.\r\n如果明显或者不重要，消息表达式中可以不包含类型信息，例如:\r\n12345initialize(code)initialized = getProductDescription(id)d = getProductDescription(id : ItemID)d = getProductDescription(id : ItemId) : ProductDescription\r\n单实例类对象\r\n在OO设计模式中，有一种特别常见的模式称为单实例类模式(Singleton).\r\n该模式所暗含的意思是，对类进行实例化时，只能存在一个实例，而决不能是两个.\r\n在UML交互图(顺序图或者通讯图)中，遇到此类对象时，需再生命线框图右上角标识\r\n\"1\". 单实例类的例子如下图所示.\r\n ___\r\n顺序图的基本表示法\r\n生命线框图和生命线\r\n与通信图相比，顺序图中的生命线框图包括框图之下的垂直延伸线，这是实例的生命线.\r\n尽管实际中所有UML示例都用虚线表示生命线(源于UML1的影响),\r\n但事实上UML2规范中定义的生命线可以是实线也可以是虚线. #### 消息\r\n在垂直生命线之间，用带实心箭头的实线并附以消息表达式的方式表示对象间的每个消息(同步消息),\r\n如下图所示，其中生命线自上而下表示时间顺序.\r\n ___\r\n上图中，最开始的消息在UML中成为创始消息(found message),\r\n以实心圆作为起点来表示此类消息.\r\n创始消息表示没有特定发送者、发送者不明确或消息源众多的消息.\r\n然而，小组或者工具可以忽略这一点，而是使用常规的消息连线表示，约定其表示的是创始消息.\r\n控制期和执行规格条\r\n如图消息和控制期的执行规格条中，顺序图中可以使用执行规格条(UML1中称为活动条或者简称为活动)来表示控制期(focus\r\nof control, 在常规阻塞调用中，将操作置于调用堆栈中)，通常在使用UML\r\nCASE工具时会经常绘制执行规格条，但是在墙上绘制草图时往往不会绘制执行规格条,\r\n绘制执行控制条是可选的. #### 表示应答或返回\r\n可以用以下两种方式表示消息的返回结果:\r\n\r\n使用消息语法 returnVar = message(parameter)\r\n在活动条末端使用应答(或返回)消息线\r\n\r\n上述两种方法都很常见，建议在草图中使用第一种方法，因为这种方法比较简单.\r\n如果使用应答线，一般要在线上加以标记描述返回值, 如下图所示.\r\n ___\r\n发送给\"自身\"的消息\r\n可以使用嵌套的活动条表示对象发送给自身的消息，如下图所示:\r\n ___\r\n实例的创建\r\n下图展示的是创建对象的表示法.\r\n需要注意的是UML使用的是虚线(许多作者采用了使用实线的示例，而且规范的早期草案中也是如此).\r\n实心箭头表示常规的同步消息，开放箭头表示异步调用.\r\n消息名称中的create不是必需的，这只是UML的习惯用法.带有实心箭头的虚线上的create消息通常可以解释为\"调用操作符new并调用其构造器\".\r\n ___\r\n对象生命线和对象的销毁\r\n在某些情况下，需要显示地表示对象的销毁，例如，当使用没有自动垃圾回收机制的C++时，或者当需要特别指明对象不再使用时(例如关闭数据库连接)，都需要如此表示.\r\nUML生命线表示法提供了表示销毁的方式，如上图\r\n实例的创建和对象的生命线 所示.\r\nUML顺序图中的图框\r\n为了支持有条件和循环的构造，UML使用了图框，图框是图的区域或者片段，在图框中具有操作符或标签(例如loop)和保护信息(条件子句),\r\n如下图所示.\r\n ___\r\n下列是一些常用的图框操作符:\r\n\r\nalt: 选择性的片段，用于表示保护信息所表达的互斥条件逻辑\r\nloop:\r\n用于表示保护信息为真的循环片段，也可以写为loop(n)以指明循环的次数，用loop(i,\r\n1, 10)表示for循环\r\nopt: 当保护信息为真时执行的可选片段\r\npar: 并行执行的并行片段\r\nregion: 只能执行一个线程的临界片段\r\n\r\n有条件消息\r\nopt图框位于一个或多个消息周围.\r\n注意，其中的保护信息要置于相关的生命线之上. 如下图所示.\r\n ___\r\n在UML\r\n2.x表示法中，对单一的有条件消息的表示需要在一个消息周围放置完整OPT图框，如上图所示.\r\n在UML 1.x的顺序图中，对这种情况可使用如下图所示的表示法,\r\n在绘制UML草图时，可对这种简单的单一消息使用UML 1风格.\r\n ___\r\n互斥的有条件消息\r\n使用ALT图框放置于互斥的可选条件周围，如下图所示.\r\n ___\r\n对集合的迭代\r\n对集合(例如list或map)中所有成员进行迭代的常用算法是向每个成员发送同一条消息。在这种情况下，通常会使用某种迭代器(iterator)对象，例如java.util.Iterator或C++标准库迭代器的实现.\r\n下图中给出了对集合迭代的一种表现方式.\r\n ___\r\n需要注意上图中生命线上的选择器表达式lineItem[i].\r\n选择器表达式用于在一组对象中选择一个对象.\r\n生命线参与者应该表示一个对象，而不是集合.\r\n下图表示了对集合进行迭代的另一种表现方式.\r\n ___\r\n图框的嵌套\r\nUML中图框是可以嵌套的，如下图所示.\r\n ___\r\n如何关联交互图\r\n交互具体值(interaction occurrence, 也称为交互使用, interaction\r\nuser)是在交互中引用另一交互.\r\n当想要简化图时，将其中的一部分分解到另一个图中，或者存在可复用的交互具体值时，这种做法十分有效.\r\nUML工具利用了这一做法，以助于关联和链接图形.\r\n可以使用两种图框来创建交互图的关联:\r\n\r\n在整个顺序图的周围放置图框，并加上sd标记和诸如AuthenticateUser这样的名称.\r\n标记为ref的图框称为引用，该引用指另一个已命名顺序图.\r\n所指的顺序图是实际的交互具体值.\r\n\r\n交互总览图包含了一系列引用框图(交互具体值).\r\n总览图将这些引用组织为更大规模的逻辑和过程流的结构.\r\n任何顺序图都可以使用sd图框围绕起来，并对其命名.\r\n当需要引用响应名字的sd图框时，可以使用ref图框. 关联交互图的示例如下:\r\n ___\r\n对类调用静态(或类)方法的消息\r\n可以通过使用生命线框图标记来表示对类或静态方法的调用，其中的生命线框图表示接受消息的对象是类，或者更准确地说是元类(meta-class)的示例，如下图所示:\r\n ___\r\n多态消息和案例\r\n多态性是OO设计的基础,\r\n在UML的顺序图中表示多态性，一种方法是使用多个顺序图，其中一个表示到抽象超类或接口对象的多态消息，其余的顺序图分别详细表示每一种多态案例，其中每个顺序图都以创始的多态消息作为起点，如下图描述所示:\r\n ___\r\n异步和同步调用\r\n异步消息调用不等待响应，不会阻塞.\r\n异步消息可以在多线程坏境中使用，因此能够创建和初始化新的执行线程.\r\nUML中利用刺形箭头消息表示异步调用，常规同步(阻塞)调用用实心箭头表示，如下图所示.\r\n ___\r\n","dateCreated":"2013-11-04T20:55:00+08:00","dateModified":"2017-12-29T22:44:40+08:00","datePublished":"2013-11-04T20:55:00+08:00","description":"开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型:\r\n动态和静态.\r\n动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图).\r\n静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.\r\n静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型:\r\n花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.\r\nUML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生.\r\n分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论.\r\n因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.","headline":"绘制UML交互图","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/11/04/uml-interaction-diagrams/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/11/04/uml-interaction-diagrams/","keywords":"UML"}</script>
+    <meta name="description" content="开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图. 静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="绘制UML交互图">
 <meta property="og:url" content="http://liumh.com/2013/11/04/uml-interaction-diagrams/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图. 静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学">
+<meta property="og:description" content="开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图. 静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/sequence-diagram.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/lifeline-boxes.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/singletons-in-interaction-diagrams.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/execution-specification-bar.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/return-result-from-message.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/messages-to-self.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/instance-creation.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-UML-frame.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message-simple-style.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/mutually-exclusive-conditional-messages.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-explicit.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-implicit.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/nesting-of-frames.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-interaction-occurrence.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/invoking-class-or-static-methods.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/modeling-polymorphic-cases.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/asynchronous-calls-and-active-objects.png">
 <meta property="article:published_time" content="2013-11-04T12:55:00.000Z">
 <meta property="article:modified_time" content="2017-12-29T14:44:40.000Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="UML">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/sequence-diagram.png">
     
     
         
@@ -129,7 +110,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -271,97 +253,182 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.</p>
-<p>静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生. 分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论. 因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.</p>
+            <p>开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型:
+动态和静态.
+动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图).
+静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.</p>
+<p>静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型:
+花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.
+UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生.
+分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论.
+因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.</p>
 <span id="more"></span>
-
-<p>UML使用交互图来描述对象间通过消息的交互. 交互图可以用于动态建模. 交互图有两种类型: 顺序图和通信图. 这里主要介绍一下顺序图.</p>
-<p>顺序图以一种栅栏格式描述交互，其中在右侧添加新创建的对象, 它能够清晰表示消息的顺序和时间排序, 如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/sequence-diagram.png" alt="UML顺序图示例"></p>
-<hr>
-<p>以上图形映射成代码可能的情形是，类A具有名为doOne的方法和类型为B的属性，同时类B具有名为doTwo和doThree的方法. 由此，类A的定义片段可能如下:</p>
+<p>UML使用交互图来描述对象间通过消息的交互. 交互图可以用于动态建模.
+交互图有两种类型: 顺序图和通信图. 这里主要介绍一下顺序图.</p>
+<p>顺序图以一种栅栏格式描述交互，其中在右侧添加新创建的对象,
+它能够清晰表示消息的顺序和时间排序, 如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/sequence-diagram.png"
+alt="UML顺序图示例" /> ___</p>
+<p>以上图形映射成代码可能的情形是，类A具有名为doOne的方法和类型为B的属性，同时类B具有名为doTwo和doThree的方法.
+由此，类A的定义片段可能如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class A</span><br><span class="line">&#123;</span><br><span class="line">  private B myB = new B();</span><br><span class="line">  </span><br><span class="line">  public void doOne() &#123;</span><br><span class="line">    myB.doTwo();</span><br><span class="line">    myB.doThree();</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  //...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="常用的UML交互图表示法"><a href="#常用的UML交互图表示法" class="headerlink" title="常用的UML交互图表示法"></a>常用的UML交互图表示法</h3><p>这一节所说的表示法适用于顺序图和通信图，包括如下几种.</p>
-<h4 id="使用生命线框图表示参与者"><a href="#使用生命线框图表示参与者" class="headerlink" title="使用生命线框图表示参与者"></a>使用生命线框图表示参与者</h4><p>在UML中，生命线框图使用方框图表示，通俗地讲，它们是交互的参与者，并且将生命线框图等同于类的实例. 下图所示是UML中生命线框图的常用表示法.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/lifeline-boxes.png" alt="交互中参与者的生命线框图"></p>
-<hr>
-<h4 id="消息表达式的基本语法"><a href="#消息表达式的基本语法" class="headerlink" title="消息表达式的基本语法"></a>消息表达式的基本语法</h4><p>交互图展示了对象之间的消息，UML对于这些消息表达式具有标准语法:</p>
+<h3 id="常用的uml交互图表示法">常用的UML交互图表示法</h3>
+<p>这一节所说的表示法适用于顺序图和通信图，包括如下几种. ####
+使用生命线框图表示参与者
+在UML中，生命线框图使用方框图表示，通俗地讲，它们是交互的参与者，并且将生命线框图等同于类的实例.
+下图所示是UML中生命线框图的常用表示法.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/lifeline-boxes.png"
+alt="交互中参与者的生命线框图" /> ___</p>
+<h4 id="消息表达式的基本语法">消息表达式的基本语法</h4>
+<p>交互图展示了对象之间的消息，UML对于这些消息表达式具有标准语法:</p>
 <p><code>return = message(parameter : parameterType) : returnType</code></p>
-<p>没有参数时可以省略圆括号，这是合法的. 如果明显或者不重要，消息表达式中可以不包含类型信息，例如:</p>
+<p>没有参数时可以省略圆括号，这是合法的.
+如果明显或者不重要，消息表达式中可以不包含类型信息，例如:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">initialize(code)</span><br><span class="line">initialize</span><br><span class="line">d = getProductDescription(id)</span><br><span class="line">d = getProductDescription(id : ItemID)</span><br><span class="line">d = getProductDescription(id : ItemId) : ProductDescription</span><br></pre></td></tr></table></figure>
-
-<h4 id="单实例类对象"><a href="#单实例类对象" class="headerlink" title="单实例类对象"></a>单实例类对象</h4><p>在OO设计模式中，有一种特别常见的模式称为单实例类模式(Singleton). 该模式所暗含的意思是，对类进行实例化时，只能存在一个实例，而决不能是两个. 在UML交互图(顺序图或者通讯图)中，遇到此类对象时，需再生命线框图右上角标识 “1”. 单实例类的例子如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/singletons-in-interaction-diagrams.png" alt="交互图中的单实例类"></p>
-<hr>
-<h3 id="顺序图的基本表示法"><a href="#顺序图的基本表示法" class="headerlink" title="顺序图的基本表示法"></a>顺序图的基本表示法</h3><h4 id="生命线框图和生命线"><a href="#生命线框图和生命线" class="headerlink" title="生命线框图和生命线"></a>生命线框图和生命线</h4><p>与通信图相比，顺序图中的生命线框图包括框图之下的垂直延伸线，这是实例的生命线. 尽管实际中所有UML示例都用虚线表示生命线(源于UML1的影响), 但事实上UML2规范中定义的生命线可以是实线也可以是虚线.</p>
-<h4 id="消息"><a href="#消息" class="headerlink" title="消息"></a>消息</h4><p>在垂直生命线之间，用带实心箭头的实线并附以消息表达式的方式表示对象间的每个消息(同步消息), 如下图所示，其中生命线自上而下表示时间顺序.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/execution-specification-bar.png" alt="消息和控制期的执行规格条"></p>
-<hr>
-<p>上图中，最开始的消息在UML中成为创始消息(found message), 以实心圆作为起点来表示此类消息. 创始消息表示没有特定发送者、发送者不明确或消息源众多的消息. 然而，小组或者工具可以忽略这一点，而是使用常规的消息连线表示，约定其表示的是创始消息.</p>
-<h4 id="控制期和执行规格条"><a href="#控制期和执行规格条" class="headerlink" title="控制期和执行规格条"></a>控制期和执行规格条</h4><p>如图<code>消息和控制期的执行规格条</code>中，顺序图中可以使用执行规格条(UML1中称为活动条或者简称为活动)来表示控制期(focus of control, 在常规阻塞调用中，将操作置于调用堆栈中)，通常在使用UML CASE工具时会经常绘制执行规格条，但是在墙上绘制草图时往往不会绘制执行规格条, 绘制执行控制条是可选的.</p>
-<h4 id="表示应答或返回"><a href="#表示应答或返回" class="headerlink" title="表示应答或返回"></a>表示应答或返回</h4><p>可以用以下两种方式表示消息的返回结果:</p>
+<h4 id="单实例类对象">单实例类对象</h4>
+<p>在OO设计模式中，有一种特别常见的模式称为单实例类模式(Singleton).
+该模式所暗含的意思是，对类进行实例化时，只能存在一个实例，而决不能是两个.
+在UML交互图(顺序图或者通讯图)中，遇到此类对象时，需再生命线框图右上角标识
+"1". 单实例类的例子如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/singletons-in-interaction-diagrams.png"
+alt="交互图中的单实例类" /> ___</p>
+<h3 id="顺序图的基本表示法">顺序图的基本表示法</h3>
+<h4 id="生命线框图和生命线">生命线框图和生命线</h4>
+<p>与通信图相比，顺序图中的生命线框图包括框图之下的垂直延伸线，这是实例的生命线.
+尽管实际中所有UML示例都用虚线表示生命线(源于UML1的影响),
+但事实上UML2规范中定义的生命线可以是实线也可以是虚线. #### 消息
+在垂直生命线之间，用带实心箭头的实线并附以消息表达式的方式表示对象间的每个消息(同步消息),
+如下图所示，其中生命线自上而下表示时间顺序.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/execution-specification-bar.png"
+alt="消息和控制期的执行规格条" /> ___</p>
+<p>上图中，最开始的消息在UML中成为创始消息(found message),
+以实心圆作为起点来表示此类消息.
+创始消息表示没有特定发送者、发送者不明确或消息源众多的消息.
+然而，小组或者工具可以忽略这一点，而是使用常规的消息连线表示，约定其表示的是创始消息.</p>
+<h4 id="控制期和执行规格条">控制期和执行规格条</h4>
+<p>如图<code>消息和控制期的执行规格条</code>中，顺序图中可以使用执行规格条(UML1中称为活动条或者简称为活动)来表示控制期(focus
+of control, 在常规阻塞调用中，将操作置于调用堆栈中)，通常在使用UML
+CASE工具时会经常绘制执行规格条，但是在墙上绘制草图时往往不会绘制执行规格条,
+绘制执行控制条是可选的. #### 表示应答或返回
+可以用以下两种方式表示消息的返回结果:</p>
 <ul>
 <li>使用消息语法 <code>returnVar = message(parameter)</code></li>
 <li>在活动条末端使用应答(或返回)消息线</li>
 </ul>
-<p>上述两种方法都很常见，建议在草图中使用第一种方法，因为这种方法比较简单. 如果使用应答线，一般要在线上加以标记描述返回值, 如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/return-result-from-message.png" alt="表示消息返回结果的两种方式"></p>
-<hr>
-<h4 id="发送给”自身”的消息"><a href="#发送给”自身”的消息" class="headerlink" title="发送给”自身”的消息"></a>发送给”自身”的消息</h4><p>可以使用嵌套的活动条表示对象发送给自身的消息，如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/messages-to-self.png" alt="发送给&quot;自身&quot;的消息"></p>
-<hr>
-<h4 id="实例的创建"><a href="#实例的创建" class="headerlink" title="实例的创建"></a>实例的创建</h4><p>下图展示的是创建对象的表示法. 需要注意的是UML使用的是虚线(许多作者采用了使用实线的示例，而且规范的早期草案中也是如此). 实心箭头表示常规的同步消息，开放箭头表示异步调用. 消息名称中的create不是必需的，这只是UML的习惯用法.带有实心箭头的虚线上的create消息通常可以解释为”调用操作符new并调用其构造器”.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/instance-creation.png" alt="实例的创建和对象的生命线"></p>
-<hr>
-<h4 id="对象生命线和对象的销毁"><a href="#对象生命线和对象的销毁" class="headerlink" title="对象生命线和对象的销毁"></a>对象生命线和对象的销毁</h4><p>在某些情况下，需要显示地表示对象的销毁，例如，当使用没有自动垃圾回收机制的C++时，或者当需要特别指明对象不再使用时(例如关闭数据库连接)，都需要如此表示. UML生命线表示法提供了表示销毁的方式，如上图 <code>实例的创建和对象的生命线</code> 所示.</p>
-<h4 id="UML顺序图中的图框"><a href="#UML顺序图中的图框" class="headerlink" title="UML顺序图中的图框"></a>UML顺序图中的图框</h4><p>为了支持有条件和循环的构造，UML使用了图框，图框是图的区域或者片段，在图框中具有操作符或标签(例如loop)和保护信息(条件子句), 如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-UML-frame.png" alt="UML图框的示例"></p>
-<hr>
+<p>上述两种方法都很常见，建议在草图中使用第一种方法，因为这种方法比较简单.
+如果使用应答线，一般要在线上加以标记描述返回值, 如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/return-result-from-message.png"
+alt="表示消息返回结果的两种方式" /> ___</p>
+<h4 id="发送给自身的消息">发送给"自身"的消息</h4>
+<p>可以使用嵌套的活动条表示对象发送给自身的消息，如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/messages-to-self.png"
+alt="发送给&quot;自身&quot;的消息" /> ___</p>
+<h4 id="实例的创建">实例的创建</h4>
+<p>下图展示的是创建对象的表示法.
+需要注意的是UML使用的是虚线(许多作者采用了使用实线的示例，而且规范的早期草案中也是如此).
+实心箭头表示常规的同步消息，开放箭头表示异步调用.
+消息名称中的create不是必需的，这只是UML的习惯用法.带有实心箭头的虚线上的create消息通常可以解释为"调用操作符new并调用其构造器".</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/instance-creation.png"
+alt="实例的创建和对象的生命线" /> ___</p>
+<h4 id="对象生命线和对象的销毁">对象生命线和对象的销毁</h4>
+<p>在某些情况下，需要显示地表示对象的销毁，例如，当使用没有自动垃圾回收机制的C++时，或者当需要特别指明对象不再使用时(例如关闭数据库连接)，都需要如此表示.
+UML生命线表示法提供了表示销毁的方式，如上图
+<code>实例的创建和对象的生命线</code> 所示.</p>
+<h4 id="uml顺序图中的图框">UML顺序图中的图框</h4>
+<p>为了支持有条件和循环的构造，UML使用了图框，图框是图的区域或者片段，在图框中具有操作符或标签(例如loop)和保护信息(条件子句),
+如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-UML-frame.png"
+alt="UML图框的示例" /> ___</p>
 <p>下列是一些常用的图框操作符:</p>
 <ul>
 <li>alt: 选择性的片段，用于表示保护信息所表达的互斥条件逻辑</li>
-<li>loop: 用于表示保护信息为真的循环片段，也可以写为loop(n)以指明循环的次数，用loop(i, 1, 10)表示for循环</li>
+<li>loop:
+用于表示保护信息为真的循环片段，也可以写为loop(n)以指明循环的次数，用loop(i,
+1, 10)表示for循环</li>
 <li>opt: 当保护信息为真时执行的可选片段</li>
 <li>par: 并行执行的并行片段</li>
 <li>region: 只能执行一个线程的临界片段</li>
 </ul>
-<h4 id="有条件消息"><a href="#有条件消息" class="headerlink" title="有条件消息"></a>有条件消息</h4><p><code>opt</code>图框位于一个或多个消息周围. 注意，其中的保护信息要置于相关的生命线之上. 如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message.png" alt="有条件消息"></p>
-<hr>
-<p>在UML 2.x表示法中，对单一的有条件消息的表示需要在一个消息周围放置完整OPT图框，如上图所示. 在UML 1.x的顺序图中，对这种情况可使用如下图所示的表示法, 在绘制UML草图时，可对这种简单的单一消息使用UML 1风格.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message-simple-style.png" alt="UML 1.x表示法中的有条件消息"></p>
-<hr>
-<h4 id="互斥的有条件消息"><a href="#互斥的有条件消息" class="headerlink" title="互斥的有条件消息"></a>互斥的有条件消息</h4><p>使用ALT图框放置于互斥的可选条件周围，如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/mutually-exclusive-conditional-messages.png" alt="互斥的有条件消息"></p>
-<hr>
-<h4 id="对集合的迭代"><a href="#对集合的迭代" class="headerlink" title="对集合的迭代"></a>对集合的迭代</h4><p>对集合(例如list或map)中所有成员进行迭代的常用算法是向每个成员发送同一条消息。在这种情况下，通常会使用某种迭代器(iterator)对象，例如java.util.Iterator或C++标准库迭代器的实现. 下图中给出了对集合迭代的一种表现方式.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-explicit.png" alt="使用相对直接的表示法对集合进行迭代"></p>
-<hr>
-<p>需要注意上图中生命线上的选择器表达式lineItem[i]. 选择器表达式用于在一组对象中选择一个对象. 生命线参与者应该表示一个对象，而不是集合. 下图表示了对集合进行迭代的另一种表现方式.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-implicit.png" alt="隐含地表达对集合的迭代"></p>
-<hr>
-<h4 id="图框的嵌套"><a href="#图框的嵌套" class="headerlink" title="图框的嵌套"></a>图框的嵌套</h4><p>UML中图框是可以嵌套的，如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/nesting-of-frames.png" alt="图框的嵌套"></p>
-<hr>
-<h4 id="如何关联交互图"><a href="#如何关联交互图" class="headerlink" title="如何关联交互图"></a>如何关联交互图</h4><p>交互具体值(interaction occurrence, 也称为交互使用, interaction user)是在交互中引用另一交互. 当想要简化图时，将其中的一部分分解到另一个图中，或者存在可复用的交互具体值时，这种做法十分有效. UML工具利用了这一做法，以助于关联和链接图形.</p>
+<h4 id="有条件消息">有条件消息</h4>
+<p><code>opt</code>图框位于一个或多个消息周围.
+注意，其中的保护信息要置于相关的生命线之上. 如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message.png"
+alt="有条件消息" /> ___</p>
+<p>在UML
+2.x表示法中，对单一的有条件消息的表示需要在一个消息周围放置完整OPT图框，如上图所示.
+在UML 1.x的顺序图中，对这种情况可使用如下图所示的表示法,
+在绘制UML草图时，可对这种简单的单一消息使用UML 1风格.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/conditional-message-simple-style.png"
+alt="UML 1.x表示法中的有条件消息" /> ___</p>
+<h4 id="互斥的有条件消息">互斥的有条件消息</h4>
+<p>使用ALT图框放置于互斥的可选条件周围，如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/mutually-exclusive-conditional-messages.png"
+alt="互斥的有条件消息" /> ___</p>
+<h4 id="对集合的迭代">对集合的迭代</h4>
+<p>对集合(例如list或map)中所有成员进行迭代的常用算法是向每个成员发送同一条消息。在这种情况下，通常会使用某种迭代器(iterator)对象，例如java.util.Iterator或C++标准库迭代器的实现.
+下图中给出了对集合迭代的一种表现方式.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-explicit.png"
+alt="使用相对直接的表示法对集合进行迭代" /> ___</p>
+<p>需要注意上图中生命线上的选择器表达式lineItem[i].
+选择器表达式用于在一组对象中选择一个对象.
+生命线参与者应该表示一个对象，而不是集合.
+下图表示了对集合进行迭代的另一种表现方式.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/iteration-over-collection-implicit.png"
+alt="隐含地表达对集合的迭代" /> ___</p>
+<h4 id="图框的嵌套">图框的嵌套</h4>
+<p>UML中图框是可以嵌套的，如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/nesting-of-frames.png"
+alt="图框的嵌套" /> ___</p>
+<h4 id="如何关联交互图">如何关联交互图</h4>
+<p>交互具体值(interaction occurrence, 也称为交互使用, interaction
+user)是在交互中引用另一交互.
+当想要简化图时，将其中的一部分分解到另一个图中，或者存在可复用的交互具体值时，这种做法十分有效.
+UML工具利用了这一做法，以助于关联和链接图形.</p>
 <p>可以使用两种图框来创建交互图的关联:</p>
 <ul>
 <li>在整个顺序图的周围放置图框，并加上<code>sd</code>标记和诸如<code>AuthenticateUser</code>这样的名称.</li>
-<li>标记为ref的图框称为引用，该引用指另一个已命名顺序图. 所指的顺序图是实际的交互具体值.</li>
+<li>标记为ref的图框称为引用，该引用指另一个已命名顺序图.
+所指的顺序图是实际的交互具体值.</li>
 </ul>
-<p>交互总览图包含了一系列引用框图(交互具体值). 总览图将这些引用组织为更大规模的逻辑和过程流的结构. 任何顺序图都可以使用sd图框围绕起来，并对其命名. 当需要引用响应名字的sd图框时，可以使用ref图框. 关联交互图的示例如下:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-interaction-occurrence.png" alt="交互具体值的示例"></p>
-<hr>
-<h4 id="对类调用静态-或类-方法的消息"><a href="#对类调用静态-或类-方法的消息" class="headerlink" title="对类调用静态(或类)方法的消息"></a>对类调用静态(或类)方法的消息</h4><p>可以通过使用生命线框图标记来表示对类或静态方法的调用，其中的生命线框图表示接受消息的对象是类，或者更准确地说是元类(meta-class)的示例，如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/invoking-class-or-static-methods.png" alt="调用类或静态方法, 以元类的实例表示类对象"></p>
-<hr>
-<h4 id="多态消息和案例"><a href="#多态消息和案例" class="headerlink" title="多态消息和案例"></a>多态消息和案例</h4><p>多态性是OO设计的基础, 在UML的顺序图中表示多态性，一种方法是使用多个顺序图，其中一个表示到抽象超类或接口对象的多态消息，其余的顺序图分别详细表示每一种多态案例，其中每个顺序图都以创始的多态消息作为起点，如下图描述所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/modeling-polymorphic-cases.png" alt="用顺序图对多态案例建模的方法"></p>
-<hr>
-<h4 id="异步和同步调用"><a href="#异步和同步调用" class="headerlink" title="异步和同步调用"></a>异步和同步调用</h4><p>异步消息调用不等待响应，不会阻塞. 异步消息可以在多线程坏境中使用，因此能够创建和初始化新的执行线程. UML中利用刺形箭头消息表示异步调用，常规同步(阻塞)调用用实心箭头表示，如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/asynchronous-calls-and-active-objects.png" alt="异步调用和主动对象"></p>
-<hr>
+<p>交互总览图包含了一系列引用框图(交互具体值).
+总览图将这些引用组织为更大规模的逻辑和过程流的结构.
+任何顺序图都可以使用sd图框围绕起来，并对其命名.
+当需要引用响应名字的sd图框时，可以使用ref图框. 关联交互图的示例如下:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/example-interaction-occurrence.png"
+alt="交互具体值的示例" /> ___</p>
+<h4 id="对类调用静态或类方法的消息">对类调用静态(或类)方法的消息</h4>
+<p>可以通过使用生命线框图标记来表示对类或静态方法的调用，其中的生命线框图表示接受消息的对象是类，或者更准确地说是元类(meta-class)的示例，如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/invoking-class-or-static-methods.png"
+alt="调用类或静态方法, 以元类的实例表示类对象" /> ___</p>
+<h4 id="多态消息和案例">多态消息和案例</h4>
+<p>多态性是OO设计的基础,
+在UML的顺序图中表示多态性，一种方法是使用多个顺序图，其中一个表示到抽象超类或接口对象的多态消息，其余的顺序图分别详细表示每一种多态案例，其中每个顺序图都以创始的多态消息作为起点，如下图描述所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/modeling-polymorphic-cases.png"
+alt="用顺序图对多态案例建模的方法" /> ___</p>
+<h4 id="异步和同步调用">异步和同步调用</h4>
+<p>异步消息调用不等待响应，不会阻塞.
+异步消息可以在多线程坏境中使用，因此能够创建和初始化新的执行线程.
+UML中利用刺形箭头消息表示异步调用，常规同步(阻塞)调用用实心箭头表示，如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-interaction-diagrams/asynchronous-calls-and-active-objects.png"
+alt="异步调用和主动对象" /> ___</p>
 
             
 
@@ -534,7 +601,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。\n监听属性变化需要以下几步:\n\n使用函数 addObserver:forKeyPath:options:context: 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\n为了响应被观察者对象的变化通知，观察者必须实现 observeValueForKeyPath:ofObject:change:context: 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context: 方法会自动调用。\n调用 – removeObserver:forKeyPath:context: 取消注册。\n\n\n\n本文内容如下:\n\n注册KVO\n实现KVO反馈\n移除KVO观察者\n自动化及手动的属性通知\n注册对依赖键路径的KVO\n\n注册KVO","dateCreated":"2015-08-25T22:00:27+08:00","dateModified":"2017-12-02T10:52:53+08:00","datePublished":"2015-08-25T22:00:27+08:00","description":"KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。\n监听属性变化需要以下几步:\n\n使用函数 addObserver:forKeyPath:options:context: 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\n为了响应被观察者对象的变化通知，观察者必须实现 observeValueForKeyPath:ofObject:change:context: 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context: 方法会自动调用。\n调用 – removeObserver:forKeyPath:context: 取消注册。\n","headline":"iOS初探KVO","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/25/ios-know-kvo/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/25/ios-know-kvo/","keywords":"iOS, KVO"}</script>
-    <meta name="description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"KVO,\r\n即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在\r\nMVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller\r\n会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听\r\nModel 对象的属性变化。除此之外，在 Model\r\n对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model\r\n对象或者其自身的属性变化。\r\n监听属性变化需要以下几步:\r\n\r\n使用函数 addObserver:forKeyPath:options:context:\r\n建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\r\n为了响应被观察者对象的变化通知，观察者必须实现\r\nobserveValueForKeyPath:ofObject:change:context:\r\n方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\r\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context:\r\n方法会自动调用。\r\n调用 – removeObserver:forKeyPath:context:\r\n取消注册。\r\n\r\n\r\n本文内容如下:\r\n\r\n注册KVO\r\n实现KVO反馈\r\n移除KVO观察者\r\n自动化及手动的属性通知\r\n注册对依赖键路径的KVO\r\n\r\n注册KVO\r\n任意一个对象都可以订阅以便被通知到其他对象状态的改变。这个过程大部分是内建的，自动的，透明的。KVO\r\n的机制可以很方便的使用多个监听者监听同一属性的变化。\r\n注册通知使用 addObserver:forKeyPath:options:context:\r\n方法实现，接下来看看各个参数的含义。参考文档 NSKeyValueObserving\r\nProtocol Reference , 注册 KVO 的函数定义如下:\r\n1234- (void)addObserver:(NSObject *)anObserver         forKeyPath:(NSString *)keyPath            options:(NSKeyValueObservingOptions)options            context:(void *)context\r\n其中\r\n\r\nanObserver 指注册 KVO 通知的对象。观察者必须实现\r\nobserveValueForKeyPath:ofObject:change:context:\r\n以对被观察对象的改变做出响应。\r\nkeyPath 指相对于被观察者的属性，此值必须不能为\r\nnil。\r\noptions 是 NSKeyValueObservingOptions\r\n定义的常量值的组合，这些值指定了在发出的观察通知中会包含哪些东西。不同的指定值会导致观察通知中包含的值不同。\r\ncontext 该值可以是任一数据值，会在\r\nobserveValueForKeyPath:ofObject:change:context: 中传递给\r\nanObserver，也就是这个参数值与\r\nobserveValueForKeyPath:ofObject:change:context: 的\r\ncontext 参数的值相等。\r\n\r\n关于keyPath\r\n关于 keyPath,\r\n如果直接传入字符串值，对于拼写错误这种不能由编译器检查到的错误，会导致\r\nKVO 不会执行。可使用 NSStringFromSelector 和 一个\r\n@selector 字面值的组合来避免，例如:\r\nNSStringFromSelector(@selector(isFinished))\r\n由于 @selector 检查目标中的所有可用\r\nselector，这并不能阻止所有的错误，但它可用捕获大部分-包括捕获 Xcode\r\n自动重构带来的改变。\r\n关于options\r\n上面的参数 options 的值决定了传向\r\nobserveValueForKeyPath:ofObject:change:context: 的\r\nchange 字典包含的值。如果传值 0 表示没有 change\r\n字典值。 NSKeyValueObservingOptions 的定义如下:\r\n123456typedef NS_OPTIONS(NSUInteger, NSKeyValueObservingOptions) &#123;    NSKeyValueObservingOptionNew = 0x01,    NSKeyValueObservingOptionOld = 0x02,    NSKeyValueObservingOptionInitial NS_ENUM_AVAILABLE(10_5, 2_0) = 0x04,    NSKeyValueObservingOptionPrior NS_ENUM_AVAILABLE(10_5, 2_0) = 0x08&#125;;\r\n\r\nNSKeyValueObservingOptionNew 表示 change\r\n字典中应该包含监听对象的新属性值。\r\nNSKeyValueObservingOptionOld 表示 change\r\n字典中应该包含监听对象的旧属性值，即改变前的值。\r\nNSKeyValueObservingOptionInitial\r\n如果设定了该值，在注册观察者的方法返回之前就会发送通知给观察者。在注册观察者时，如果同时指定了\r\nNSKeyValueObservingOptionNew，那么在发出的通知中，\r\nchange 字典中会包含 NSKeyValueChangeNewKey\r\n及被观察对象的当前值，但是却不会包含 NSKeyValueChangeOldKey，且\r\nNSKeyValueChangeKindKey 对应的值是\r\nNSKeyValueChangeSetting。\r\nNSKeyValueObservingOptionPrior\r\n使得被观察对象的值在改变之前和改变之后都会发送通知，而不仅仅是在改变之后发送一个通知。在被观察对象的值发生改变之前(和- willChange...:被触发的时间相对应)发送的通知中，change\r\n字典中包含 NSKeyValueChangeNotificationIsPriorKey，其值是\r\n[NSNumber numberWithBool:YES]。指定该值后，想要知道被观察对象改变前后的值，还是需要指定\r\nNSKeyValueObservingOptionNew 和\r\nNSKeyValueObservingOptionOld。我们可以像以下这样区分通知是在改变之前还是之后被触发的:\r\n\r\n1234567if ([change[NSKeyValueChangeNotificationIsPriorKey] boolValue]) &#123;    // 改变之前&#125; else &#123;    // 改变之后&#125;\r\n关于context\r\n关于 context\r\n参数，其作用可用来标识观察者的身份，在多个观察者观察同一键值时，尤其在处理父类和子类都观察同一键值时非常有用。\r\n那么如何正确声明一个 context 呢? 建议如下:\r\nstatic void * XXContext = &amp;XXContext;\r\n其值就是一个存储自身指针的静态变量值，使用示例如下:\r\n1234567- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;    if (context == XXContext) &#123;            &#125; else &#123;        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];    &#125;&#125;\r\n实现KVO反馈\r\n注册 KVO 之后，观察者需要实现\r\n- observeValueForKeyPath:ofObject:change:context:，其实现类似于:\r\n1234567- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;    if (context == XXContext) &#123;            &#125; else &#123;        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];    &#125;&#125;\r\n其中:\r\n\r\nkeyPath 指相对于被监听对象 object 的键路径\r\nobject 指键路径 keyPath\r\n所属对象，即被监听对象\r\nchange 描述被监听属性的变化信息\r\ncontext 注册 KVO 时由监听者提供，见上节关于\r\ncontext 的描述\r\n\r\nchange 字典中包含的 key 值包括:\r\n\r\nNSKeyValueChangeKindKey\r\n\r\n其值是 NSNumber 对象，与 NSKeyValueChange\r\n定义的枚举值之一对应，指示发生了哪种类型的变化。\r\nNSKeyValueChangeSetting 指示被观察者接收到了\r\nsetValue:forKey: 消息，或者其 set\r\n方法被调用，或者调用了 willChangeValueForKey: or\r\ndidChangeValueForKey: 系列方法。\r\nNSKeyValueChangeInsertion, NSKeyValueChangeRemoval,\r\n或者 NSKeyValueChangeReplacement\r\n表示向集合代理发送了改变集合值的消息，或者发送了其他符合\r\nkey-value-coding-compliant 规则的集合操作消息。\r\n可以使用 NSNumber 的 intValue\r\n方法获取监控对象发生的改变类型。\r\n\r\nNSKeyValueChangeNewKey\r\n\r\n如果 NSKeyValueChangeKindKey 的值是\r\nNSKeyValueChangeSetting，且在注册观察者时指定了\r\nNSKeyValueObservingOptionNew\r\n值，那么该键所对应的值就是监测对象的新值。\r\n对于 NSKeyValueChangeInsertion 或者\r\nNSKeyValueChangeReplacement，如果注册观察者时指定了\r\nNSKeyValueObservingOptionNew, 那么该键所对应的值是一个 NSArray\r\n实例，里面分别对应被插入和替换后的值。\r\n\r\nNSKeyValueChangeOldKey\r\n\r\n如果 NSKeyValueChangeKindKey 的值是\r\nNSKeyValueChangeSetting，且在注册时指定了\r\nNSKeyValueObservingOptionOld，那么该键所对应的值就是被监测对象改变前的值。\r\n对于 NSKeyValueChangeRemoval 或者\r\nNSKeyValueChangeReplacement，如果注册观察者时指定了\r\nNSKeyValueObservingOptionOld，该键所对应的值是 NSArray\r\n实例，里面分别对应的是检测对象中已被移除和被替换前的值。\r\n\r\nNSKeyValueChangeIndexesKey\r\n\r\n如果 NSKeyValueChangeKindKey 的值是\r\nNSKeyValueChangeInsertion、NSKeyValueChangeRemoval\r\n或者 NSKeyValueChangeReplacement，那么该键所对应的值是\r\nNSIndexSet 实例，里面包含了被插入、被移除或者被替换的值。\r\n\r\nNSKeyValueChangeNotificationIsPriorKey\r\n\r\n当注册观察者时指定了\r\nNSKeyValueObservingOptionPrior，那么该消息会在检测对象发生改变前发送通知，该键对应的值是\r\n[NSNumber numberWithBool:YES] 对象。\r\n移除KVO观察者\r\n当一个观察者完成了监听一个对象的改变，需要调用\r\n–removeObserver:forKeyPath:context:。它经常在\r\n-observeValueForKeyPath:ofObject:change:context:，或者\r\n-dealloc 中被调用。\r\n如果你调用 –removeObserver:forKeyPath:context:\r\n移除一个观察者对象，但这个对象没有被注册为观察者(因为它已经解注册了或者开始没有注册)，则会抛出一个异常。Objective-C\r\n中，没有一个内建的方式来检查对象是否注册，这会导致我们需要用一种相当不好的方式\r\n@try 和一个没有处理的\r\n@catch,如下所示:\r\n1234567891011121314- (void)observeValueForKeyPath:(NSString *)keyPath                      ofObject:(id)object                        change:(NSDictionary *)change                       context:(void *)context&#123;    if ([keyPath isEqualToString:NSStringFromSelector(@selector(isFinished))]) &#123;        if ([object isFinished]) &#123;          @try &#123;              [object removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished))];          &#125;          @catch (NSException * __unused exception) &#123;&#125;        &#125;    &#125;&#125;\r\n自动化及手动的属性通知\r\nKVO 的自动通知，对于非集合对象，直接使用属性的 set\r\n方法即可自动触发 KVO；对于集合对象，可使用如下代理方法:\r\n123- mutableArrayValueForKey:- mutableSetValueForKey:- mutableOrderedSetValueForKey:\r\n关于如何为 NSMutableArray 添加 KVO，可参考如何为NSMutableArray添加KVO.\r\nKVO\r\n很有用并且被广泛采用，正是因为这样，大部分需要得到正确绑定的工作自动被编译和进行时接管。Class\r\n可以通过重写 +automaticallyNotifiesObserversForKey:\r\n,使需要关闭自动 KVO 的键路径返回 NO，如下所示，关闭\r\nopeningBalance 路径的自动 KVO 通知:\r\n1234567891011+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey &#123;     BOOL automatic = NO;    if ([theKey isEqualToString:@&quot;openingBalance&quot;]) &#123;        automatic = NO;    &#125;    else &#123;        automatic = [super automaticallyNotifiesObserversForKey:theKey];    &#125;    return automatic;&#125;\r\n那么，关闭键路径的自动 KVO 通知后，如何手动触发一个观察对象的 KVO\r\n呢？你需要在改变值之前调用 willChangeValueForKey:,\r\n在改变值之后调用 didChangeValueForKey:, 以下示例实现了\r\nopeningBalance 属性的手动触发:\r\n1234567- (void)setOpeningBalance:(double)theBalance &#123;    if (theBalance != _openingBalance) &#123;        [self willChangeValueForKey:@&quot;openingBalance&quot;];        _openingBalance = theBalance;        [self didChangeValueForKey:@&quot;openingBalance&quot;];    &#125;&#125;\r\n如果一个单一操作引发多个键路径值的改变，那么你可以使用嵌套的 KVO\r\n来通知观察者，如下所示:\r\n12345678- (void)setOpeningBalance:(double)theBalance &#123;    [self willChangeValueForKey:@&quot;openingBalance&quot;];    [self willChangeValueForKey:@&quot;itemChanged&quot;];    _openingBalance = theBalance;    _itemChanged = _itemChanged+1;    [self didChangeValueForKey:@&quot;itemChanged&quot;];    [self didChangeValueForKey:@&quot;openingBalance&quot;];&#125;\r\n对于有序多元素的集合，手动触发 KVO\r\n时，不仅需要指定哪个键值改变了，还需要指出发生改变的类型以及这种改变影响到的对象在集合中的索引，改变的类型由\r\nNSKeyValueChange 定义，包括 NSKeyValueChangeInsertion,\r\nNSKeyValueChangeRemoval,\r\nNSKeyValueChangeReplacement。发生改变的元素在集合中的索引以\r\nNSIndexSet 对象的形式传递给观察者。以下代码展示了移除\r\ntransactions 中元素时手动触发 KVO 通知:\r\n123456789- (void)removeTransactionsAtIndexes:(NSIndexSet *)indexes &#123;    [self willChange:NSKeyValueChangeRemoval        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];     // Remove the transaction objects at the specified indexes.     [self didChange:NSKeyValueChangeRemoval        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];&#125;\r\n注册对依赖键路径的KVO\r\n考虑如下情形：一个属性A值依赖于另外一个或者多个其他的属性，如果依赖的属性值发生了改变，那么属性A也应该相应的发生改变，并且向观察者发出\r\nKVO 通知，这种情况如何处理呢？\r\n有两种方法:\r\n\r\n重写 keyPathsForValuesAffectingValueForKey:\r\n为注册依赖键实现符合一定规则的方法\r\nkeyPathsForValuesAffecting&lt;Key&gt;\r\n\r\n\r\n重写 keyPathsForValuesAffectingValueForKey:\r\n\r\n举个例子，一个人的全名有其姓和名组成，那么返回全名的方法会如下所示:\r\n123- (NSString *)fullName &#123;    return [NSString stringWithFormat:@&quot;%@ %@&quot;, _firstName, _lastName];&#125;\r\n观察者观察 fullName 属性的变化时，应该在改变\r\nfirstName 和 lastName 时都得到通知以更新\r\nfullName 的值，下面重写\r\nkeyPathsForValuesAffectingValueForKey: 来实现此目的:\r\n12345678910+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;        NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];        if ([key isEqualToString:NSStringFromSelector(@selector(firstName))]) &#123;        NSArray *affectingKeys = @[NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName))];        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];    &#125;    return keyPaths;&#125;\r\n需要注意需调用父类的方法以处理其余的 key 值。\r\n\r\n实现服从 +keyPathsForValuesAffecting&lt;Key&gt;\r\n规则的类方法\r\n\r\n另外，你也可以通过实现服从\r\n+keyPathsForValuesAffecting&lt;Key&gt;\r\n规则的类方法来达到监测复合属性的变化，其中 key\r\n指的是需要监测的属性名(其首字母需大写)。对于上述示例，需要监测\r\nfullName 的变化，是实现\r\n+ (NSSet *)keyPathsForValuesAffectingFullName 类方法:\r\n123+ (NSSet *)keyPathsForValuesAffectingFullName &#123;    return [NSSet setWithObjects:NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName)), nil];&#125;\r\n参考:\r\n\r\nKey-Value\r\nObserving Programming Guide\r\nKey-Value\r\nCoding Programming Guide\r\nKey-Value\r\nObserving\r\niOS下KVO使用过程中的陷阱\r\n\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-08-25T22:00:27+08:00","dateModified":"2024-10-21T22:39:48+08:00","datePublished":"2015-08-25T22:00:27+08:00","description":"KVO,\r\n即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在\r\nMVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller\r\n会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听\r\nModel 对象的属性变化。除此之外，在 Model\r\n对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model\r\n对象或者其自身的属性变化。\r\n监听属性变化需要以下几步:\r\n\r\n使用函数 addObserver:forKeyPath:options:context:\r\n建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。\r\n为了响应被观察者对象的变化通知，观察者必须实现\r\nobserveValueForKeyPath:ofObject:change:context:\r\n方法，该方法定义了观察者是如何对被观察者的变化做出响应的。\r\n当被观察的属性发生变化时，observeValueForKeyPath:ofObject:change:context:\r\n方法会自动调用。\r\n调用 – removeObserver:forKeyPath:context:\r\n取消注册。\r\n","headline":"iOS初探KVO","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/25/ios-know-kvo/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/25/ios-know-kvo/","keywords":"iOS, KVO"}</script>
+    <meta name="description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS初探KVO">
 <meta property="og:url" content="http://liumh.com/2015/08/25/ios-know-kvo/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监">
+<meta property="og:description" content="KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-08-25T14:00:27.000Z">
-<meta property="article:modified_time" content="2017-12-02T02:52:53.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:39:48.517Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="KVO">
@@ -109,7 +109,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,25 +252,248 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。</p>
+            <p>KVO,
+即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在
+MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller
+会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听
+Model 对象的属性变化。除此之外，在 Model
+对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model
+对象或者其自身的属性变化。</p>
 <p>监听属性变化需要以下几步:</p>
-<ol>
-<li>使用函数 <code>addObserver:forKeyPath:options:context:</code> 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
-<li>为了响应被观察者对象的变化通知，观察者必须实现 <code>observeValueForKeyPath:ofObject:change:context:</code> 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
-<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code> 方法会自动调用。</li>
-<li>调用 <code>– removeObserver:forKeyPath:context:</code> 取消注册。</li>
+<ol type="1">
+<li>使用函数 <code>addObserver:forKeyPath:options:context:</code>
+建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
+<li>为了响应被观察者对象的变化通知，观察者必须实现
+<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
+<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法会自动调用。</li>
+<li>调用 <code>– removeObserver:forKeyPath:context:</code>
+取消注册。</li>
 </ol>
 <span id="more"></span>
-
 <p>本文内容如下:</p>
 <ul>
-<li><a href="#registering-kvo">注册KVO</a></li>
-<li><a href="#implement-kvo">实现KVO反馈</a></li>
-<li><a href="#remove-kvo">移除KVO观察者</a></li>
-<li><a href="#auto-manual-notify">自动化及手动的属性通知</a></li>
-<li><a href="#registering-dependent-keys">注册对依赖键路径的KVO</a></li>
+<li>注册KVO</li>
+<li>实现KVO反馈</li>
+<li>移除KVO观察者</li>
+<li>自动化及手动的属性通知</li>
+<li>注册对依赖键路径的KVO</li>
 </ul>
-<h1 id="注册KVO"><a href="#注册KVO" class="headerlink" title="注册KVO"></a>注册KVO</h1>
+<h1 id="注册kvo">注册KVO</h1>
+<p>任意一个对象都可以订阅以便被通知到其他对象状态的改变。这个过程大部分是内建的，自动的，透明的。KVO
+的机制可以很方便的使用多个监听者监听同一属性的变化。</p>
+<p>注册通知使用 <code>addObserver:forKeyPath:options:context:</code>
+方法实现，接下来看看各个参数的含义。参考文档 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Protocols/NSKeyValueObserving_Protocol/index.html#//apple_ref/occ/instm/NSObject/addObserver:forKeyPath:options:context:">NSKeyValueObserving
+Protocol Reference</a> , 注册 KVO 的函数定义如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)addObserver:(NSObject *)anObserver</span><br><span class="line">         forKeyPath:(NSString *)keyPath</span><br><span class="line">            options:(NSKeyValueObservingOptions)options</span><br><span class="line">            context:(void *)context</span><br></pre></td></tr></table></figure>
+<p>其中</p>
+<ul>
+<li><em>anObserver</em> 指注册 KVO 通知的对象。观察者必须实现
+<code>observeValueForKeyPath:ofObject:change:context:</code>
+以对被观察对象的改变做出响应。</li>
+<li><em>keyPath</em> 指相对于被观察者的属性，此值必须不能为
+<code>nil</code>。</li>
+<li><em>options</em> 是 <code>NSKeyValueObservingOptions</code>
+定义的常量值的组合，这些值指定了在发出的观察通知中会包含哪些东西。不同的指定值会导致观察通知中包含的值不同。</li>
+<li><em>context</em> 该值可以是任一数据值，会在
+<code>observeValueForKeyPath:ofObject:change:context:</code> 中传递给
+<em>anObserver</em>，也就是这个参数值与
+<code>observeValueForKeyPath:ofObject:change:context:</code> 的
+<em>context</em> 参数的值相等。</li>
+</ul>
+<h2 id="关于keypath">关于<em>keyPath</em></h2>
+<p>关于 <em>keyPath</em>,
+如果直接传入字符串值，对于拼写错误这种不能由编译器检查到的错误，会导致
+KVO 不会执行。可使用 <code>NSStringFromSelector</code> 和 一个
+<code>@selector</code> 字面值的组合来避免，例如:</p>
+<p><code>NSStringFromSelector(@selector(isFinished))</code></p>
+<p>由于 <code>@selector</code> 检查目标中的所有可用
+selector，这并不能阻止所有的错误，但它可用捕获大部分-包括捕获 Xcode
+自动重构带来的改变。</p>
+<h2 id="关于options">关于<em>options</em></h2>
+<p>上面的参数 <em>options</em> 的值决定了传向
+<code>observeValueForKeyPath:ofObject:change:context:</code> 的
+<em>change</em> 字典包含的值。如果传值 0 表示没有 <em>change</em>
+字典值。 <code>NSKeyValueObservingOptions</code> 的定义如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_OPTIONS(NSUInteger, NSKeyValueObservingOptions) &#123;</span><br><span class="line">    NSKeyValueObservingOptionNew = 0x01,</span><br><span class="line">    NSKeyValueObservingOptionOld = 0x02,</span><br><span class="line">    NSKeyValueObservingOptionInitial NS_ENUM_AVAILABLE(10_5, 2_0) = 0x04,</span><br><span class="line">    NSKeyValueObservingOptionPrior NS_ENUM_AVAILABLE(10_5, 2_0) = 0x08</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>NSKeyValueObservingOptionNew</em> 表示 <em>change</em>
+字典中应该包含监听对象的新属性值。</li>
+<li><em>NSKeyValueObservingOptionOld</em> 表示 <em>change</em>
+字典中应该包含监听对象的旧属性值，即改变前的值。</li>
+<li><em>NSKeyValueObservingOptionInitial</em>
+如果设定了该值，在注册观察者的方法返回之前就会发送通知给观察者。在注册观察者时，如果同时指定了
+<em>NSKeyValueObservingOptionNew</em>，那么在发出的通知中，
+<em>change</em> 字典中会包含 <em>NSKeyValueChangeNewKey</em>
+及被观察对象的当前值，但是却不会包含 <em>NSKeyValueChangeOldKey</em>，且
+<em>NSKeyValueChangeKindKey</em> 对应的值是
+<em>NSKeyValueChangeSetting</em>。</li>
+<li><em>NSKeyValueObservingOptionPrior</em>
+使得被观察对象的值在改变之前和改变之后都会发送通知，而不仅仅是在改变之后发送一个通知。在被观察对象的值发生改变之前(和<code>- willChange...:</code>被触发的时间相对应)发送的通知中，<em>change</em>
+字典中包含 <em>NSKeyValueChangeNotificationIsPriorKey</em>，其值是
+<code>[NSNumber numberWithBool:YES]</code>。指定该值后，想要知道被观察对象改变前后的值，还是需要指定
+<em>NSKeyValueObservingOptionNew</em> 和
+<em>NSKeyValueObservingOptionOld</em>。我们可以像以下这样区分通知是在改变之前还是之后被触发的:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if ([change[NSKeyValueChangeNotificationIsPriorKey] boolValue]) &#123;</span><br><span class="line">    </span><br><span class="line">// 改变之前</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    </span><br><span class="line">// 改变之后</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="关于context">关于<em>context</em></h2>
+<p>关于 <em>context</em>
+参数，其作用可用来标识观察者的身份，在多个观察者观察同一键值时，尤其在处理父类和子类都观察同一键值时非常有用。</p>
+<p>那么如何正确声明一个 <em>context</em> 呢? 建议如下:</p>
+<p><code>static void * XXContext = &amp;XXContext;</code></p>
+<p>其值就是一个存储自身指针的静态变量值，使用示例如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;</span><br><span class="line">    if (context == XXContext) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实现kvo反馈">实现KVO反馈</h1>
+<p>注册 KVO 之后，观察者需要实现
+<code>- observeValueForKeyPath:ofObject:change:context:</code>，其实现类似于:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context &#123;</span><br><span class="line">    if (context == XXContext) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中:</p>
+<ul>
+<li><em>keyPath</em> 指相对于被监听对象 <em>object</em> 的键路径</li>
+<li><em>object</em> 指键路径 <em>keyPath</em>
+所属对象，即被监听对象</li>
+<li><em>change</em> 描述被监听属性的变化信息</li>
+<li><em>context</em> 注册 KVO 时由监听者提供，见上节关于
+<em>context</em> 的描述</li>
+</ul>
+<p><em>change</em> 字典中包含的 <em>key</em> 值包括:</p>
+<ul>
+<li>NSKeyValueChangeKindKey</li>
+</ul>
+<p>其值是 <em>NSNumber</em> 对象，与 <em>NSKeyValueChange</em>
+定义的枚举值之一对应，指示发生了哪种类型的变化。</p>
+<p><em>NSKeyValueChangeSetting</em> 指示被观察者接收到了
+<em>setValue:forKey:</em> 消息，或者其 <em>set</em>
+方法被调用，或者调用了 <em>willChangeValueForKey:</em> or
+<em>didChangeValueForKey:</em> 系列方法。</p>
+<p><em>NSKeyValueChangeInsertion</em>, <em>NSKeyValueChangeRemoval</em>,
+或者 <em>NSKeyValueChangeReplacement</em>
+表示向集合代理发送了改变集合值的消息，或者发送了其他符合
+<em>key-value-coding-compliant</em> 规则的集合操作消息。</p>
+<p>可以使用 NSNumber 的 <em>intValue</em>
+方法获取监控对象发生的改变类型。</p>
+<ul>
+<li>NSKeyValueChangeNewKey</li>
+</ul>
+<p>如果 <em>NSKeyValueChangeKindKey</em> 的值是
+<em>NSKeyValueChangeSetting</em>，且在注册观察者时指定了
+<em>NSKeyValueObservingOptionNew</em>
+值，那么该键所对应的值就是监测对象的新值。</p>
+<p>对于 <em>NSKeyValueChangeInsertion</em> 或者
+<em>NSKeyValueChangeReplacement</em>，如果注册观察者时指定了
+<em>NSKeyValueObservingOptionNew</em>, 那么该键所对应的值是一个 NSArray
+实例，里面分别对应被插入和替换后的值。</p>
+<ul>
+<li>NSKeyValueChangeOldKey</li>
+</ul>
+<p>如果 <em>NSKeyValueChangeKindKey</em> 的值是
+<em>NSKeyValueChangeSetting</em>，且在注册时指定了
+<em>NSKeyValueObservingOptionOld</em>，那么该键所对应的值就是被监测对象改变前的值。</p>
+<p>对于 <em>NSKeyValueChangeRemoval</em> 或者
+<em>NSKeyValueChangeReplacement</em>，如果注册观察者时指定了
+<em>NSKeyValueObservingOptionOld</em>，该键所对应的值是 NSArray
+实例，里面分别对应的是检测对象中已被移除和被替换前的值。</p>
+<ul>
+<li>NSKeyValueChangeIndexesKey</li>
+</ul>
+<p>如果 <em>NSKeyValueChangeKindKey</em> 的值是
+<em>NSKeyValueChangeInsertion</em>、<em>NSKeyValueChangeRemoval</em>
+或者 <em>NSKeyValueChangeReplacement</em>，那么该键所对应的值是
+NSIndexSet 实例，里面包含了被插入、被移除或者被替换的值。</p>
+<ul>
+<li>NSKeyValueChangeNotificationIsPriorKey</li>
+</ul>
+<p>当注册观察者时指定了
+<em>NSKeyValueObservingOptionPrior</em>，那么该消息会在检测对象发生改变前发送通知，该键对应的值是
+<code>[NSNumber numberWithBool:YES]</code> 对象。</p>
+<h1 id="移除kvo观察者">移除KVO观察者</h1>
+<p>当一个观察者完成了监听一个对象的改变，需要调用
+<code>–removeObserver:forKeyPath:context:</code>。它经常在
+<code>-observeValueForKeyPath:ofObject:change:context:</code>，或者
+<code>-dealloc</code> 中被调用。</p>
+<p>如果你调用 <code>–removeObserver:forKeyPath:context:</code>
+移除一个观察者对象，但这个对象没有被注册为观察者(因为它已经解注册了或者开始没有注册)，则会抛出一个异常。Objective-C
+中，没有一个内建的方式来检查对象是否注册，这会导致我们需要用一种相当不好的方式
+<span class="citation" data-cites="try">@try</span> 和一个没有处理的
+<span class="citation" data-cites="catch">@catch</span>,如下所示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath</span><br><span class="line">                      ofObject:(id)object</span><br><span class="line">                        change:(NSDictionary *)change</span><br><span class="line">                       context:(void *)context</span><br><span class="line">&#123;</span><br><span class="line">    if ([keyPath isEqualToString:NSStringFromSelector(@selector(isFinished))]) &#123;</span><br><span class="line">        if ([object isFinished]) &#123;</span><br><span class="line">          @try &#123;</span><br><span class="line">              [object removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished))];</span><br><span class="line">          &#125;</span><br><span class="line">          @catch (NSException * __unused exception) &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="自动化及手动的属性通知">自动化及手动的属性通知</h1>
+<p>KVO 的自动通知，对于非集合对象，直接使用属性的 <em>set</em>
+方法即可自动触发 KVO；对于集合对象，可使用如下代理方法:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- mutableArrayValueForKey:</span><br><span class="line">- mutableSetValueForKey:</span><br><span class="line">- mutableOrderedSetValueForKey:</span><br></pre></td></tr></table></figure>
+<p>关于如何为 NSMutableArray 添加 KVO，可参考<a
+href="/2015/08/22/ios-nsmutablearray-kvo/">如何为NSMutableArray添加KVO</a>.</p>
+<p>KVO
+很有用并且被广泛采用，正是因为这样，大部分需要得到正确绑定的工作自动被编译和进行时接管。Class
+可以通过重写 <code>+automaticallyNotifiesObserversForKey:</code>
+,使需要关闭自动 KVO 的键路径返回 <em>NO</em>，如下所示，关闭
+<em>openingBalance</em> 路径的自动 KVO 通知:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey &#123;</span><br><span class="line"> </span><br><span class="line">    BOOL automatic = NO;</span><br><span class="line">    if ([theKey isEqualToString:@&quot;openingBalance&quot;]) &#123;</span><br><span class="line">        automatic = NO;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        automatic = [super automaticallyNotifiesObserversForKey:theKey];</span><br><span class="line">    &#125;</span><br><span class="line">    return automatic;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么，关闭键路径的自动 KVO 通知后，如何手动触发一个观察对象的 KVO
+呢？你需要在改变值之前调用 <code>willChangeValueForKey:</code>,
+在改变值之后调用 <code>didChangeValueForKey:</code>, 以下示例实现了
+<em>openingBalance</em> 属性的手动触发:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (void)setOpeningBalance:(double)theBalance &#123;</span><br><span class="line">    if (theBalance != _openingBalance) &#123;</span><br><span class="line">        [self willChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">        _openingBalance = theBalance;</span><br><span class="line">        [self didChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果一个单一操作引发多个键路径值的改变，那么你可以使用嵌套的 KVO
+来通知观察者，如下所示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (void)setOpeningBalance:(double)theBalance &#123;</span><br><span class="line">    [self willChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">    [self willChangeValueForKey:@&quot;itemChanged&quot;];</span><br><span class="line">    _openingBalance = theBalance;</span><br><span class="line">    _itemChanged = _itemChanged+1;</span><br><span class="line">    [self didChangeValueForKey:@&quot;itemChanged&quot;];</span><br><span class="line">    [self didChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于有序多元素的集合，手动触发 KVO
+时，不仅需要指定哪个键值改变了，还需要指出发生改变的类型以及这种改变影响到的对象在集合中的索引，改变的类型由
+<em>NSKeyValueChange</em> 定义，包括 <em>NSKeyValueChangeInsertion</em>,
+<em>NSKeyValueChangeRemoval</em>,
+<em>NSKeyValueChangeReplacement</em>。发生改变的元素在集合中的索引以
+NSIndexSet 对象的形式传递给观察者。以下代码展示了移除
+<em>transactions</em> 中元素时手动触发 KVO 通知:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (void)removeTransactionsAtIndexes:(NSIndexSet *)indexes &#123;</span><br><span class="line">    [self willChange:NSKeyValueChangeRemoval</span><br><span class="line">        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];</span><br><span class="line"> </span><br><span class="line">    // Remove the transaction objects at the specified indexes.</span><br><span class="line"> </span><br><span class="line">    [self didChange:NSKeyValueChangeRemoval</span><br><span class="line">        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="注册对依赖键路径的kvo">注册对依赖键路径的KVO</h1>
+<p>考虑如下情形：一个属性A值依赖于另外一个或者多个其他的属性，如果依赖的属性值发生了改变，那么属性A也应该相应的发生改变，并且向观察者发出
+KVO 通知，这种情况如何处理呢？</p>
+<p>有两种方法:</p>
+<ul>
+<li>重写 <code>keyPathsForValuesAffectingValueForKey:</code></li>
+<li>为注册依赖键实现符合一定规则的方法
+<code>keyPathsForValuesAffecting&lt;Key&gt;</code></li>
+</ul>
+<ol type="1">
+<li>重写 <code>keyPathsForValuesAffectingValueForKey:</code></li>
+</ol>
+<p>举个例子，一个人的全名有其姓和名组成，那么返回全名的方法会如下所示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)fullName &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;%@ %@&quot;, _firstName, _lastName];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>观察者观察 <em>fullName</em> 属性的变化时，应该在改变
+<em>firstName</em> 和 <em>lastName</em> 时都得到通知以更新
+<em>fullName</em> 的值，下面重写
+<code>keyPathsForValuesAffectingValueForKey:</code> 来实现此目的:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;</span><br><span class="line">    </span><br><span class="line">    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];</span><br><span class="line">    </span><br><span class="line">    if ([key isEqualToString:NSStringFromSelector(@selector(firstName))]) &#123;</span><br><span class="line">        NSArray *affectingKeys = @[NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName))];</span><br><span class="line">        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];</span><br><span class="line">    &#125;</span><br><span class="line">    return keyPaths;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意需调用父类的方法以处理其余的 <em>key</em> 值。</p>
+<ol start="2" type="1">
+<li>实现服从 <code>+keyPathsForValuesAffecting&lt;Key&gt;</code>
+规则的类方法</li>
+</ol>
+<p>另外，你也可以通过实现服从
+<code>+keyPathsForValuesAffecting&lt;Key&gt;</code>
+规则的类方法来达到监测复合属性的变化，其中 <em>key</em>
+指的是需要监测的属性名(其首字母需大写)。对于上述示例，需要监测
+<em>fullName</em> 的变化，是实现
+<code>+ (NSSet *)keyPathsForValuesAffectingFullName</code> 类方法:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (NSSet *)keyPathsForValuesAffectingFullName &#123;</span><br><span class="line">    return [NSSet setWithObjects:NSStringFromSelector(@selector(firstName)), NSStringFromSelector(@selector(lastName)), nil];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考:</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177-BCICJDHA">Key-Value
+Observing Programming Guide</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html#//apple_ref/doc/uid/10000107-SW1">Key-Value
+Coding Programming Guide</a></li>
+<li><a target="_blank" rel="noopener" href="http://nshipster.cn/key-value-observing/">Key-Value
+Observing</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://www.cnblogs.com/wengzilin/p/4346775.html">iOS下KVO使用过程中的陷阱</a></li>
+</ul>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -441,7 +665,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

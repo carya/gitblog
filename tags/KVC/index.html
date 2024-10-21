@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,7 +251,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文讨论的是，对于类中声明为 readonly 的属性值，我们就不可以修改其值了么？如何可以，那么如何修改呢？</p>
+                    <p>本文讨论的是，对于类中声明为 readonly
+的属性值，我们就不可以修改其值了么？如何可以，那么如何修改呢？</p>
 <p>为了便于说明，定义一个 <code>ACLStudent</code> 的类:</p>
                     
                         <a
@@ -302,11 +304,27 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>进一步阅读之前，可以先思考这个问题: 存在数组 <code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
-<p>KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
-<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 <em>@</em> 开始的字符串, 也可理解为: KVC集合操作符允许在 <code>valueForKeyPath:</code> 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:</p>
-<p>![Operator key path format][]</p>
-<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
+                    <p>进一步阅读之前，可以先思考这个问题: 存在数组
+<code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
+<p>KVC
+的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
+<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Protocols/NSKeyValueCoding_Protocol/index.html#//apple_ref/occ/instm/NSObject/valueForKeyPath:">valueForKeyPath:</a>
+方法。集合操作是以 <em><span class="citation" data-cites="*">@*</span>
+开始的字符串, 也可理解为: KVC集合操作符允许在
+<code>valueForKeyPath:</code> 方法中使用 key path
+符号在一个集合中执行方法。无论什么时候你在 key path
+中看见了</em>@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的
+key path 一样。下图就是集合操作符的格式:</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-kvc/ios-kvc-keypath.jpg"
+alt="Operator key path format" />
+<figcaption aria-hidden="true">Operator key path format</figcaption>
+</figure>
+<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的
+NSArray 或者
+NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
                     
                         <a
                             href="/2015/09/04/ios-kvc-collection-operators/"
@@ -360,7 +378,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

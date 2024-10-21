@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: [Coding Guidelines for Cocoa][]。当然本文会讲一些官网没有的东西。\n\n\n\n常量命名\n用枚举表示状态、选项、状态码\n类及其方法命名\n分类及其方法命名\n\n常量命名","dateCreated":"2015-11-19T22:59:16+08:00","dateModified":"2021-04-18T11:47:43+08:00","datePublished":"2015-11-19T22:59:16+08:00","description":"本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: [Coding Guidelines for Cocoa][]。当然本文会讲一些官网没有的东西。","headline":"谈谈iOS中的命名规范","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/19/ios-talk-naming-guide/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/19/ios-talk-naming-guide/","keywords":"iOS"}</script>
-    <meta name="description" content="本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: [Coding Guidelines for Cocoa][]。当然本文会讲一些官网没有的东西。">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文谈谈 iOS\r\n开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步:\r\nCoding\r\nGuidelines for Cocoa。当然本文会讲一些官网没有的东西。\r\n\r\n\r\n常量命名\r\n用枚举表示状态、选项、状态码\r\n类及其方法命名\r\n分类及其方法命名\r\n\r\n常量命名\r\niOS\r\n开发中，肯定避免不了要命名一些常量，那么，我们应该怎样来命名常量呢？\r\n在讨论上述问题前，先来了解定义常量的两种方式。\r\n第一种，使用 #define 预处理定义常量。例如：\r\n#define ANIMATION_DURATION 0.3\r\n定义一个 ANIMATION_DURATION 常量来表示 UI\r\n动画的一个常量时间，这样，代码中所有使用 ANIMATION_DURATION\r\n的地方都会被替换成\r\n0.3，但是这样定义的常量无类型信息，且如果你在调试时想要查看\r\nANIMATION_DURATION\r\n的值却无从下手，因为在预处理阶段ANIMATION_DURATION\r\n就已经被替换了，不便于调试。因此，弃用这种方式定义常量。\r\n第二种，使用类型常量。将上面的预处理定义常量修改成类型常量:\r\nstatic const NSTimeInterval kAnimationDuration = 0.3;\r\n这样就为常量带入了类型信息，那么定义类型常量又有什么规范呢？\r\n\r\n对于局限于某编译单元(实现文件)的常量，通常以字符k开头，例如上文中的\r\nkAnimationDuration，且需要以 static const\r\n修饰，例如:\r\n\r\nstatic const NSTimeInterval kAnimationDuration = 0.3;\r\n\r\n对于定义于类头文件的常量，外部可见，则通常以定义该常量所在类的类名开头，例如\r\nEOCViewClassAnimationDuration, 仿照苹果风格，在头文件中进行\r\nextern 声明，在实现文件中定义其值:\r\n\r\n12345678EOCViewClass.hextern const NSTimeInterval EOCViewClassAnimationDuration;EOCViewClass.mconst NSTimeInterval EOCViewClassAnimationDuration = 0.3;\r\n对于字符串常量，则会像这样:\r\n12345678EOCViewClass.hextern NSString *const EOCViewClassStringConstant;EOCViewClass.mNSString *const EOCViewClassStringConstant = @&quot;EOCStringConstant&quot;;\r\n常量定义是从右往左解读，上面的示例中就是定义了一个常量指针，其指向一个\r\nNSString 对象,\r\n这样该常量就不会被随意修改。至于这种暴露出来的类常量最前面是否加上字母k,\r\n可以根据自己习惯在团队中进行约定，因为从 iOS\r\n的接口中我看到这两种情况都有, 如\r\n12NSString *const UIApplicationLaunchOptionsRemoteNotificationKey;NSString *const UIApplicationLaunchOptionsLocalNotificationKey;\r\n还有:\r\n12NSString *const kCAAnimationCubic;NSString *const kCAAnimationCubicPaced;\r\n用枚举表示状态、选项、状态码\r\n项目中，可用枚举来表示一系列的状态、选项和状态码。例如 iOS SDK 中表示\r\nUICollectionView 滑动方向的枚举定义如下:\r\n1234typedef NS_ENUM(NSInteger, UICollectionViewScrollDirection) &#123;    UICollectionViewScrollDirectionVertical,    UICollectionViewScrollDirectionHorizontal&#125;;\r\n或者定义 UITableView Style 的枚举:\r\n1234typedef NS_ENUM(NSInteger, UITableViewStyle) &#123;    UITableViewStylePlain,      // regular table view    UITableViewStyleGrouped     // preferences style table view&#125;;\r\n从这里可以看出，定义的枚举类型名称应以 2~3\r\n个大写字母开头，而这通常与项目设置的类文件前缀相同，跟随其后的命名应采用驼峰命名法则，命名应准确表述枚举表示的意义，枚举中各个值都应以定义的枚举类型开头，其后跟随各个枚举值对应的状态、选项或者状态码。\r\n对于需要以按位或操作来组合的枚举都应使用 NS_OPTIONS 宏来定义，例如\r\nSDK 中:\r\n123456789typedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) &#123;    UIViewAutoresizingNone                 = 0,    UIViewAutoresizingFlexibleLeftMargin   = 1 &lt;&lt; 0,    UIViewAutoresizingFlexibleWidth        = 1 &lt;&lt; 1,    UIViewAutoresizingFlexibleRightMargin  = 1 &lt;&lt; 2,    UIViewAutoresizingFlexibleTopMargin    = 1 &lt;&lt; 3,    UIViewAutoresizingFlexibleHeight       = 1 &lt;&lt; 4,    UIViewAutoresizingFlexibleBottomMargin = 1 &lt;&lt; 5&#125;;\r\n这样定义的选项能够以 按位或操作符\r\n来进行组合，枚举中每个值均可启用或者禁用某一选项，在使用时，可以使用\r\n按位与操作符 来检测是否启用了某一选项，如下:\r\n123456UIViewAutoresizing resizing = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;if (resizing &amp; UIViewAutoresizingFlexibleWidth) &#123;// UIViewAutoresizingFlexibleWidth is set&#125;\r\n另外，我们可能使用 switch 语句时，会在最后加上 default\r\n分支，但是若用枚举定义状态机，则最好不要使用 default\r\n分支，因为如果稍后再加了一种状态，那么编译器就会发出警告，提示新加入的状态并未在\r\nswitch 分支中处理。假如写上了 default\r\n分支，那么它就会处理这个新状态，从而导致编译器不发出警告，用 NS_ENUM\r\n定义其他枚举类型时也要注意此问题。例如在定义代表 UI\r\n元素样式的枚举时，通常要确保 switch 语句能正确处理所有样式。\r\n总结一下:\r\n\r\n应该用枚举来表示状态机的状态、传递给方法的选项以及状态码等值，给这些值起个易懂的名字。\r\n如果把传递给某个方法的选项表示为枚举类型，而多个选项又可同时使用，那么就将各选项值定义为\r\n2 的幂，以便通过按位或操作将其组合起来。\r\n用 NS_ENUM 与 NS_OPTIONS\r\n宏来定义枚举类型，并指明其底层数据类型。这样就可以确保枚举是用开发者所选的底层数据类型实现出来的，而不是采用编译器所选的类型。\r\n在处理枚举类型的 switch 语句中不要实现 default\r\n分支。这样加入新的枚举值之后，编译器就会发出警告提示，switch\r\n还有未处理的枚举值。\r\n\r\n类及其方法命名\r\nObjective-C\r\n没有其他语言那种内置的命名空间(namespace)机制。因此，我们在起名时要设法避免潜在的命名冲突，否则很容易就重名了。避免此问题的唯一方法就是变相实现命名空间:\r\n为所有名称都加上适当前缀。所选前缀可以是与公司、应用程序或者二者皆有关联的名字。使用\r\nCocoa 和 Cocoa Touch 创建应用程序时一定要注意，Apple\r\n宣传其保留使用所有\"两个字母前缀\"(tow-letter\r\nprefixed)的权利。所以你自己选用的前缀应该是三个字母的。你可以在苹果官网\r\nClass\r\nNames Must Be Unique Across an Entire App 看到上述说明:\r\n\r\nIn order to keep class names unique, the convention is to use\r\nprefixes on all classes. You’ll have noticed that Cocoa and Cocoa Touch\r\nclass names typically start either with NS or UI. Two-letter prefixes\r\nlike these are reserved by Apple for use in framework classes.\r\nYour own classes should use three letter prefixes. These might relate\r\nto a combination of your company name and your app name, or even a\r\nspecific component within your app.\r\nYou should also name your classes using a noun that makes it clear\r\nwhat the class represents, like these examples from Cocoa and Cocoa\r\nTouch:\r\nNSWindow | CAAnimation | NSWindowController |\r\nNSManagedObjectContext\r\n\r\n另外，在文档 Coding\r\nGuidelines for Cocoa 中提到:\r\n\r\nUse prefixes when naming classes, protocols, functions, constants,\r\nand typedef structures. Do not use prefixes when naming methods; methods\r\nexist in a name space created by the class that defines them. Also,\r\ndon’t use prefixes for naming the fields of a structure.\r\n\r\n这里需要说明两点:\r\n\r\n上述所说的functions指的是纯 C 函数。对于纯 C\r\n函数和全局变量，不论其处于头文件或者其实现文件中，在编译好的目标文件中，这些名称要算作\"顶级符号\"(top-level\r\nsymbol)的。因此我们总应该为这种 C 函数的名字加上前缀。通常情况下，这类 C\r\n函数我们可以以定义其类的名字作为前缀。这样，在调试时，若此符号出现在栈回溯信息中，则很容易就能判明问题源自哪块代码。例如:\r\n\r\n123456789101112131415161718192021ACLSoundPlayer.h#import &lt;Foundation/Foundation.h&gt;@interface ACLSoundPlayer : NSObject@endACLSoundPlayer.m#import &quot;ACLSoundPlayer.h&quot;#import &lt;AudioToolbox/AudioToolbox.h&gt;void ACLSoundPlayerCompletion(SystemSoundID ssID, void *clientData) &#123;&#125;@implementation ACLSoundPlayer@end\r\n\r\n上述引用说到不应该为 Objective-C methods\r\n添加前缀，我觉得应该添加一个例外，当我们定义分类中的方法时，则总应该为其添加前缀，这会在下一条详细说明。\r\n\r\n最后一种情况，若为第三库编写自己的代码，并准备将其发布为程序库供他人开发应用程序所用时，你应该给你所用的那份第三方库代码都加上你自己的前缀。为便于说明，假如你要发布的程序库叫\r\nEOCLibrary，你所使用的第三方库叫 XYZLibrary，则你应该把你使用的\r\nXYZLibrary 中所有名字都冠以 EOC, 成为\r\nEOCXYZLibrary, 原因如下:\r\n\r\n你的程序所包含的那个第三方库也许还会为应用程序本身所引入。\r\n你可能会想，让应用程序本身不要直接引入 XYZLibrary，改用 EOCLibrary\r\n中使用的那个，但是，应用程序也许还会引入另一个名为 ABCLibrary\r\n的第三方库，而该库中又包含了 XYZLibrary。此时，如果你和 ABCLibrary\r\n的作者都不给各自所用的 XYZLibrary\r\n加前缀，那么应用程序依然会出现重复符号错误。\r\n你的库里所引用的第三方库是 X 版本的，而应用程序却需要引用第三库的 Y\r\n版本的功能。\r\n\r\n对于类中的方法命名，应遵循以下规则:\r\n\r\n如果方法的返回值是新建的，那么方法名的首个词应是返回值的类型，例如:\r\n+stringWithString:。除非前面还有修饰语，例如\r\nlocalizedString。属性的存取方法不遵循这种命名方式。\r\nBOOL属性应加 is 前缀。如果某方法返回非属性的 Boolean\r\n值，那么应该根据你功能，选用 has 或 is 当前缀。\r\n\r\n分类及其方法命名\r\n分类机制通常用于向无源码的既有类中新增功能。分类中的方法是直接加在类里面的，它们就好比这个类固有的方法，将分类方法加入类中这一操作是在运行期系统加载分类时完成的。运行期系统会把分类中所实现的每个方法都加入类的方法列表中。如果类中本来就有此方法，而分类中又实现了一次，那么分类中的方法会覆盖原来那一份实现代码。实际上可能会发生很多次覆盖，比如某个分类中的方法覆盖了\"主实现\"中的相关方法，而另外一个分类中的方法又覆盖了这个分类中的方法，多次覆盖的结果以最后一个分类为准。当有多份实现时，无法确定运行时使用的是那份实现。由这样引发的\r\nbug 很难追查。\r\n那么，如何来最大限度的避免这种覆盖呢?\r\n在 iOS\r\n开发中，没有命名空间的概念。通常，我们通过为项目中所有类命名加上特有的前缀来实现命名空间的功能，来避免可能发生的与使用第三方库中的方法命名相同。同样的，这里我们也是为分类，以及分类中的所有方法都加上特定前缀。这个前缀应该与应用程序库中其他地方所用的前缀相同，通常会使用公司名或应用程序名来做决定。例如来编写一个判断对象是否为空的分类方法:\r\n1234567NSObject+ACLNetworkingMethods.h@interface NSObject (ACLNetworkingMethods)- (BOOL)acl_isEmptyObject;@end\r\n这里为分类名以及分类中的方法加上了 ACL\r\n的前缀。注意在方法中，需前缀小写。\r\n另外，使用分类时，不要刻意覆写分类中的方法，尤其是当你把代码发布为程序库供其他开发者使用时，因为你无法决定其他开发者需要的是方法哪份实现。\r\n总结:\r\n\r\n向第三方类中添加分类时，总应该给分类名称加上你专有的前缀，前缀须大写。\r\n向第三方类中添加分类时，总应该给分类中的方法名加上你专有的前缀，前缀须小写，且以下划线连接前缀与方法名。\r\n\r\n\r\n本文内容主要来自[编写高质量iOS与OS X代码的52个有效方法]\r\n一书，欢迎留言交流。\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-11-19T22:59:16+08:00","dateModified":"2024-10-21T22:45:52+08:00","datePublished":"2015-11-19T22:59:16+08:00","description":"本文谈谈 iOS\r\n开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步:\r\nCoding\r\nGuidelines for Cocoa。当然本文会讲一些官网没有的东西。","headline":"谈谈iOS中的命名规范","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/19/ios-talk-naming-guide/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/19/ios-talk-naming-guide/","keywords":"iOS"}</script>
+    <meta name="description" content="本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: Coding Guidelines for Cocoa。当然本文会讲一些官网没有的东西。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="谈谈iOS中的命名规范">
 <meta property="og:url" content="http://liumh.com/2015/11/19/ios-talk-naming-guide/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: [Coding Guidelines for Cocoa][]。当然本文会讲一些官网没有的东西。">
+<meta property="og:description" content="本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: Coding Guidelines for Cocoa。当然本文会讲一些官网没有的东西。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-11-19T14:59:16.000Z">
-<meta property="article:modified_time" content="2021-04-18T03:47:43.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:45:52.304Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,16 +251,177 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>本文谈谈 iOS 开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步: [Coding Guidelines for Cocoa][]。当然本文会讲一些官网没有的东西。</p>
+            <p>本文谈谈 iOS
+开发中的命名规范，主要涉及常量命名、枚举命名、类及其方法命名，以及分类及其方法命名。如果你找的是官网的编码规范，请移步:
+<a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingBasics.html#//apple_ref/doc/uid/20001281-BBCHBFAH">Coding
+Guidelines for Cocoa</a>。当然本文会讲一些官网没有的东西。</p>
 <span id="more"></span>
-
 <ul>
-<li><a href="#name-const">常量命名</a></li>
-<li><a href="#name-enum">用枚举表示状态、选项、状态码</a></li>
-<li><a href="#name-class">类及其方法命名</a></li>
-<li><a href="#name-category">分类及其方法命名</a></li>
+<li>常量命名</li>
+<li>用枚举表示状态、选项、状态码</li>
+<li>类及其方法命名</li>
+<li>分类及其方法命名</li>
 </ul>
-<h1 id="常量命名"><a href="#常量命名" class="headerlink" title="常量命名"></a>常量命名</h1>
+<h1 id="常量命名">常量命名</h1>
+<p>iOS
+开发中，肯定避免不了要命名一些常量，那么，我们应该怎样来命名常量呢？</p>
+<p>在讨论上述问题前，先来了解定义常量的两种方式。</p>
+<p>第一种，使用 <code>#define</code> 预处理定义常量。例如：</p>
+<p><code>#define ANIMATION_DURATION 0.3</code></p>
+<p>定义一个 <code>ANIMATION_DURATION</code> 常量来表示 UI
+动画的一个常量时间，这样，代码中所有使用 <code>ANIMATION_DURATION</code>
+的地方都会被替换成
+0.3，但是这样定义的常量无类型信息，且如果你在调试时想要查看
+<code>ANIMATION_DURATION</code>
+的值却无从下手，因为在预处理阶段<code>ANIMATION_DURATION</code>
+就已经被替换了，不便于调试。因此，弃用这种方式定义常量。</p>
+<p>第二种，使用类型常量。将上面的预处理定义常量修改成类型常量:</p>
+<p><code>static const NSTimeInterval kAnimationDuration = 0.3;</code></p>
+<p>这样就为常量带入了类型信息，那么定义类型常量又有什么规范呢？</p>
+<ul>
+<li>对于局限于某编译单元(实现文件)的常量，通常以字符<code>k</code>开头，例如上文中的
+<code>kAnimationDuration</code>，且需要以 <code>static const</code>
+修饰，例如:</li>
+</ul>
+<p><code>static const NSTimeInterval kAnimationDuration = 0.3;</code></p>
+<ul>
+<li>对于定义于类头文件的常量，外部可见，则通常以定义该常量所在类的类名开头，例如
+<code>EOCViewClassAnimationDuration</code>, 仿照苹果风格，在头文件中进行
+extern 声明，在实现文件中定义其值:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">EOCViewClass.h</span><br><span class="line"></span><br><span class="line">extern const NSTimeInterval EOCViewClassAnimationDuration;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">EOCViewClass.m</span><br><span class="line"></span><br><span class="line">const NSTimeInterval EOCViewClassAnimationDuration = 0.3;</span><br></pre></td></tr></table></figure>
+<p>对于字符串常量，则会像这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">EOCViewClass.h</span><br><span class="line"></span><br><span class="line">extern NSString *const EOCViewClassStringConstant;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">EOCViewClass.m</span><br><span class="line"></span><br><span class="line">NSString *const EOCViewClassStringConstant = @&quot;EOCStringConstant&quot;;</span><br></pre></td></tr></table></figure>
+<p>常量定义是从右往左解读，上面的示例中就是定义了一个常量指针，其指向一个
+NSString 对象,
+这样该常量就不会被随意修改。至于这种暴露出来的类常量最前面是否加上字母<code>k</code>,
+可以根据自己习惯在团队中进行约定，因为从 iOS
+的接口中我看到这两种情况都有, 如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *const UIApplicationLaunchOptionsRemoteNotificationKey;</span><br><span class="line">NSString *const UIApplicationLaunchOptionsLocalNotificationKey;</span><br></pre></td></tr></table></figure>
+<p>还有:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *const kCAAnimationCubic;</span><br><span class="line">NSString *const kCAAnimationCubicPaced;</span><br></pre></td></tr></table></figure>
+<h1 id="用枚举表示状态选项状态码">用枚举表示状态、选项、状态码</h1>
+<p>项目中，可用枚举来表示一系列的状态、选项和状态码。例如 iOS SDK 中表示
+UICollectionView 滑动方向的枚举定义如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, UICollectionViewScrollDirection) &#123;</span><br><span class="line">    UICollectionViewScrollDirectionVertical,</span><br><span class="line">    UICollectionViewScrollDirectionHorizontal</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>或者定义 UITableView Style 的枚举:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, UITableViewStyle) &#123;</span><br><span class="line">    UITableViewStylePlain,      // regular table view</span><br><span class="line">    UITableViewStyleGrouped     // preferences style table view</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，定义的枚举类型名称应以 2~3
+个大写字母开头，而这通常与项目设置的类文件前缀相同，跟随其后的命名应采用驼峰命名法则，命名应准确表述枚举表示的意义，枚举中各个值都应以定义的枚举类型开头，其后跟随各个枚举值对应的状态、选项或者状态码。</p>
+<p>对于需要以按位或操作来组合的枚举都应使用 NS_OPTIONS 宏来定义，例如
+SDK 中:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) &#123;</span><br><span class="line">    UIViewAutoresizingNone                 = 0,</span><br><span class="line">    UIViewAutoresizingFlexibleLeftMargin   = 1 &lt;&lt; 0,</span><br><span class="line">    UIViewAutoresizingFlexibleWidth        = 1 &lt;&lt; 1,</span><br><span class="line">    UIViewAutoresizingFlexibleRightMargin  = 1 &lt;&lt; 2,</span><br><span class="line">    UIViewAutoresizingFlexibleTopMargin    = 1 &lt;&lt; 3,</span><br><span class="line">    UIViewAutoresizingFlexibleHeight       = 1 &lt;&lt; 4,</span><br><span class="line">    UIViewAutoresizingFlexibleBottomMargin = 1 &lt;&lt; 5</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样定义的选项能够以 <strong>按位或操作符</strong>
+来进行组合，枚举中每个值均可启用或者禁用某一选项，在使用时，可以使用
+<strong>按位与操作符</strong> 来检测是否启用了某一选项，如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">UIViewAutoresizing resizing = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;</span><br><span class="line"></span><br><span class="line">if (resizing &amp; UIViewAutoresizingFlexibleWidth) &#123;</span><br><span class="line">// UIViewAutoresizingFlexibleWidth is set</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，我们可能使用 switch 语句时，会在最后加上 default
+分支，但是若用枚举定义状态机，则最好不要使用 default
+分支，因为如果稍后再加了一种状态，那么编译器就会发出警告，提示新加入的状态并未在
+switch 分支中处理。假如写上了 default
+分支，那么它就会处理这个新状态，从而导致编译器不发出警告，用 NS_ENUM
+定义其他枚举类型时也要注意此问题。例如在定义代表 UI
+元素样式的枚举时，通常要确保 switch 语句能正确处理所有样式。</p>
+<p>总结一下:</p>
+<ul>
+<li>应该用枚举来表示状态机的状态、传递给方法的选项以及状态码等值，给这些值起个易懂的名字。</li>
+<li>如果把传递给某个方法的选项表示为枚举类型，而多个选项又可同时使用，那么就将各选项值定义为
+2 的幂，以便通过按位或操作将其组合起来。</li>
+<li>用 NS_ENUM 与 NS_OPTIONS
+宏来定义枚举类型，并指明其底层数据类型。这样就可以确保枚举是用开发者所选的底层数据类型实现出来的，而不是采用编译器所选的类型。</li>
+<li>在处理枚举类型的 switch 语句中不要实现 default
+分支。这样加入新的枚举值之后，编译器就会发出警告提示，switch
+还有未处理的枚举值。</li>
+</ul>
+<h1 id="类及其方法命名">类及其方法命名</h1>
+<p>Objective-C
+没有其他语言那种内置的命名空间(namespace)机制。因此，我们在起名时要设法避免潜在的命名冲突，否则很容易就重名了。避免此问题的唯一方法就是变相实现命名空间:
+为所有名称都加上适当前缀。所选前缀可以是与公司、应用程序或者二者皆有关联的名字。使用
+Cocoa 和 Cocoa Touch 创建应用程序时一定要注意，Apple
+宣传其保留使用所有"两个字母前缀"(tow-letter
+prefixed)的权利。所以你自己选用的前缀应该是三个字母的。你可以在苹果官网
+<a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html">Class
+Names Must Be Unique Across an Entire App</a> 看到上述说明:</p>
+<blockquote>
+<p>In order to keep class names unique, the convention is to use
+prefixes on all classes. You’ll have noticed that Cocoa and Cocoa Touch
+class names typically start either with NS or UI. Two-letter prefixes
+like these are reserved by Apple for use in framework classes.</p>
+<p>Your own classes should use three letter prefixes. These might relate
+to a combination of your company name and your app name, or even a
+specific component within your app.</p>
+<p>You should also name your classes using a noun that makes it clear
+what the class represents, like these examples from Cocoa and Cocoa
+Touch:</p>
+<div class="line-block">NSWindow | CAAnimation | NSWindowController |
+NSManagedObjectContext</div>
+</blockquote>
+<p>另外，在文档 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingBasics.html#//apple_ref/doc/uid/20001281-BBCHBFAH">Coding
+Guidelines for Cocoa</a> 中提到:</p>
+<blockquote>
+<p>Use prefixes when naming classes, protocols, functions, constants,
+and typedef structures. Do not use prefixes when naming methods; methods
+exist in a name space created by the class that defines them. Also,
+don’t use prefixes for naming the fields of a structure.</p>
+</blockquote>
+<p>这里需要说明两点:</p>
+<ul>
+<li>上述所说的<code>functions</code>指的是纯 C 函数。对于纯 C
+函数和全局变量，不论其处于头文件或者其实现文件中，在编译好的目标文件中，这些名称要算作"顶级符号"(top-level
+symbol)的。因此我们总应该为这种 C 函数的名字加上前缀。通常情况下，这类 C
+函数我们可以以定义其类的名字作为前缀。这样，在调试时，若此符号出现在栈回溯信息中，则很容易就能判明问题源自哪块代码。例如:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">ACLSoundPlayer.h</span><br><span class="line"></span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface ACLSoundPlayer : NSObject</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ACLSoundPlayer.m</span><br><span class="line"></span><br><span class="line">#import &quot;ACLSoundPlayer.h&quot;</span><br><span class="line">#import &lt;AudioToolbox/AudioToolbox.h&gt;</span><br><span class="line"></span><br><span class="line">void ACLSoundPlayerCompletion(SystemSoundID ssID, void *clientData) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@implementation ACLSoundPlayer</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上述引用说到不应该为 Objective-C methods
+添加前缀，我觉得应该添加一个例外，当我们定义分类中的方法时，则总应该为其添加前缀，这会在下一条详细说明。</li>
+</ul>
+<p>最后一种情况，若为第三库编写自己的代码，并准备将其发布为程序库供他人开发应用程序所用时，你应该给你所用的那份第三方库代码都加上你自己的前缀。为便于说明，假如你要发布的程序库叫
+EOCLibrary，你所使用的第三方库叫 XYZLibrary，则你应该把你使用的
+XYZLibrary 中所有名字都冠以 <code>EOC</code>, 成为
+<code>EOCXYZLibrary</code>, 原因如下:</p>
+<ul>
+<li>你的程序所包含的那个第三方库也许还会为应用程序本身所引入。</li>
+<li>你可能会想，让应用程序本身不要直接引入 XYZLibrary，改用 EOCLibrary
+中使用的那个，但是，应用程序也许还会引入另一个名为 ABCLibrary
+的第三方库，而该库中又包含了 XYZLibrary。此时，如果你和 ABCLibrary
+的作者都不给各自所用的 XYZLibrary
+加前缀，那么应用程序依然会出现重复符号错误。</li>
+<li>你的库里所引用的第三方库是 X 版本的，而应用程序却需要引用第三库的 Y
+版本的功能。</li>
+</ul>
+<p>对于类中的方法命名，应遵循以下规则:</p>
+<ul>
+<li>如果方法的返回值是新建的，那么方法名的首个词应是返回值的类型，例如:
+<code>+stringWithString:</code>。除非前面还有修饰语，例如
+localizedString。属性的存取方法不遵循这种命名方式。</li>
+<li>BOOL属性应加 is 前缀。如果某方法返回非属性的 Boolean
+值，那么应该根据你功能，选用 has 或 is 当前缀。</li>
+</ul>
+<h1 id="分类及其方法命名">分类及其方法命名</h1>
+<p>分类机制通常用于向无源码的既有类中新增功能。分类中的方法是直接加在类里面的，它们就好比这个类固有的方法，将分类方法加入类中这一操作是在运行期系统加载分类时完成的。运行期系统会把分类中所实现的每个方法都加入类的方法列表中。如果类中本来就有此方法，而分类中又实现了一次，那么分类中的方法会覆盖原来那一份实现代码。实际上可能会发生很多次覆盖，比如某个分类中的方法覆盖了"主实现"中的相关方法，而另外一个分类中的方法又覆盖了这个分类中的方法，多次覆盖的结果以最后一个分类为准。当有多份实现时，无法确定运行时使用的是那份实现。由这样引发的
+bug 很难追查。</p>
+<p>那么，如何来最大限度的避免这种覆盖呢?</p>
+<p>在 iOS
+开发中，没有命名空间的概念。通常，我们通过为项目中所有类命名加上特有的前缀来实现命名空间的功能，来避免可能发生的与使用第三方库中的方法命名相同。同样的，这里我们也是为分类，以及分类中的所有方法都加上特定前缀。这个前缀应该与应用程序库中其他地方所用的前缀相同，通常会使用公司名或应用程序名来做决定。例如来编写一个判断对象是否为空的分类方法:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSObject+ACLNetworkingMethods.h</span><br><span class="line"></span><br><span class="line">@interface NSObject (ACLNetworkingMethods)</span><br><span class="line"></span><br><span class="line">- (BOOL)acl_isEmptyObject;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>这里为分类名以及分类中的方法加上了 <code>ACL</code>
+的前缀。注意在方法中，需前缀小写。</p>
+<p>另外，使用分类时，不要刻意覆写分类中的方法，尤其是当你把代码发布为程序库供其他开发者使用时，因为你无法决定其他开发者需要的是方法哪份实现。</p>
+<p>总结:</p>
+<ul>
+<li>向第三方类中添加分类时，总应该给分类名称加上你专有的前缀，前缀须大写。</li>
+<li>向第三方类中添加分类时，总应该给分类中的方法名加上你专有的前缀，前缀须小写，且以下划线连接前缀与方法名。</li>
+</ul>
+<hr />
+<p>本文内容主要来自[编写高质量iOS与OS X代码的52个有效方法]
+一书，欢迎留言交流。</p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -431,7 +593,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

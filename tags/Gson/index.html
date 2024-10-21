@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,10 +251,10 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>使用Gson序列化对象时，默认情况下，对象值为”null”的字段在输出值会被忽略(NOTE:collections和arrays中的null对象会被保留)。如果要使Gson序列化对象输出所有的null值，可使用如下方法进行配置。</p>
+                    <p>使用Gson序列化对象时，默认情况下，对象值为"null"的字段在输出值会被忽略(NOTE:collections和arrays中的null对象会被保留)。如果要使Gson序列化对象输出所有的null值，可使用如下方法进行配置。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new GsonBuilder().serializeNulls().create();</span><br></pre></td></tr></table></figure>
-
-<p>NOTE: 当使用Gson序列化null值时，它会添加JsonNull元素到JsonElement结构中。</p>
+<p>NOTE:
+当使用Gson序列化null值时，它会添加JsonNull元素到JsonElement结构中。</p>
                     
                         <a
                             href="/2014/07/23/gson-null-object-support/"
@@ -304,8 +305,9 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>有时候在调试代码时，需要格式化输出JSON字符串，使其便于开发者&#x2F;测试者查看，本文记录的就是使用Gson如何格式化输出JSON字符串。</p>
-<p>Gson默认的JSON输出是紧凑的JSON格式，这意味着在输出的JSON结构中没有任何空白字符，因此，在JSON输出中，字段名及其字段值，对象字段和数组中的对象间都没有空白字符，另外“null”字段在输出时会忽略(NOTE:collections&#x2F;arrays中的null值会保留)。如果要使用Pretty Print输出JSON，可以使用GsonBuilder配置JsonPrintFormatter，该格式默认会输出80字符宽度，2字符缩进，右边距为4字符。</p>
+                    <p>有时候在调试代码时，需要格式化输出JSON字符串，使其便于开发者/测试者查看，本文记录的就是使用Gson如何格式化输出JSON字符串。</p>
+<p>Gson默认的JSON输出是紧凑的JSON格式，这意味着在输出的JSON结构中没有任何空白字符，因此，在JSON输出中，字段名及其字段值，对象字段和数组中的对象间都没有空白字符，另外“null”字段在输出时会忽略(NOTE:collections/arrays中的null值会保留)。如果要使用Pretty
+Print输出JSON，可以使用GsonBuilder配置JsonPrintFormatter，该格式默认会输出80字符宽度，2字符缩进，右边距为4字符。</p>
                     
                         <a
                             href="/2014/07/21/gson-pretty-printing/"
@@ -356,10 +358,15 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON Array，例如:</p>
+                    <p>本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON
+Array，例如:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#x27;hello&#x27;,5,&#123;name:&#x27;GREETINGS&#x27;,source:&#x27;guest&#x27;&#125;]</span><br></pre></td></tr></table></figure>
-
-<p>对于这种情况看，使用 Gson <code>toJson(collection)</code> 序列化，无需做额外的工作都能够得到正确的结果，但是，使用 <code>fromJson(json, Collection.class)</code> 反序列化时不能得到期望结果，因为Gson不知道如何将集合中元素与其类型对应起来。可采用如下解决方法: 使用Gson parser API(JsonParser)解析数组中每个元素，然后对数组中每个元素使用<code>Gson.fromJson()</code>进行反序列化。示例如下:</p>
+<p>对于这种情况看，使用 Gson <code>toJson(collection)</code>
+序列化，无需做额外的工作都能够得到正确的结果，但是，使用
+<code>fromJson(json, Collection.class)</code>
+反序列化时不能得到期望结果，因为Gson不知道如何将集合中元素与其类型对应起来。可采用如下解决方法:
+使用Gson parser
+API(JsonParser)解析数组中每个元素，然后对数组中每个元素使用<code>Gson.fromJson()</code>进行反序列化。示例如下:</p>
                     
                         <a
                             href="/2014/03/27/gson-collection-with-arbitrary-types/"
@@ -411,7 +418,8 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用<code>transient</code>和使用注解<code>@Expose</code>.</p>
-<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽. 如下示例所示:</p>
+<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽.
+如下示例所示:</p>
 <p>Student对象:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private transient int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    </span><br><span class="line">    //......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
@@ -464,7 +472,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson处理List对象数据, 包括序列化List对象以及将Json串反序列化为List对象.</p>
+                    <p>本文记录的是如何使用Gson处理List对象数据,
+包括序列化List对象以及将Json串反序列化为List对象.</p>
 <p>首先定义一个Student类, 其属性都是基本类型, 如下所示:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    public Student() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public Student(int stuNo, int sex, String name) &#123;</span><br><span class="line">        this.stuNo = stuNo;</span><br><span class="line">        this.sex = sex;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    //getter &amp; setter</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
@@ -517,7 +526,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson处理Array类型数据, 包括将Array对象序列化为Json串以及将Json串反序列化为Array对象.</p>
+                    <p>本文记录的是如何使用Gson处理Array类型数据,
+包括将Array对象序列化为Json串以及将Json串反序列化为Array对象.</p>
 <p>下面的示例是将数组元素序列化为Json串，如下所示:</p>
 <p><code>Serialization:</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new Gson();</span><br><span class="line">int[] ints = &#123;1, 2, 3, 4, 5&#125;;</span><br><span class="line">String[] strings = &#123;&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;&#125;;    </span><br><span class="line">System.out.println(&quot;json_string: &quot; + gson.toJson(ints));</span><br><span class="line">System.out.println(&quot;json_string: &quot; + gson.toJson(strings));</span><br></pre></td></tr></table></figure>
@@ -574,7 +584,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

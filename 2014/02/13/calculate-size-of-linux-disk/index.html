@@ -17,16 +17,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。\n为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh),(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh), 那么如何利用64bit的mibs计算存储大小呢?\n\n\n先看看dskTotalLow的说明:\n12345678910CaryaLiu-MacBook-Pro:gitblog carya$ snmptranslate -On -Td UCD-SNMP-MIB::dskTotalLow.1.3.6.1.4.1.2021.9.1.11dskTotalLow OBJECT-TYPE  -- FROM  UCD-SNMP-MIB  SYNTAX  Unsigned32  MAX-ACCESS  read-only  STATUS  current  DESCRIPTION  &quot;Total size of the disk/partion (kBytes).  Together with dskTotalHigh composes 64-bit number.&quot;::= &#123; iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) dskTable(9) dskEntry(1) 11 &#125;\n从说明中可以看出，要计算Linux设备的存储大小，需要将dskTotalLow的低32位与dskTotalHigh的高32位组合起来，怎么处理呢，看下面的例子。\n例如，采集到如下数据:\n12UCD-SNMP-MIB::dskTotalLow.1 = Gauge32: 1071652864UCD-SNMP-MIB::dskTotalHigh.1 = Gauge32: 11\n\n低32位转换为十六进制为0x3FE0 2000(&#x3D;1,071,652,864),高32位转换为十六进制为0x0B(&#x3D;11)，将它们组合起来就是0x0B 3FE0 2000, 然后再将其转换为10进制就得到了设备的存储大小了。\n使用Java处理如下:\n123456789Long dskTotalLow = 1071652864L;Long dskTotalHigh = 11L;    String dskTotalLowStr = Long.toHexString(dskTotalLow);String dskTotalHighStr = Long.toHexString(dskTotalHigh);    Long dskTotal = Long.parseLong(dskTotalHighStr + dskTotalLowStr, 16);System.out.println(&quot;the size of disk is &quot; + dskTotal + &quot;kBytes.&quot;);System.out.printf(&quot;the size of disk is %d G&quot;, dskTotal/1024/1024);\n\n控制台输出内容如下:\n12the size of disk is 48316293120kBytes.the size of disk is 46078 G\n\n参考: SNMP UCD dskTotalLow + dskTotalHigh\n","dateCreated":"2014-02-13T21:44:59+08:00","dateModified":"2014-06-25T08:38:09+08:00","datePublished":"2014-02-13T21:44:59+08:00","description":"本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。\n为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh),(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh), 那么如何利用64bit的mibs计算存储大小呢?","headline":"利用64bit的mibs计算Linux设备的存储大小","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/02/13/calculate-size-of-linux-disk/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/02/13/calculate-size-of-linux-disk/","keywords":"snmp"}</script>
-    <meta name="description" content="本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。 为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SN">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。\r\n为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题,\r\n在snmp5.5+版本中引入了64bit的mibs, 包括\r\n(UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh),(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh),\r\n那么如何利用64bit的mibs计算存储大小呢?\r\n\r\n先看看dskTotalLow的说明:\r\n12345678910CaryaLiu-MacBook-Pro:gitblog carya$ snmptranslate -On -Td UCD-SNMP-MIB::dskTotalLow.1.3.6.1.4.1.2021.9.1.11dskTotalLow OBJECT-TYPE  -- FROM  UCD-SNMP-MIB  SYNTAX  Unsigned32  MAX-ACCESS  read-only  STATUS  current  DESCRIPTION  &quot;Total size of the disk/partion (kBytes).  Together with dskTotalHigh composes 64-bit number.&quot;::= &#123; iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) dskTable(9) dskEntry(1) 11 &#125;\r\n从说明中可以看出，要计算Linux设备的存储大小，需要将dskTotalLow的低32位与dskTotalHigh的高32位组合起来，怎么处理呢，看下面的例子。\r\n例如，采集到如下数据:\r\n12UCD-SNMP-MIB::dskTotalLow.1 = Gauge32: 1071652864UCD-SNMP-MIB::dskTotalHigh.1 = Gauge32: 11\r\n低32位转换为十六进制为0x3FE0 2000(=1,071,652,864),高32位转换为十六进制为0x0B(=11)，将它们组合起来就是0x0B 3FE0 2000,\r\n然后再将其转换为10进制就得到了设备的存储大小了。\r\n使用Java处理如下:\r\n123456789Long dskTotalLow = 1071652864L;Long dskTotalHigh = 11L;    String dskTotalLowStr = Long.toHexString(dskTotalLow);String dskTotalHighStr = Long.toHexString(dskTotalHigh);    Long dskTotal = Long.parseLong(dskTotalHighStr + dskTotalLowStr, 16);System.out.println(&quot;the size of disk is &quot; + dskTotal + &quot;kBytes.&quot;);System.out.printf(&quot;the size of disk is %d G&quot;, dskTotal/1024/1024);\r\n控制台输出内容如下:\r\n12the size of disk is 48316293120kBytes.the size of disk is 46078 G\r\n参考: SNMP\r\nUCD dskTotalLow + dskTotalHigh\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2014-02-13T21:44:59+08:00","dateModified":"2024-10-21T22:20:08+08:00","datePublished":"2014-02-13T21:44:59+08:00","description":"本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。\r\n为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题,\r\n在snmp5.5+版本中引入了64bit的mibs, 包括\r\n(UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh),(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh),\r\n那么如何利用64bit的mibs计算存储大小呢?","headline":"利用64bit的mibs计算Linux设备的存储大小","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/02/13/calculate-size-of-linux-disk/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/02/13/calculate-size-of-linux-disk/","keywords":"snmp"}</script>
+    <meta name="description" content="本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。 为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="利用64bit的mibs计算Linux设备的存储大小">
 <meta property="og:url" content="http://liumh.com/2014/02/13/calculate-size-of-linux-disk/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。 为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD-SN">
+<meta property="og:description" content="本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。 为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 (UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh),(UCD-SNMP-MIB::dskAvailLow,UCD">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2014-02-13T13:44:59.000Z">
-<meta property="article:modified_time" content="2014-06-25T00:38:09.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:20:08.077Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="snmp">
 <meta name="twitter:card" content="summary">
@@ -110,7 +110,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,23 +254,27 @@
     <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>本文记录的是如何使用 64-bit 的mib计算Linux设备的存储大小。</p>
-<p>为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题, 在snmp5.5+版本中引入了64bit的mibs, 包括 <code>(UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh)</code>,<code>(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh)</code>,<code>(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh)</code>, 那么如何利用64bit的mibs计算存储大小呢?</p>
+<p>为了解决snmp采集大容量(&gt;2T)Linux设备时dskTotal越界的问题,
+在snmp5.5+版本中引入了64bit的mibs, 包括
+<code>(UCD-SNMP-MIB::dskTotalLow,UCD-SNMP-MIB::dskTotalHigh)</code>,<code>(UCD-SNMP-MIB::dskAvailLow,UCD-SNMP-MIB::dskAvailHigh)</code>,<code>(UCD-SNMP-MIB::dskUsedLow,UCD-SNMP-MIB::dskUsedHigh)</code>,
+那么如何利用64bit的mibs计算存储大小呢?</p>
 <span id="more"></span>
-
 <p>先看看<code>dskTotalLow</code>的说明:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CaryaLiu-MacBook-Pro:gitblog carya$ snmptranslate -On -Td UCD-SNMP-MIB::dskTotalLow</span><br><span class="line">.1.3.6.1.4.1.2021.9.1.11</span><br><span class="line">dskTotalLow OBJECT-TYPE</span><br><span class="line">  -- FROM  UCD-SNMP-MIB</span><br><span class="line">  SYNTAX  Unsigned32</span><br><span class="line">  MAX-ACCESS  read-only</span><br><span class="line">  STATUS  current</span><br><span class="line">  DESCRIPTION  &quot;Total size of the disk/partion (kBytes).</span><br><span class="line">  Together with dskTotalHigh composes 64-bit number.&quot;</span><br><span class="line">::= &#123; iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) ucdavis(2021) dskTable(9) dskEntry(1) 11 &#125;</span><br></pre></td></tr></table></figure>
 <p>从说明中可以看出，要计算Linux设备的存储大小，需要将<code>dskTotalLow</code>的低32位与<code>dskTotalHigh</code>的高32位组合起来，怎么处理呢，看下面的例子。</p>
 <p>例如，采集到如下数据:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UCD-SNMP-MIB::dskTotalLow.1 = Gauge32: 1071652864</span><br><span class="line">UCD-SNMP-MIB::dskTotalHigh.1 = Gauge32: 11</span><br></pre></td></tr></table></figure>
-
-<p>低32位转换为十六进制为<code>0x3FE0 2000</code>(&#x3D;1,071,652,864),高32位转换为十六进制为<code>0x0B</code>(&#x3D;11)，将它们组合起来就是<code>0x0B 3FE0 2000</code>, 然后再将其转换为10进制就得到了设备的存储大小了。</p>
+<p>低32位转换为十六进制为<code>0x3FE0 2000</code>(=1,071,652,864),高32位转换为十六进制为<code>0x0B</code>(=11)，将它们组合起来就是<code>0x0B 3FE0 2000</code>,
+然后再将其转换为10进制就得到了设备的存储大小了。</p>
 <p>使用Java处理如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Long dskTotalLow = 1071652864L;</span><br><span class="line">Long dskTotalHigh = 11L;</span><br><span class="line">    </span><br><span class="line">String dskTotalLowStr = Long.toHexString(dskTotalLow);</span><br><span class="line">String dskTotalHighStr = Long.toHexString(dskTotalHigh);</span><br><span class="line">    </span><br><span class="line">Long dskTotal = Long.parseLong(dskTotalHighStr + dskTotalLowStr, 16);</span><br><span class="line">System.out.println(&quot;the size of disk is &quot; + dskTotal + &quot;kBytes.&quot;);</span><br><span class="line">System.out.printf(&quot;the size of disk is %d G&quot;, dskTotal/1024/1024);</span><br></pre></td></tr></table></figure>
-
 <p>控制台输出内容如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">the size of disk is 48316293120kBytes.</span><br><span class="line">the size of disk is 46078 G</span><br></pre></td></tr></table></figure>
-
-<p>参考: <a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/16790020/snmp-ucd-dsktotallow-dsktotalhigh">SNMP UCD dskTotalLow + dskTotalHigh</a></p>
+<p>参考: <a
+target="_blank" rel="noopener" href="http://stackoverflow.com/questions/16790020/snmp-ucd-dsktotallow-dsktotalhigh">SNMP
+UCD dskTotalLow + dskTotalHigh</a></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -442,7 +447,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

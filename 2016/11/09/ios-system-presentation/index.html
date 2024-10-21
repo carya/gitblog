@@ -15,17 +15,24 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是对下图所示的Kind, Presentation, Transition的理解：\niOS系统转场\n\n\n\n目录如下：\n\nSize Classes\nKind转场类型\nShow\nShow Detail\nPresent Modally\nPresentation Styles\nTransition Styles\n\n\nPresenting a View Controller in a Popover\n\n\n\nSize Classes","dateCreated":"2016-11-09T09:03:06+08:00","dateModified":"2018-11-20T07:51:15+08:00","datePublished":"2016-11-09T09:03:06+08:00","description":"本文记录的是对下图所示的Kind, Presentation, Transition的理解：\niOS系统转场","headline":"iOS中的系统转场","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/11/09/ios-system-presentation/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/11/09/ios-system-presentation/","keywords":"iOS, 转场"}</script>
-    <meta name="description" content="本文记录的是对下图所示的Kind, Presentation, Transition的理解： iOS系统转场">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是对下图所示的Kind, Presentation,\r\nTransition的理解：\r\niOS系统转场\r\n\r\n目录如下：\r\n\r\nSize Classes\r\nKind转场类型\r\n\r\nShow\r\nShow Detail\r\nPresent Modally\r\n\r\nPresentation Styles\r\nTransition Styles\r\n\r\nPresenting a View Controller in a Popover\r\n\r\n\r\nSize Classes\r\n开始之前，先来了解一下Size Classes,\r\n从iOS8.0开始引入了Size\r\nClasses的概念来对屏幕进行分类：把各个设备屏幕以及它们的屏幕旋转状态都抽象成屏幕Size的变化，下表是不同尺寸设备屏幕对Size\r\nClasses的约定。\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nDevice\r\nPortrait\r\nLandscape\r\n\r\n\r\n\r\n\r\niPad (all)iPad Mini\r\nVertical size class:\r\nRegularHorizontal size class: Regular\r\nVertical size class:\r\nRegularHorizontal size class: Regular\r\n\r\n\r\niPhone 6 Plus\r\nVertical size class:\r\nRegularHorizontal size class: Compact\r\nVertical size class:\r\nCompactHorizontal size class: Regular\r\n\r\n\r\niPhone 6\r\nVertical size class:\r\nRegularHorizontal size class: Compact\r\nVertical size class:\r\nCompactHorizontal size class: Compact\r\n\r\n\r\niPhone 5siPhone 5ciPhone 5\r\nVertical size class:\r\nRegularHorizontal size class: Compact\r\nVertical size class:\r\nCompactHorizontal size class: Compact\r\n\r\n\r\niPhone 4s\r\nVertical size class:\r\nRegularHorizontal size class: Compact\r\nVertical size class:\r\nCompactHorizontal size class: Compact\r\n\r\n\r\n\r\n宽（正常，任意， 紧凑），高（正常，任意， 紧凑），3 x 3 共 9 种\r\nSize，每种 Size\r\n都可以设置特定的一套布局，如果不特殊指定，默认是在（宽任意，高任意）模式下设置，且其他\r\n8 种布局继承它。对于Size Classes，可以看看博客: iOS8 Size\r\nClasses初探\r\nKind-转场类型\r\n先说明一下两个名词，假如view controller A模态展示了view\r\ncontroller B，则\r\n\r\npresenting view controller, 是上述场景中的A view\r\ncontroller, 它会负责展示另外一个view controller；\r\npresented view controller, 是上述场景中的B view\r\ncontroller，它是由其它控制器展示出来的view\r\ncontroller。\r\n\r\n转场Kind的设置选项，系统默认的类型有四种，Show,\r\nShow Detail, Present Modally, Present As\r\nPopover。\r\n转场类型\r\nShow\r\n\r\nPresents a view controller in a primary context.\r\n1func show(_ vc: UIViewController, sender: Any?)\r\n\r\n使用该方法可以将display view controller从presenting that\r\nview controller on\r\nscreen的过程中解耦，ViewController不需要知道它是嵌入到UINavigationController中或者是UISplitViewController中，都可以调用此方法来展示到屏幕上。UISplitViewController和UINavigationController重写了该方法，使其能够根据自身设计来处理展现过程。例如，UINavigationController重写了该方法，并使用该方法来push\r\nviewcontroller到navigation stack中。\r\n该方法的默认实现会调用targetViewControllerForAction:sender:在view\r\ncontroller层级中找到重写该方法的对象，然后调用该对象的此方法，使其能够以适当的方式来展现view\r\ncontroller。\r\n如果targetViewControllerForAction:sender:方法返回nil，此方法会使用window的root\r\nview controller来模态显示vc。\r\n你可以在自定义view\r\ncontroller中重写该方法来展示vc，你的实现应该在regular和compact环境中做好适配。\r\n官方文档\r\nShow Detail\r\n\r\nPresents a view controller in a secondary (or detail) context.\r\n1func showDetailViewController(_ vc: UIViewController, sender: Any?)\r\n\r\n该方法特点同Show类似:使用该方法可以将display view\r\ncontroller从presenting that view controller on\r\nscreen的过程中解耦，ViewController不需要知道它是嵌入到UINavigationController中或者是UISplitViewController中，都可以调用此方法来展示到屏幕上。在regular环境，UISplitViewController重写了该方法，将vc以detail\r\nview controller的方式加载;在compact环境，split view\r\ncontroller的该方法实现是调用show(_:sender:)方法。\r\n同show(_:sender:)相同:该方法的默认实现会调用targetViewControllerForAction:sender:在view\r\ncontroller层级中找到重写该方法的对象，然后调用该对象的此方法，使其能够以适当的方式来展现view\r\ncontroller。\r\n如果targetViewControllerForAction:sender:方法返回nil，此方法会使用window的root\r\nview controller来模态显示vc。\r\n你可以在自定义view\r\ncontroller中重载此方法来展示vc，使用此方法来将vc展现在secondary\r\ncontext中，例如，一个容器view\r\ncontroller可能会使用此方法来替换第二子控制器，你的实现应该为regular和compact环境做好适配.\r\n官方文档\r\nPresent Modally\r\n\r\nPresents a view controller modally.\r\n123- (void)presentViewController:(UIViewController *)viewControllerToPresent                      animated:(BOOL)flag                    completion:(void (^)(void))completion;\r\n\r\n在horizontally regular的环境，view\r\ncontroller会以modalPresentationStyle属性设定的样式进行展现。在horizontally\r\ncompact环境，view\r\ncontroller默认会以全屏的方式进行展现。对于viewControllerToPresent关联的presentation\r\ncontroller, 如果你实现了其adaptive\r\ndelegate方法，则可以动态修改presentation style。\r\n调用该方法的对象不一定是处理该presentation的对象。每一个presentation\r\nstyle会有不同的规则来处理其行为。例如，full-screen\r\npresentation必须由自身覆盖了整个屏幕的view\r\ncontroller来处理。如果调用该方法的当前view\r\ncontrolelr不能满足该要求，则它会沿着view\r\ncontroller的层级向上传递给最近的父控制器，由其父控制器来负责处理或者继续转发该请求。\r\n在展现view controller之前，该方法会基于presentation\r\nstyle来设置presented view\r\ncontroller的view大小。对于大多数的presentation\r\nstyles，最终视图会以presented view\r\ncontroller的modalTransitionStyle属性设定的转场样式动画来显示到屏幕上。对于自定义的presentations,\r\n视图会以presented view controller的transitioning\r\ndelegate中要求的动画来展示。对于current context\r\npresentations,视图可能会是以当前view\r\ncontroller的transition\r\nstyle来显示到屏幕上，这种情况稍后会再次提到。\r\n注意: completion闭包是在presented view\r\ncontroller的viewDidAppear:的方法调用完成后才会调用。\r\n官方文档\r\n接下来聊聊present modally类型下的presentation\r\nstyle.\r\nPresentation Styles\r\nview controller的presentation\r\nstyle控制其在屏幕上的显示。UIKit定义了多种标准的presentation\r\nstyles,\r\n每一种都有特定的UI展示和用途。当然，你也可以自定义presentation\r\nstyles。当设计你的app时，根据当前的使用场景选择最合适的presentaion\r\nstyle, 然后设置presented view\r\ncontroller的modalPresentationStyle属性值为对应的常量值。\r\n\r\nmodalPresentationStyle:\r\nThe presentation style determines how a modally presented view\r\ncontroller is displayed onscreen. In a horizontally compact environment,\r\nmodal view controllers are always presented\r\nfull-screen. In a horizontally regular environment,\r\nthere are several different presentation options. For a list of possible\r\npresentation styles, and their compatibility with the available\r\ntransition styles, see the UIModalPresentationStyle constant\r\ndescriptions.\r\n\r\nUIModalPresentationStyle的枚举值定义如下:\r\n1234567891011121314151617181920212223242526272829public enum UIModalPresentationStyle : Int &#123;        case fullScreen    @available(iOS 3.2, *)    case pageSheet    @available(iOS 3.2, *)    case formSheet    @available(iOS 3.2, *)    case currentContext    @available(iOS 7.0, *)    case custom    @available(iOS 8.0, *)    case overFullScreen    @available(iOS 8.0, *)    case overCurrentContext    @available(iOS 8.0, *)    case popover    @available(iOS 7.0, *)    case none&#125;\r\n由于popover需要进行特殊处理，在Xcode中，Presentation处仅有如下图所示的设置:\r\nPresentation设置值\r\n对以上枚举值进行大体分类: full-screen presentation styles,\r\npopover style, current context styles, custom\r\npresentation styles。其中:\r\n\r\nfull-screen presentation\r\nstyles对应枚举值fullScreen, pageSheet,\r\nformSheet, overFullScreen;\r\n\r\npopover style对应枚举值popover;\r\n\r\ncurrent context styles对应枚举值currentContext,\r\noverCurrentContext。\r\n\r\n先看看full-screen presentation styles。\r\nFull-Screen Presentation\r\nStyles\r\n\r\nFull screen presentation styles cover the entire screen, preventing\r\ninteractions with the underlying content. In a horizontally regular\r\nenvironment, only one of the full-screen styles covers the underlying\r\ncontent completely. The rest incorporate dimming views or transparency\r\nto allow portions of the underlying view controller to show through. In\r\na horizontally compact environment, full-screen presentations\r\nautomatically adapt to the UIModalPresentationFullScreen style and cover\r\nall of the underlying content.\r\n\r\nfull screen presentation\r\nstyles会覆盖设备的整个屏幕，阻止用户与底部内容进行交互。在horizontally\r\nregular环境，full screen presentation\r\nstyles中只有一种类型(UIModalPresentationFullScreen)会完全覆盖住底部的内容，其余的类型会结合透明或者黑色半透明的视图来使底部的部分内容显示出来。在horizontally\r\ncompact环境，所有的full screen presentation\r\nstyles会自动适配为UIModalPresentationFullScreen类型并覆盖底部的所有内容。\r\n下图是在horizontally regular环境下fullScreen,\r\npageSheet,\r\nformSheet样式下的显示效果。图中，左上角的绿色view\r\ncontroller会presents右上角的蓝色view\r\ncontroller，对于某些presentation styles,\r\nUIKit会在两个view controller之间插入dimming\r\nview。\r\nThe full screen presentation styles\r\nfullScreen\r\n\r\ncase fullScreen = 0\r\nA presentation style in which the presented view covers the screen.\r\nThe views belonging to the presenting view controller are\r\nremoved after the presentation completes.\r\n\r\n此种类型的presentation style presented\r\nview会完全覆盖屏幕。且属于presenting view\r\ncontroller的视图会在presentation\r\ncompletes后移除视图层级。\r\n\r\n注意：当你使用UIModalPresentationFullScreen样式来presenting\r\na view\r\ncontroller的时候，UIKit会在转场动画完成后移除底部控制器(所覆盖的控制器)的视图，如果你想阻止视图的移除，则可以使用UIModalPresentationOverFullScreen样式来替代。当presented\r\nview\r\ncontroller设计有透明区域以显示底层内容时，你可能会用到这种样式。\r\n\r\npageSheet\r\n\r\ncase pageSheet = 1\r\nIn a horizontally regular environment, a presentation style that\r\npartially covers the underlying content. The presented view's width is\r\nset to the width of the screen in a portrait orientation and the the\r\nheight is set to the height of the screen. Any uncovered areas are\r\ndimmed to prevent the user from interacting with them. (In portrait\r\norientations, this option is essentially the same as fullScreen.)\r\nIn a horizontally compact environment, this option behaves the same\r\nas fullScreen.\r\n\r\n在horizontally regular环境，此种presentation\r\nstyle会部分遮挡底部的内容。presented\r\nview的宽度会被设置成与portrait\r\norientation模式下屏幕的宽度相等，且presented\r\nview的高度被设置成与设备当前模式(portrait 或者\r\nlandscape)下屏幕的高度相同。任何未覆盖到的区域会加黑色透明视图以阻止用户的交互。在portrait\r\norientations场景，该设置大体上与fullScreen相同(该样式下，statusbar上会覆盖黑色透明视图)。在horizontally\r\ncompact环境下，该样式与fullScreen样式完全相同。\r\nformSheet\r\n\r\ncase formSheet = 2\r\nIn a horizontally regular environment, a presentation style that\r\ndisplays the content centered in the screen. The width and height of the\r\ncontent area are smaller than the screen size and a dimming view is\r\nplaced underneath the content. If the device is in a landscape\r\norientation and the keyboard is visible, the position of the view is\r\nadjusted upward so that the view remains visible. All uncovered areas\r\nare dimmed to prevent the user from interacting with them.\r\nIn a horizontally compact environment, this option behaves the same\r\nas fullScreen.\r\n\r\n在horizontally\r\nregular环境下，formSheet这种样式会将内容布局在屏幕的中间。显示内容的宽高都会比屏幕尺寸小，并且会在显示内容下插入黑色透明视图(dimming\r\nview)。如果设备处于landscape\r\norientation并且弹出了键盘，显示内容会向上移动适配以使显示内容仍然可见。所有未被显示内容覆盖到的区域都会被dimmed以阻止用户与其交互。\r\n在horizontally\r\ncompact环境，该选项的效果与fullScreen的效果完全一致。\r\n\r\n\r\nWhen using one of the full-screen presentation styles, the view\r\ncontroller that initiates the presentation must itself cover the entire\r\nscreen. If the presenting view controller does not cover the screen,\r\nUIKit walks up the view controller hierarchy until it finds one that\r\ndoes. If it can’t find an intermediate view controller that fills the\r\nscreen, UIKit uses the root view controller of the window.\r\n\r\n当你使用这些full-screen presentation\r\nstyles时，启动这次presentation的view\r\ncontroller必须其自身是覆盖了整个屏幕。如果presenting view\r\ncontroller没有覆盖整个屏幕，则UIKit会沿着view\r\ncontroller的层级一直寻找直到找到满足该条件的view\r\ncontroller，如果没有找到，UIKit则会使用window的root\r\nview controller。\r\nThe Popover Style\r\n内容见Presenting a View Controller in a\r\nPopover\r\nThe Current Context Styles\r\n使用UIModalPresentationCurrentContext样式会使presented\r\nview controller覆盖你在UI中指定的view\r\ncontroller。你通过设置view\r\ncontroller的definesPresentationContext属性值为YES来使其成为被覆盖的对象。下图演示的是curren\r\ncontext presentation仅仅覆盖了split view\r\ncontroller的一个子控制器。\r\nThe current context presentation style\r\n注意：使用该样式时，对于未被presented\r\nview覆盖的区域，用户仍然可以与UI元素(例如UIButton)进行交互。\r\n\r\nA presentation style where the content is displayed over a view\r\ncontroller’s content whose definesPresentationContext property\r\nis true. UIKit may walk up the view controller hierarchy to find a view\r\ncontroller that wants to define the presentation context. The views\r\nbelonging to the presenting view controller are removed after the\r\npresentation completes.\r\nWhen presenting a view controller in a popover, this presentation\r\nstyle is supported only if the transition style is coverVertical.\r\nAttempting to use a different transition style triggers an exception.\r\nHowever, you may use other transition styles (except the partial curl\r\ntransition) if the parent view controller is not in a popover.\r\n\r\n该样式会将内容显示在属性值definesPresentationContext为true的view\r\ncontroller之上。UIKit会沿着view\r\ncontroller的层级向上寻找定义了presentation\r\ncontext的view controller。属于presenting view\r\ncontroller的视图会在presentation completes后移除。\r\n当在一个popover中来presenting view\r\ncontroller时，只有当transition\r\nstyle是coverVertical时才支持此种样式，使用其它类型的transition\r\nstyle会导致crash(经过测试，只有当transition\r\nstyles为partial\r\ncurl时才会crash，不过小心为妙)。当parent view\r\ncontroller不在popover中时，你可以使用除partial\r\ncurl外的其它transition styles。\r\n当转场结束时，属于presented view\r\ncontroller的视图会被移除，你可以使用UIModalPresentationOverCurrentContext样式来替代以避免被移除，你可能会在当presented\r\nview controller有透明区域使底部内容显示出来时使用此样式。\r\n定义成为presentation context的view controller,\r\n也可以在其内定义presentation时使用的转场动画。通常情况下，UIKit会使用presented\r\nview\r\ncontroller的modalTransitionStyle属性定义的动画将presented\r\nview controller显示到屏幕上。如果presentation context view\r\ncontroller的属性providesPresentationContextTransitionStyle值为YES,则UIKit会使用该view\r\ncontroller的modalTransitionStyle属性值来执行动画。\r\n当转换到horizontally compact环境时，current\r\ncontext样式会适配为UIModalPresentationFullScreen样式。如果要想改变这种适配行为，可以使用adaptive\r\npresentation delegate来指定另一种presentation\r\nstyle或者更换view controller。\r\nCustom Presentation Styles\r\nUIModalPresentationCustom允许你使用自定义的样式来展示view\r\ncontroller。创建自定义的样式需要你子类化UIPresentationController并且使用其方法来将自定义视图动画显示到屏幕，定义其大小和设置presente\r\nview controller的大小。\r\n更多信息参考: Creating\r\nCustom Presentations\r\nTransition Styles\r\n\r\nTransition styles determine the type of animations used to display a\r\npresented view controller. For the built-in transition styles, you\r\nassign one of the standard transition styles to the modalTransitionStyle\r\nproperty of the view controller you want to present. When you present\r\nthe view controller, UIKit creates the animations that correspond to\r\nthat style. For example, Figure 8-4 illustrates how the standard\r\nslide-up transition (UIModalTransitionStyleCoverVertical) animates the\r\nview controller onscreen. View controller B starts offscreen and\r\nanimates up and over the top of view controller A. When view controller\r\nB is dismissed, the animation reverses so that B slides down to reveal\r\nA.\r\n\r\ntransition styles决定了显示presented view\r\ncontroller时所用的动画类型。对于系统内置的transition\r\nstyles，你可以通过对presented view\r\ncontroller的modalTransitionStyle属性赋值来指定样式。当你显示view\r\ncontroller时，UIKit属性值对应的动画。例如，下图演示了系统UIModalTransitionStyleCoverVertical样式对应的显示动画。view\r\ncontroller B从不可见-&gt;往上滑进屏幕-&gt;覆盖view controller\r\nA。当view controller\r\nB退场时，它会向下滑出屏幕以显示view controller A。\r\nA transition animation for a view controller\r\n\r\nYou can create custom transitions using an animator object and\r\ntransitioning delegate. The animator object creates the transition\r\nanimations for placing the view controller onscreen. The transitioning\r\ndelegate supplies that animator object to UIKit at the appropriate time.\r\nFor information about how to implement custom transitions, see\r\nCustomizing the Transition Animations\r\n\r\n目前iOS支持的系统转场类型如下图所示:\r\niOS默认转场动画类型\r\n经过测试，Partial\r\nCurl转场只有在Presentation为Full\r\nScreen时才会有效，其余presentation\r\nstyles会导致crash，不知道是我使用的方式不对或者是其它原因，请指教。\r\nPresenting a View\r\nController in a Popover\r\n同上，这种方式也是使用api：\r\n123- (void)presentViewController:(UIViewController *)viewControllerToPresent                      animated:(BOOL)flag                    completion:(void (^)(void))completion;\r\n来展现视图。与上不同的是，popover的展现方式还需要额外的配置。在设置\r\nmodel presentation\r\nstyle值为UIModalPresentationPopover之后，配置如下与popover相关的属性值:\r\n\r\n设置presented view\r\ncontroller的preferredContentSize，将视图大小设置为期望的大小；\r\n从presented view\r\ncontroller的popoverPresentationController属性中获取关联的UIPopoverPresentationController对象，然后设置该对象的锚点。设置锚点可从如下两种方式中任选一种:\r\n\r\n设置barButtonItem属性值为一个bar button item;\r\n设置sourceView和sourceRect属性值为视图中的特定区域；\r\n\r\n\r\n你可以使用UIPopoverPresentationController对象来修改popover最终绘制出来的效果。popover\r\npresentation\r\ncontroller同样也支持使用一个delegate对象来监听presentation过程以做出对应的响应。例如，你可以使用该delegate对象来监听popover的appears,\r\ndisappears, 或者repositioned on the\r\nscreen事件，以做出对应的响应。关于该对象的更多信息，请参考: UIPopoverPresentationController\r\nClass Reference\r\nUIModalPresentationPopover样式会以浮层的形式显示view\r\ncontroller.Popovers可用来显示一些额外信息，或者，是当前聚焦或者选中对象关联的对象列表。在horizontally\r\nregular环境，弹出的浮层只会覆盖屏幕的一部分，如下图所示。在horizontally\r\ncompact环境，popovers会默认适配为UIModalPresentationOverFullScreen样式。在浮层以外的区域点击则会自动使浮层消失。\r\nThe popover presentation style\r\n由于popovers在horizontally\r\ncompact环境下会自动适配为full-screen\r\npresentations，你需要编辑你的浮层代码以处理这种适配。在full-screen模式下，你需要一种方式来使presented\r\npopover消失。你可以添加一个按钮，将popover嵌入到可dismissible的容器视图控制器中，或者是修改该适配行为。\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2016-11-09T09:03:06+08:00","dateModified":"2024-10-21T22:44:43+08:00","datePublished":"2016-11-09T09:03:06+08:00","description":"本文记录的是对下图所示的Kind, Presentation,\r\nTransition的理解：\r\niOS系统转场","headline":"iOS中的系统转场","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/11/09/ios-system-presentation/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/11/09/ios-system-presentation/","keywords":"iOS, 转场"}</script>
+    <meta name="description" content="本文记录的是对下图所示的Kind, Presentation, Transition的理解： iOS系统转场">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS中的系统转场">
 <meta property="og:url" content="http://liumh.com/2016/11/09/ios-system-presentation/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文记录的是对下图所示的Kind, Presentation, Transition的理解： iOS系统转场">
+<meta property="og:description" content="本文记录的是对下图所示的Kind, Presentation, Transition的理解： iOS系统转场">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://liumh.com/img/system-presentation/system-presentation.png">
+<meta property="og:image" content="http://liumh.com/img/system-presentation/system-presentation-kind.png">
+<meta property="og:image" content="http://liumh.com/img/system-presentation/presentation-style.png">
+<meta property="og:image" content="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_PresentationStyles%20_fig_8-1_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_CurrentContextStyles_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_SlideTransition_fig_8-1_2x.png">
+<meta property="og:image" content="http://liumh.com/img/system-presentation/transition-style.png">
+<meta property="og:image" content="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_popover-style_2x.png">
 <meta property="article:published_time" content="2016-11-09T01:03:06.000Z">
-<meta property="article:modified_time" content="2018-11-19T23:51:15.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:44:43.056Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="转场">
@@ -111,7 +118,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,27 +261,442 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>本文记录的是对下图所示的<em>Kind</em>, <em>Presentation</em>, <em>Transition</em>的理解：</p>
+            <p>本文记录的是对下图所示的<em>Kind</em>, <em>Presentation</em>,
+<em>Transition</em>的理解：</p>
 <div class="figure left" style="width:260;"><img class="fig-img" src="/img/system-presentation/system-presentation.png" style="width:260;height:250;"alt="iOS系统转场"><span class="caption">iOS系统转场</span></div><div style="clear:both;"></div>
-
 <span id="more"></span>
-
 <p>目录如下：</p>
-<ol>
-<li><a href="#size-classes">Size Classes</a></li>
-<li><a href="#presentation-kind">Kind转场类型</a><ul>
-<li><a href="#presentation-kind-show">Show</a></li>
-<li><a href="#presentation-kind-showdetail">Show Detail</a></li>
-<li><a href="#presentation-kind-present-modally">Present Modally</a><ul>
-<li><a href="#presentation-style">Presentation Styles</a></li>
-<li><a href="#transiton-style">Transition Styles</a></li>
-</ul>
-</li>
-<li><a href="#presenting-popover">Presenting a View Controller in a Popover</a></li>
-</ul>
-</li>
+<ol type="1">
+<li>Size Classes</li>
+<li>Kind转场类型
+<ul>
+<li>Show</li>
+<li>Show Detail</li>
+<li>Present Modally
+<ul>
+<li>Presentation Styles</li>
+<li>Transition Styles</li>
+</ul></li>
+<li>Presenting a View Controller in a Popover</li>
+</ul></li>
 </ol>
-<h1 id="Size-Classes"><a href="#Size-Classes" class="headerlink" title="Size Classes"></a>Size Classes</h1>
+<h1 id="size-classes">Size Classes</h1>
+<p>开始之前，先来了解一下<em>Size Classes</em>,
+从<em>iOS8.0</em>开始引入了<em>Size
+Classes</em>的概念来对屏幕进行分类：把各个设备屏幕以及它们的屏幕旋转状态都抽象成屏幕Size的变化，下表是不同尺寸设备屏幕对<em>Size
+Classes</em>的约定。</p>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 32%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Device</th>
+<th style="text-align: left;">Portrait</th>
+<th style="text-align: left;">Landscape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">iPad (all)</br>iPad Mini</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Regular</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Regular</td>
+</tr>
+<tr>
+<td style="text-align: left;">iPhone 6 Plus</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Compact</td>
+<td style="text-align: left;">Vertical size class:
+Compact</br>Horizontal size class: Regular</td>
+</tr>
+<tr>
+<td style="text-align: left;">iPhone 6</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Compact</td>
+<td style="text-align: left;">Vertical size class:
+Compact</br>Horizontal size class: Compact</td>
+</tr>
+<tr>
+<td style="text-align: left;">iPhone 5s</br>iPhone 5c</br>iPhone 5</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Compact</td>
+<td style="text-align: left;">Vertical size class:
+Compact</br>Horizontal size class: Compact</td>
+</tr>
+<tr>
+<td style="text-align: left;">iPhone 4s</td>
+<td style="text-align: left;">Vertical size class:
+Regular</br>Horizontal size class: Compact</td>
+<td style="text-align: left;">Vertical size class:
+Compact</br>Horizontal size class: Compact</td>
+</tr>
+</tbody>
+</table>
+<p>宽（正常，任意， 紧凑），高（正常，任意， 紧凑），3 x 3 共 9 种
+Size，每种 Size
+都可以设置特定的一套布局，如果不特殊指定，默认是在（宽任意，高任意）模式下设置，且其他
+8 种布局继承它。对于Size Classes，可以看看博客: <a
+target="_blank" rel="noopener" href="http://blog.sunnyxx.com/2014/09/09/ios8-size-classes/">iOS8 Size
+Classes初探</a></p>
+<h1 id="kind-转场类型">Kind-转场类型</h1>
+<p>先说明一下两个名词，假如<em>view controller A</em>模态展示了<em>view
+controller B</em>，则</p>
+<ol type="1">
+<li><em>presenting view controller</em>, 是上述场景中的<em>A view
+controller</em>, 它会负责展示另外一个<em>view controller</em>；</li>
+<li><em>presented view controller</em>, 是上述场景中的<em>B view
+controller</em>，它是由其它控制器展示出来的<em>view
+controller</em>。</li>
+</ol>
+<p>转场<em>Kind</em>的设置选项，系统默认的类型有四种，<em>Show</em>,
+<em>Show Detail</em>, <em>Present Modally</em>, <em>Present As
+Popover</em>。</p>
+<div class="figure left" style="width:256;"><img class="fig-img" src="/img/system-presentation/system-presentation-kind.png" style="width:256;height:308;"alt="转场类型"><span class="caption">转场类型</span></div><div style="clear:both;"></div>
+<h2 id="show">Show</h2>
+<blockquote>
+<p>Presents a view controller in a primary context.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func show(_ vc: UIViewController, sender: Any?)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>使用该方法可以将<em>display view controller</em>从<em>presenting that
+view controller on
+screen</em>的过程中解耦，<em>ViewController</em>不需要知道它是嵌入到<em>UINavigationController</em>中或者是<em>UISplitViewController</em>中，都可以调用此方法来展示到屏幕上。<em>UISplitViewController</em>和<em>UINavigationController</em>重写了该方法，使其能够根据自身设计来处理展现过程。例如，<em>UINavigationController</em>重写了该方法，并使用该方法来<em>push
+viewcontroller</em>到<em>navigation stack</em>中。</p>
+<p>该方法的默认实现会调用<em>targetViewControllerForAction:sender:</em>在<em>view
+controller</em>层级中找到重写该方法的对象，然后调用该对象的此方法，使其能够以适当的方式来展现<em>view
+controller</em>。
+如果<em>targetViewControllerForAction:sender:</em>方法返回<em>nil</em>，此方法会使用<em>window</em>的<em>root
+view controller</em>来模态显示<em>vc</em>。</p>
+<p>你可以在自定义<em>view
+controller</em>中重写该方法来展示<em>vc</em>，你的实现应该在<em>regular</em>和<em>compact</em>环境中做好适配。</p>
+<p><a
+target="_blank" rel="noopener" href="https://developer.apple.com/reference/uikit/uiviewcontroller/1621377-showviewcontroller">官方文档</a></p>
+<h2 id="show-detail">Show Detail</h2>
+<blockquote>
+<p>Presents a view controller in a secondary (or detail) context.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">func showDetailViewController(_ vc: UIViewController, sender: Any?)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>该方法特点同<em>Show</em>类似:使用该方法可以将<em>display view
+controller</em>从<em>presenting that view controller on
+screen</em>的过程中解耦，<em>ViewController</em>不需要知道它是嵌入到<em>UINavigationController</em>中或者是<em>UISplitViewController</em>中，都可以调用此方法来展示到屏幕上。在<em>regular</em>环境，<em>UISplitViewController</em>重写了该方法，将<em>vc</em>以<em>detail
+view controller</em>的方式加载;在<em>compact</em>环境，<em>split view
+controller</em>的该方法实现是调用<code>show(_:sender:)</code>方法。</p>
+<p>同<code>show(_:sender:)</code>相同:该方法的默认实现会调用<em>targetViewControllerForAction:sender:</em>在<em>view
+controller</em>层级中找到重写该方法的对象，然后调用该对象的此方法，使其能够以适当的方式来展现<em>view
+controller</em>。
+如果<em>targetViewControllerForAction:sender:</em>方法返回<em>nil</em>，此方法会使用<em>window</em>的<em>root
+view controller</em>来模态显示<em>vc</em>。</p>
+<p>你可以在自定义<em>view
+controller</em>中重载此方法来展示<em>vc</em>，使用此方法来将<em>vc</em>展现在<em>secondary
+context</em>中，例如，一个容器<em>view
+controller</em>可能会使用此方法来替换第二子控制器，你的实现应该为<em>regular</em>和<em>compact</em>环境做好适配.</p>
+<p><a
+target="_blank" rel="noopener" href="https://developer.apple.com/reference/uikit/uiviewcontroller/1621432-showdetailviewcontroller">官方文档</a></p>
+<h2 id="present-modally">Present Modally</h2>
+<blockquote>
+<p>Presents a view controller modally.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)presentViewController:(UIViewController *)viewControllerToPresent </span><br><span class="line">                     animated:(BOOL)flag </span><br><span class="line">                   completion:(void (^)(void))completion;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>在<em>horizontally regular</em>的环境，<em>view
+controller</em>会以<em>modalPresentationStyle</em>属性设定的样式进行展现。在<em>horizontally
+compact</em>环境，<em>view
+controller</em>默认会以全屏的方式进行展现。对于<em>viewControllerToPresent</em>关联的<em>presentation
+controller</em>, 如果你实现了其<em>adaptive
+delegate</em>方法，则可以动态修改<em>presentation style</em>。</p>
+<p>调用该方法的对象不一定是处理该<em>presentation</em>的对象。每一个<em>presentation
+style</em>会有不同的规则来处理其行为。例如，<em>full-screen
+presentation</em>必须由自身覆盖了整个屏幕的<em>view
+controller</em>来处理。如果调用该方法的当前<em>view
+controlelr</em>不能满足该要求，则它会沿着<em>view
+controller</em>的层级向上传递给最近的父控制器，由其父控制器来负责处理或者继续转发该请求。</p>
+<p>在展现<em>view controller</em>之前，该方法会基于<em>presentation
+style</em>来设置<em>presented view
+controller</em>的<em>view</em>大小。对于大多数的<em>presentation
+styles</em>，最终视图会以<em>presented view
+controller</em>的<em>modalTransitionStyle</em>属性设定的转场样式动画来显示到屏幕上。对于自定义的<em>presentations</em>,
+视图会以<em>presented view controller</em>的<em>transitioning
+delegate</em>中要求的动画来展示。对于<em>current context
+presentations</em>,视图<strong>可能</strong>会是以当前<em>view
+controller</em>的<em>transition
+style</em>来显示到屏幕上，这种情况稍后会再次提到。</p>
+<p>注意: <em>completion</em>闭包是在<em>presented view
+controller</em>的<em>viewDidAppear:</em>的方法调用完成后才会调用。</p>
+<p><a
+target="_blank" rel="noopener" href="https://developer.apple.com/reference/uikit/uiviewcontroller/1621380-presentviewcontroller">官方文档</a></p>
+<p>接下来聊聊<em>present modally</em>类型下的<em>presentation
+style</em>.</p>
+<h3 id="presentation-styles">Presentation Styles</h3>
+<p><em>view controller</em>的<em>presentation
+style</em>控制其在屏幕上的显示。<em>UIKit</em>定义了多种标准的<em>presentation
+styles</em>,
+每一种都有特定的UI展示和用途。当然，你也可以自定义<em>presentation
+styles</em>。当设计你的<em>app</em>时，根据当前的使用场景选择最合适的<em>presentaion
+style</em>, 然后设置<em>presented view
+controller</em>的<em>modalPresentationStyle</em>属性值为对应的常量值。</p>
+<blockquote>
+<p>modalPresentationStyle:<br />
+The presentation style determines how a modally presented view
+controller is displayed onscreen. In a horizontally compact environment,
+modal view controllers are always presented
+<strong>full-screen</strong>. In a horizontally regular environment,
+there are several different presentation options. For a list of possible
+presentation styles, and their compatibility with the available
+transition styles, see the UIModalPresentationStyle constant
+descriptions.</p>
+</blockquote>
+<p><em>UIModalPresentationStyle</em>的枚举值定义如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public enum UIModalPresentationStyle : Int &#123;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    case fullScreen</span><br><span class="line"></span><br><span class="line">    @available(iOS 3.2, *)</span><br><span class="line">    case pageSheet</span><br><span class="line"></span><br><span class="line">    @available(iOS 3.2, *)</span><br><span class="line">    case formSheet</span><br><span class="line"></span><br><span class="line">    @available(iOS 3.2, *)</span><br><span class="line">    case currentContext</span><br><span class="line"></span><br><span class="line">    @available(iOS 7.0, *)</span><br><span class="line">    case custom</span><br><span class="line"></span><br><span class="line">    @available(iOS 8.0, *)</span><br><span class="line">    case overFullScreen</span><br><span class="line"></span><br><span class="line">    @available(iOS 8.0, *)</span><br><span class="line">    case overCurrentContext</span><br><span class="line"></span><br><span class="line">    @available(iOS 8.0, *)</span><br><span class="line">    case popover</span><br><span class="line"></span><br><span class="line">    @available(iOS 7.0, *)</span><br><span class="line">    case none</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于<em>popover</em>需要进行特殊处理，在<em>Xcode</em>中，<em>Presentation</em>处仅有如下图所示的设置:</p>
+<div class="figure left" style="width:256;"><img class="fig-img" src="/img/system-presentation/presentation-style.png" style="width:256;height:320;"alt="Presentation设置值"><span class="caption">Presentation设置值</span></div><div style="clear:both;"></div>
+<p>对以上枚举值进行大体分类: <em>full-screen presentation styles</em>,
+<em>popover style</em>, <em>current context styles</em>, <em>custom
+presentation styles</em>。其中:</p>
+<ul>
+<li><em>full-screen presentation
+styles</em>对应枚举值<em>fullScreen</em>, <em>pageSheet</em>,
+<em>formSheet</em>, <em>overFullScreen</em>;<br />
+</li>
+<li><em>popover style</em>对应枚举值<em>popover</em>;<br />
+</li>
+<li><em>current context styles</em>对应枚举值<em>currentContext</em>,
+<em>overCurrentContext</em>。</li>
+</ul>
+<p>先看看<em>full-screen presentation styles</em>。</p>
+<h4 id="full-screen-presentation-styles">Full-Screen Presentation
+Styles</h4>
+<blockquote>
+<p>Full screen presentation styles cover the entire screen, preventing
+interactions with the underlying content. In a horizontally regular
+environment, only one of the full-screen styles covers the underlying
+content completely. The rest incorporate dimming views or transparency
+to allow portions of the underlying view controller to show through. In
+a horizontally compact environment, full-screen presentations
+automatically adapt to the UIModalPresentationFullScreen style and cover
+all of the underlying content.</p>
+</blockquote>
+<p><em>full screen presentation
+styles</em>会覆盖设备的整个屏幕，阻止用户与底部内容进行交互。在<em>horizontally
+regular</em>环境，<em>full screen presentation
+styles</em>中只有一种类型(<em>UIModalPresentationFullScreen</em>)会完全覆盖住底部的内容，其余的类型会结合透明或者黑色半透明的视图来使底部的部分内容显示出来。在<em>horizontally
+compact</em>环境，所有的<em>full screen presentation
+styles</em>会自动适配为<em>UIModalPresentationFullScreen</em>类型并覆盖底部的所有内容。</p>
+<p>下图是在<em>horizontally regular</em>环境下<em>fullScreen</em>,
+<em>pageSheet</em>,
+<em>formSheet</em>样式下的显示效果。图中，左上角的绿色<em>view
+controller</em>会<em>presents</em>右上角的蓝色<em>view
+controller</em>，对于某些<em>presentation styles</em>,
+<em>UIKit</em>会在两个<em>view controller</em>之间插入<em>dimming
+view</em>。</p>
+<div class="figure left" style="width:;"><img class="fig-img" src="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_PresentationStyles%20_fig_8-1_2x.png" alt="The full screen presentation styles"><span class="caption">The full screen presentation styles</span></div><div style="clear:both;"></div>
+<h5 id="fullscreen">fullScreen</h5>
+<blockquote>
+<p>case fullScreen = 0</p>
+<p>A presentation style in which the presented view covers the screen.
+<strong>The views belonging to the presenting view controller are
+removed after the presentation completes.</strong></p>
+</blockquote>
+<p>此种类型的<em>presentation style presented
+view</em>会完全覆盖屏幕。且属于<em>presenting view
+controller</em>的视图会在<em>presentation
+completes</em>后移除视图层级。</p>
+<blockquote>
+<p>注意：当你使用<em>UIModalPresentationFullScreen</em>样式来<em>presenting
+a view
+controller</em>的时候，<em>UIKit</em>会在转场动画完成后移除底部控制器(所覆盖的控制器)的视图，如果你想阻止视图的移除，则可以使用<em>UIModalPresentationOverFullScreen</em>样式来替代。当<em>presented
+view
+controller</em>设计有透明区域以显示底层内容时，你可能会用到这种样式。</p>
+</blockquote>
+<h5 id="pagesheet">pageSheet</h5>
+<blockquote>
+<p>case pageSheet = 1</p>
+<p>In a horizontally regular environment, a presentation style that
+partially covers the underlying content. The presented view's width is
+set to the width of the screen in a portrait orientation and the the
+height is set to the height of the screen. Any uncovered areas are
+dimmed to prevent the user from interacting with them. (In portrait
+orientations, this option is essentially the same as fullScreen.)</p>
+<p>In a horizontally compact environment, this option behaves the same
+as fullScreen.</p>
+</blockquote>
+<p>在<em>horizontally regular</em>环境，此种<em>presentation
+style</em>会部分遮挡底部的内容。<em>presented
+view</em>的宽度会被设置成与<em>portrait
+orientation</em>模式下屏幕的宽度相等，且<em>presented
+view</em>的高度被设置成与设备当前模式(<em>portrait 或者
+landscape</em>)下屏幕的高度相同。任何未覆盖到的区域会加黑色透明视图以阻止用户的交互。在<em>portrait
+orientations</em>场景，该设置大体上与<em>fullScreen</em>相同(该样式下，<em>statusbar</em>上会覆盖黑色透明视图)。在<em>horizontally
+compact</em>环境下，该样式与<em>fullScreen</em>样式完全相同。</p>
+<h5 id="formsheet">formSheet</h5>
+<blockquote>
+<p>case formSheet = 2</p>
+<p>In a horizontally regular environment, a presentation style that
+displays the content centered in the screen. The width and height of the
+content area are smaller than the screen size and a dimming view is
+placed underneath the content. If the device is in a landscape
+orientation and the keyboard is visible, the position of the view is
+adjusted upward so that the view remains visible. All uncovered areas
+are dimmed to prevent the user from interacting with them.</p>
+<p>In a horizontally compact environment, this option behaves the same
+as fullScreen.</p>
+</blockquote>
+<p>在<em>horizontally
+regular</em>环境下，<em>formSheet</em>这种样式会将内容布局在屏幕的中间。显示内容的宽高都会比屏幕尺寸小，并且会在显示内容下插入黑色透明视图(<em>dimming
+view</em>)。如果设备处于<em>landscape
+orientation</em>并且弹出了键盘，显示内容会向上移动适配以使显示内容仍然可见。所有未被显示内容覆盖到的区域都会被<em>dimmed</em>以阻止用户与其交互。</p>
+<p>在<em>horizontally
+compact</em>环境，该选项的效果与<em>fullScreen</em>的效果完全一致。</p>
+<hr />
+<blockquote>
+<p>When using one of the full-screen presentation styles, the view
+controller that initiates the presentation must itself cover the entire
+screen. If the presenting view controller does not cover the screen,
+UIKit walks up the view controller hierarchy until it finds one that
+does. If it can’t find an intermediate view controller that fills the
+screen, UIKit uses the root view controller of the window.</p>
+</blockquote>
+<p>当你使用这些<em>full-screen presentation
+styles</em>时，启动这次<em>presentation</em>的<em>view
+controller</em>必须其自身是覆盖了整个屏幕。如果<em>presenting view
+controller</em>没有覆盖整个屏幕，则<em>UIKit</em>会沿着<em>view
+controller</em>的层级一直寻找直到找到满足该条件的<em>view
+controller</em>，如果没有找到，<em>UIKit</em>则会使用<em>window</em>的<em>root
+view controller</em>。</p>
+<h4 id="the-popover-style">The Popover Style</h4>
+<p>内容见<a href="#presenting-popover">Presenting a View Controller in a
+Popover</a></p>
+<h4 id="the-current-context-styles">The Current Context Styles</h4>
+<p>使用<em>UIModalPresentationCurrentContext</em>样式会使<em>presented
+view controller</em>覆盖你在<em>UI</em>中指定的<em>view
+controller</em>。你通过设置<em>view
+controller</em>的<em>definesPresentationContext</em>属性值为<em>YES</em>来使其成为被覆盖的对象。下图演示的是<em>curren
+context presentation</em>仅仅覆盖了<em>split view
+controller</em>的一个子控制器。</p>
+<div class="figure left" style="width:;"><img class="fig-img" src="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_CurrentContextStyles_2x.png" alt="The current context presentation style"><span class="caption">The current context presentation style</span></div><div style="clear:both;"></div>
+<p>注意：使用该样式时，对于未被<em>presented
+view</em>覆盖的区域，用户仍然可以与<em>UI</em>元素(例如<em>UIButton</em>)进行交互。</p>
+<blockquote>
+<p>A presentation style where the content is displayed over a view
+controller’s content whose <em>definesPresentationContext</em> property
+is true. UIKit may walk up the view controller hierarchy to find a view
+controller that wants to define the presentation context. The views
+belonging to the presenting view controller are removed after the
+presentation completes.</p>
+<p>When presenting a view controller in a popover, this presentation
+style is supported only if the transition style is coverVertical.
+Attempting to use a different transition style triggers an exception.
+However, you may use other transition styles (except the partial curl
+transition) if the parent view controller is not in a popover.</p>
+</blockquote>
+<p>该样式会将内容显示在属性值<em>definesPresentationContext</em>为<em>true</em>的<em>view
+controller</em>之上。<em>UIKit</em>会沿着<em>view
+controller</em>的层级向上寻找定义了<em>presentation
+context</em>的<em>view controller</em>。属于<em>presenting view
+controller</em>的视图会在<em>presentation completes</em>后移除。</p>
+<p>当在一个<em>popover</em>中来<em>presenting view
+controller</em>时，只有当<em>transition
+style</em>是<em>coverVertical</em>时才支持此种样式，使用其它类型的<em>transition
+style</em>会导致<em>crash</em>(经过测试，只有当<em>transition
+styles</em>为<em>partial
+curl</em>时才会<em>crash</em>，不过小心为妙)。当<em>parent view
+controller</em>不在<em>popover</em>中时，你可以使用除<em>partial
+curl</em>外的其它<em>transition styles</em>。</p>
+<p>当转场结束时，属于<em>presented view
+controller</em>的视图会被移除，你可以使用<em>UIModalPresentationOverCurrentContext</em>样式来替代以避免被移除，你可能会在当<em>presented
+view controller</em>有透明区域使底部内容显示出来时使用此样式。</p>
+<p>定义成为<em>presentation context</em>的<em>view controller</em>,
+也可以在其内定义<em>presentation</em>时使用的转场动画。通常情况下，<em>UIKit</em>会使用<em>presented
+view
+controller</em>的<em>modalTransitionStyle</em>属性定义的动画将<em>presented
+view controller</em>显示到屏幕上。如果<em>presentation context view
+controller</em>的属性<em>providesPresentationContextTransitionStyle</em>值为<em>YES</em>,则<em>UIKit</em>会使用该<em>view
+controller</em>的<em>modalTransitionStyle</em>属性值来执行动画。</p>
+<p>当转换到<em>horizontally compact</em>环境时，<em>current
+context</em>样式会适配为<em>UIModalPresentationFullScreen</em>样式。如果要想改变这种适配行为，可以使用<em>adaptive
+presentation delegate</em>来指定另一种<em>presentation
+style</em>或者更换<em>view controller</em>。</p>
+<h4 id="custom-presentation-styles">Custom Presentation Styles</h4>
+<p><em>UIModalPresentationCustom</em>允许你使用自定义的样式来展示<em>view
+controller</em>。创建自定义的样式需要你子类化<em>UIPresentationController</em>并且使用其方法来将自定义视图动画显示到屏幕，定义其大小和设置<em>presente
+view controller</em>的大小。</p>
+<p>更多信息参考: <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/DefiningCustomPresentations.html#//apple_ref/doc/uid/TP40007457-CH25-SW1">Creating
+Custom Presentations</a></p>
+<h3 id="transition-styles">Transition Styles</h3>
+<blockquote>
+<p>Transition styles determine the type of animations used to display a
+presented view controller. For the built-in transition styles, you
+assign one of the standard transition styles to the modalTransitionStyle
+property of the view controller you want to present. When you present
+the view controller, UIKit creates the animations that correspond to
+that style. For example, Figure 8-4 illustrates how the standard
+slide-up transition (UIModalTransitionStyleCoverVertical) animates the
+view controller onscreen. View controller B starts offscreen and
+animates up and over the top of view controller A. When view controller
+B is dismissed, the animation reverses so that B slides down to reveal
+A.</p>
+</blockquote>
+<p><em>transition styles</em>决定了显示<em>presented view
+controller</em>时所用的动画类型。对于系统内置的<em>transition
+styles</em>，你可以通过对<em>presented view
+controller</em>的<em>modalTransitionStyle</em>属性赋值来指定样式。当你显示<em>view
+controller</em>时，<em>UIKit</em>属性值对应的动画。例如，下图演示了系统<em>UIModalTransitionStyleCoverVertical</em>样式对应的显示动画。<em>view
+controller B</em>从不可见-&gt;往上滑进屏幕-&gt;覆盖<em>view controller
+A</em>。当<em>view controller
+B</em>退场时，它会向下滑出屏幕以显示<em>view controller A</em>。</p>
+<div class="figure left" style="width:;"><img class="fig-img" src="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_SlideTransition_fig_8-1_2x.png" alt="A transition animation for a view controller"><span class="caption">A transition animation for a view controller</span></div><div style="clear:both;"></div>
+<blockquote>
+<p>You can create custom transitions using an animator object and
+transitioning delegate. The animator object creates the transition
+animations for placing the view controller onscreen. The transitioning
+delegate supplies that animator object to UIKit at the appropriate time.
+For information about how to implement custom transitions, see
+Customizing the Transition Animations</p>
+</blockquote>
+<p>目前iOS支持的系统转场类型如下图所示:</p>
+<div class="figure left" style="width:256;"><img class="fig-img" src="/img/system-presentation/transition-style.png" style="width:256;height:288;"alt="iOS默认转场动画类型"><span class="caption">iOS默认转场动画类型</span></div><div style="clear:both;"></div>
+<p>经过测试，<em>Partial
+Curl</em>转场只有在<em>Presentation</em>为<em>Full
+Screen</em>时才会有效，其余<em>presentation
+styles</em>会导致<em>crash</em>，不知道是我使用的方式不对或者是其它原因，请指教。</p>
+<h2 id="presenting-a-view-controller-in-a-popover">Presenting a View
+Controller in a Popover</h2>
+<p>同上，这种方式也是使用api：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)presentViewController:(UIViewController *)viewControllerToPresent </span><br><span class="line">                     animated:(BOOL)flag </span><br><span class="line">                   completion:(void (^)(void))completion;</span><br></pre></td></tr></table></figure>
+<p>来展现视图。与上不同的是，<em>popover</em>的展现方式还需要额外的配置。在设置
+<em>model presentation
+style</em>值为<em>UIModalPresentationPopover</em>之后，配置如下与<em>popover</em>相关的属性值:</p>
+<ul>
+<li>设置<em>presented view
+controller</em>的<em>preferredContentSize</em>，将视图大小设置为期望的大小；</li>
+<li>从<em>presented view
+controller</em>的<em>popoverPresentationController</em>属性中获取关联的<em>UIPopoverPresentationController</em>对象，然后设置该对象的锚点。设置锚点可从如下两种方式中任选一种:
+<ul>
+<li>设置<em>barButtonItem</em>属性值为一个<em>bar button item</em>;</li>
+<li>设置<em>sourceView</em>和<em>sourceRect</em>属性值为视图中的特定区域；</li>
+</ul></li>
+</ul>
+<p>你可以使用<em>UIPopoverPresentationController</em>对象来修改<em>popover</em>最终绘制出来的效果。<em>popover
+presentation
+controller</em>同样也支持使用一个<em>delegate</em>对象来监听<em>presentation</em>过程以做出对应的响应。例如，你可以使用该<em>delegate</em>对象来监听<em>popover</em>的<em>appears</em>,
+<em>disappears</em>, 或者<em>repositioned on the
+screen</em>事件，以做出对应的响应。关于该对象的更多信息，请参考: <a
+target="_blank" rel="noopener" href="https://developer.apple.com/reference/uikit/uipopoverpresentationcontroller">UIPopoverPresentationController
+Class Reference</a></p>
+<p><em>UIModalPresentationPopover</em>样式会以浮层的形式显示<em>view
+controller</em>.<em>Popovers</em>可用来显示一些额外信息，或者，是当前聚焦或者选中对象关联的对象列表。在<em>horizontally
+regular</em>环境，弹出的浮层只会覆盖屏幕的一部分，如下图所示。在<em>horizontally
+compact</em>环境，<em>popovers</em>会默认适配为<em>UIModalPresentationOverFullScreen</em>样式。在浮层以外的区域点击则会自动使浮层消失。</p>
+<div class="figure left" style="width:;"><img class="fig-img" src="https://developer.apple.com/library/content/featuredarticles/ViewControllerPGforiPhoneOS/Art/VCPG_popover-style_2x.png" alt="The popover presentation style"><span class="caption">The popover presentation style</span></div><div style="clear:both;"></div>
+<p>由于<em>popovers</em>在<em>horizontally
+compact</em>环境下会自动适配为<em>full-screen
+presentations</em>，你需要编辑你的浮层代码以处理这种适配。在<em>full-screen</em>模式下，你需要一种方式来使<em>presented
+popover</em>消失。你可以添加一个按钮，将<em>popover</em>嵌入到可<em>dismissible</em>的容器视图控制器中，或者是修改该适配行为。</p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -445,7 +868,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\nKVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符串, 也可理解为: KVC集合操作符允许在 valueForKeyPath: 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:\n![Operator key path format][]\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。\n\n\n除了 @count 外的所有集合操作，都要求在集合操作右边有一键路径(keypathToProperty)。\n集合操作返回的对象值决定于集合操作的类型:\n\n简单类型的集合操作符，返回 strings, numbers, dates, 其值由右侧的键路径决定(见简单集合操作符)\n对象操作符，返回 NSArray 对象实例(见 对象操作符)\n数组和集合操作符，返回的是一个 array 或者 set 对象(见 数组和集合操作符)\n\n示例数据","dateCreated":"2015-09-04T14:51:30+08:00","dateModified":"2017-12-02T10:55:15+08:00","datePublished":"2015-09-04T14:51:30+08:00","description":"进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\nKVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符串, 也可理解为: KVC集合操作符允许在 valueForKeyPath: 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:\n![Operator key path format][]\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。","headline":"iOS KVC 集合操作","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/","keywords":"iOS, KVC"}</script>
-    <meta name="description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"进一步阅读之前，可以先思考这个问题: 存在数组\r\n@[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\r\nKVC\r\n的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\r\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 valueForKeyPath:\r\n方法。集合操作是以 @*\r\n开始的字符串, 也可理解为: KVC集合操作符允许在\r\nvalueForKeyPath: 方法中使用 key path\r\n符号在一个集合中执行方法。无论什么时候你在 key path\r\n中看见了@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的\r\nkey path 一样。下图就是集合操作符的格式:\r\n\r\n\r\nOperator key path format\r\n\r\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的\r\nNSArray 或者\r\nNSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。\r\n\r\n除了 @count\r\n外的所有集合操作，都要求在集合操作右边有一键路径(keypathToProperty)。\r\n集合操作返回的对象值决定于集合操作的类型:\r\n\r\n简单类型的集合操作符，返回 strings, numbers, dates,\r\n其值由右侧的键路径决定(见简单集合操作符)\r\n对象操作符，返回 NSArray 对象实例(见 对象操作符)\r\n数组和集合操作符，返回的是一个 array 或者 set 对象(见 数组和集合操作符)\r\n\r\n示例数据\r\n以下示例会用到一些数据，先看看示例数据。想象一个 Product 类和由\r\nProduct 类对象所组成的 products 数组：\r\n12345@interface Product : NSObject@property NSString *name;@property CGFloat price;@property NSDate *launchedOn;@end\r\n\r\n键-值 编码会在必要的时候把基本数据类型的数据自动装箱和拆箱到 NSNumber\r\n或者 NSValue 中来确保一切工作正常。\r\n\r\nproducts 数组中 Product 类对象所使用数据如下:\r\n\r\n\r\n\r\nName\r\nPrice\r\nLaunch Date\r\n\r\n\r\n\r\n\r\niPhone5\r\n$199\r\nSeptember 21, 2012\r\n\r\n\r\niPhone5\r\n$199\r\nSeptember 21, 2012\r\n\r\n\r\niPhone5\r\n$199\r\nSeptember 21, 2012\r\n\r\n\r\niPad Mini\r\n$329\r\nNovember 2, 2012\r\n\r\n\r\nMacBook Pro\r\n$1699\r\nJune 11,2012\r\n\r\n\r\nMacBook Pro\r\n$1699\r\nJune 11,2012\r\n\r\n\r\niMac\r\n$1299\r\nNovember 2, 2012\r\n\r\n\r\n\r\n还有另一个数组 products2，它内部元素也是 Product\r\n类对象，数据如下:\r\n\r\n\r\n\r\nName\r\nPrice\r\nLaunch Date\r\n\r\n\r\n\r\n\r\niPhone5\r\n$199\r\nSeptember 21, 2012\r\n\r\n\r\niPad Mini\r\n$329\r\nNovember 2, 2012\r\n\r\n\r\nMacBook Pro\r\n$1699\r\nJune 11,2012\r\n\r\n\r\niMac\r\n$1299\r\nNovember 2, 2012\r\n\r\n\r\niMac\r\n$1299\r\nNovember 2, 2012\r\n\r\n\r\niMac\r\n$1299\r\nNovember 2, 2012\r\n\r\n\r\n\r\n简单集合操作符\r\n简单集合操作符作用于 array 或者 set\r\n中相对于集合操作符右侧的属性。包括 @avg,\r\n@count, @max, @min,\r\n@sum.\r\n\r\n@avg\r\n操作符将集合中属性键路径所指对象转换为 double,\r\n计算其平均值，返回该平均值的 NSNumber 对象。当均值为 nil\r\n的时候，返回 0.\r\n@count\r\n操作符返回集合中对象总数的 NSNumber 对象。操作符右边没有键路径。\r\n@max\r\n操作符比较由操作符右边的键路径指定的属性值，并返回比较结果的最大值。最大值由指定的键路径所指对象的\r\ncompare:\r\n方法决定，因此参加比较的对象必须支持和另一个对象的比较。如果右侧键路径所指对象值为\r\nnil， 则忽略，不影响比较结果。\r\n@min 和 @max\r\n一样，但是返回的是集合中的最小值。\r\n@sum\r\n返回右侧键路径指定的属性值的总和。每一个比较值都转换为\r\ndouble，然后计算值的总和，最后返回总和值的 NSNumber\r\n对象。如果右侧键路径所指对象值为 nil，则忽略。\r\n\r\n12345[products valueForKeyPath:@&quot;@count&quot;]; // 7[products valueForKeyPath:@&quot;@sum.price&quot;]; // 5632.00[products valueForKeyPath:@&quot;@avg.price&quot;]; // 804.5714285714286[products valueForKeyPath:@&quot;@max.price&quot;]; // 1699.00[products valueForKeyPath:@&quot;@min.launchedOn&quot;]; // June 11, 2012\r\n\r\nPro提示：你可以简单的通过把 self 作为操作符后面的 key path\r\n来获取一个由 NSNumber 组成的数组或者集合的总值，例如对于数组 @[@(1),\r\n@(2), @(3)] 可使用 valueForKeyPath:@\"@max.self\"\r\n来获取最大值。\r\n\r\n对象操作符\r\n对象操作符包括 @distinctUnionOfObjects 和\r\n@unionOfObjects, 返回一个由操作符右边的 key path\r\n所指定的对象属性组成的数组。其中 @distinctUnionOfObjects\r\n会对数组去重，而 @unionOfObjects 不会。\r\n12NSArray *unionOfObjects = [products valueForKeyPath:@&quot;@unionOfObjects.name&quot;]; // 1. NSArray *distinctUnionObjects = [products valueForKeyPath:@&quot;@distinctUnionOfObjects.name&quot;];  //2.\r\nunionOfObjects 中会包含 \"iPhone5\", \"iPhone5\",\"iPhone5\",\r\n\"iPad Mini\", \"MacBook Pro\", \"MacBook Pro\", \"iMac\"\r\ndistinctUnionObjects 中会包含 \"iPhone5\", \"iPad Mini\",\r\n\"MacBook Pro\", \"iMac\", 相当于对 unionOfObjects\r\n数组进行去重处理。\r\n数组和集合操作符\r\n数组和集合操作符作用对象是嵌套的集合，也就是说，是一个集合且其内部每个元素是一个集合。数组和集合操作符包括\r\n@distinctUnionOfArrays，@unionOfArrays，@distinctUnionOfSets:\r\n\r\n@distinctUnionOfArrays / @unionOfArrays\r\n返回一个数组，其中包含这个集合中每个数组对于这个操作符右面指定的 key\r\npath 进行操作之后的值。 distinct 版本会移除重复的值。\r\n@distinctUnionOfSets 和 @distinctUnionOfArrays 差不多,\r\n但是它期望的是一个包含着 NSSet 对象的 NSSet ，并且会返回一个 NSSet\r\n对象。因为集合不能包含重复的值，所以它只有 distinct 操作。\r\n\r\n假定有个 totalProducts 数组，其包含两个数组\r\nproducts 和 products2，以下代码片段展示了\r\ntotalProducts 的创建。\r\n123totalProducts = [NSMutableArray array];[totalProducts addObject:products];[totalProducts addObject:products2];\r\n其中 products 和 products2 中元素都是 Product\r\n类对象，其内部数据使用的是示例数据的数据内容。\r\n对于以下操作:\r\n12NSArray *distinctUnionOfArrays = [totalProducts valueForKeyPath:@&quot;@distinctUnionOfArrays.name&quot;];NSArray *unionOfArrays = [totalProducts valueForKeyPath:@&quot;@unionOfArrays.name&quot;];\r\n那么 unionOfArrays 中包含 \"iPhone5\", \"iPhone5\", \"iPhone5\",\r\n\"iPad Mini\", \"MacBook Pro\", \"MacBook Pro\", \"iMac\", \"iPhone5\", \"iPad\r\nMini\", \"MacBook Pro\", \"iMac\", \"iMac\", \"iMac\" 共 13 个元素。而\r\ndistinctUnionOfArrays 中仅包含 \"iPhone5\", \"iPad Mini\", \"MacBook\r\nPro\", \"iMac\" 共 4 个元素。\r\n\r\n注意: 如果操作符右侧 key path 指定的对象为\r\nnil，那么返回的数组中会包含 NSNull 对象.\r\n\r\n参考:\r\n\r\nKVC\r\nCollection Operators\r\nKey-Value\r\nCoding Programming Guide\r\n\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-09-04T14:51:30+08:00","dateModified":"2024-10-21T22:40:45+08:00","datePublished":"2015-09-04T14:51:30+08:00","description":"进一步阅读之前，可以先思考这个问题: 存在数组\r\n@[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？\r\nKVC\r\n的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。\r\nKVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 valueForKeyPath:\r\n方法。集合操作是以 @*\r\n开始的字符串, 也可理解为: KVC集合操作符允许在\r\nvalueForKeyPath: 方法中使用 key path\r\n符号在一个集合中执行方法。无论什么时候你在 key path\r\n中看见了@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的\r\nkey path 一样。下图就是集合操作符的格式:\r\n\r\n\r\nOperator key path format\r\n\r\n其中左边的键路径(keypathToCollection)指定了相对消息接收者的\r\nNSArray 或者\r\nNSSet，右边的键路径(keypathToProperty)指定了相对于集合内对象的键路径，集合操作作用于该键路径。","headline":"iOS KVC 集合操作","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/09/04/ios-kvc-collection-operators/","keywords":"iOS, KVC"}</script>
+    <meta name="description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 valueForKeyPath: 方法。集合操作是以 @* 开始">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS KVC 集合操作">
 <meta property="og:url" content="http://liumh.com/2015/09/04/ios-kvc-collection-operators/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 @ 开始的字符">
+<meta property="og:description" content="进一步阅读之前，可以先思考这个问题: 存在数组 @[@(90), @(31), @(65), @(78), @(76)]，如何取出数组中的最大值或者最小值？ KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。 KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 valueForKeyPath: 方法。集合操作是以 @* 开始">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-09-04T06:51:30.000Z">
-<meta property="article:modified_time" content="2017-12-02T02:55:15.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:40:45.069Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="KVC">
@@ -109,7 +109,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,21 +252,226 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>进一步阅读之前，可以先思考这个问题: 存在数组 <code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
-<p>KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
-<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 <em>@</em> 开始的字符串, 也可理解为: KVC集合操作符允许在 <code>valueForKeyPath:</code> 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:</p>
-<p>![Operator key path format][]</p>
-<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
+            <p>进一步阅读之前，可以先思考这个问题: 存在数组
+<code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
+<p>KVC
+的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
+<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Protocols/NSKeyValueCoding_Protocol/index.html#//apple_ref/occ/instm/NSObject/valueForKeyPath:">valueForKeyPath:</a>
+方法。集合操作是以 <em><span class="citation" data-cites="*">@*</span>
+开始的字符串, 也可理解为: KVC集合操作符允许在
+<code>valueForKeyPath:</code> 方法中使用 key path
+符号在一个集合中执行方法。无论什么时候你在 key path
+中看见了</em>@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的
+key path 一样。下图就是集合操作符的格式:</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-kvc/ios-kvc-keypath.jpg"
+alt="Operator key path format" />
+<figcaption aria-hidden="true">Operator key path format</figcaption>
+</figure>
+<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的
+NSArray 或者
+NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
 <span id="more"></span>
-
-<p>除了 <code>@count</code> 外的所有集合操作，都要求在集合操作右边有一键路径(<em>keypathToProperty</em>)。</p>
+<p>除了 <code>@count</code>
+外的所有集合操作，都要求在集合操作右边有一键路径(<em>keypathToProperty</em>)。</p>
 <p>集合操作返回的对象值决定于集合操作的类型:</p>
 <ul>
-<li>简单类型的集合操作符，返回 strings, numbers, dates, 其值由右侧的键路径决定(见<a href="#simple-collection-operators">简单集合操作符</a>)</li>
-<li>对象操作符，返回 NSArray 对象实例(见 <a href="#object-operators">对象操作符</a>)</li>
-<li>数组和集合操作符，返回的是一个 array 或者 set 对象(见 <a href="#array-set-operators">数组和集合操作符</a>)</li>
+<li>简单类型的集合操作符，返回 strings, numbers, dates,
+其值由右侧的键路径决定(见<a
+href="#simple-collection-operators">简单集合操作符</a>)</li>
+<li>对象操作符，返回 NSArray 对象实例(见 <a
+href="#object-operators">对象操作符</a>)</li>
+<li>数组和集合操作符，返回的是一个 array 或者 set 对象(见 <a
+href="#array-set-operators">数组和集合操作符</a>)</li>
 </ul>
-<h1 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h1>
+<h1 id="示例数据">示例数据</h1>
+<p>以下示例会用到一些数据，先看看示例数据。想象一个 Product 类和由
+Product 类对象所组成的 <em>products</em> 数组：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@interface Product : NSObject</span><br><span class="line">@property NSString *name;</span><br><span class="line">@property CGFloat price;</span><br><span class="line">@property NSDate *launchedOn;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>键-值 编码会在必要的时候把基本数据类型的数据自动装箱和拆箱到 NSNumber
+或者 NSValue 中来确保一切工作正常。</p>
+</blockquote>
+<p><em>products</em> 数组中 Product 类对象所使用数据如下:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Price</th>
+<th style="text-align: center;">Launch Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">iPhone5</td>
+<td style="text-align: center;">$199</td>
+<td style="text-align: center;">September 21, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iPhone5</td>
+<td style="text-align: center;">$199</td>
+<td style="text-align: center;">September 21, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iPhone5</td>
+<td style="text-align: center;">$199</td>
+<td style="text-align: center;">September 21, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iPad Mini</td>
+<td style="text-align: center;">$329</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">MacBook Pro</td>
+<td style="text-align: center;">$1699</td>
+<td style="text-align: center;">June 11,2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">MacBook Pro</td>
+<td style="text-align: center;">$1699</td>
+<td style="text-align: center;">June 11,2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iMac</td>
+<td style="text-align: center;">$1299</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+</tbody>
+</table>
+<p>还有另一个数组 <em>products2</em>，它内部元素也是 Product
+类对象，数据如下:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Price</th>
+<th style="text-align: center;">Launch Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">iPhone5</td>
+<td style="text-align: center;">$199</td>
+<td style="text-align: center;">September 21, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iPad Mini</td>
+<td style="text-align: center;">$329</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">MacBook Pro</td>
+<td style="text-align: center;">$1699</td>
+<td style="text-align: center;">June 11,2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iMac</td>
+<td style="text-align: center;">$1299</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iMac</td>
+<td style="text-align: center;">$1299</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+<tr>
+<td style="text-align: center;">iMac</td>
+<td style="text-align: center;">$1299</td>
+<td style="text-align: center;">November 2, 2012</td>
+</tr>
+</tbody>
+</table>
+<h1 id="简单集合操作符">简单集合操作符</h1>
+<p>简单集合操作符作用于 array 或者 set
+中相对于集合操作符右侧的属性。包括 <code>@avg</code>,
+<code>@count</code>, <code>@max</code>, <code>@min</code>,
+<code>@sum</code>.</p>
+<ul>
+<li><span class="citation" data-cites="avg">@avg</span>
+操作符将集合中属性键路径所指对象转换为 <em>double</em>,
+计算其平均值，返回该平均值的 NSNumber 对象。当均值为 <em>nil</em>
+的时候，返回 <em>0</em>.</li>
+<li><span class="citation" data-cites="count">@count</span>
+操作符返回集合中对象总数的 NSNumber 对象。操作符右边没有键路径。</li>
+<li><span class="citation" data-cites="max">@max</span>
+操作符比较由操作符右边的键路径指定的属性值，并返回比较结果的最大值。最大值由指定的键路径所指对象的
+<code>compare:</code>
+方法决定，因此参加比较的对象必须支持和另一个对象的比较。如果右侧键路径所指对象值为
+<em>nil</em>， 则忽略，不影响比较结果。</li>
+<li><span class="citation" data-cites="min">@min</span> 和 <span
+class="citation" data-cites="max">@max</span>
+一样，但是返回的是集合中的最小值。</li>
+<li><span class="citation" data-cites="sum">@sum</span>
+返回右侧键路径指定的属性值的总和。每一个比较值都转换为
+<em>double</em>，然后计算值的总和，最后返回总和值的 NSNumber
+对象。如果右侧键路径所指对象值为 <em>nil</em>，则忽略。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[products valueForKeyPath:@&quot;@count&quot;]; // 7</span><br><span class="line">[products valueForKeyPath:@&quot;@sum.price&quot;]; // 5632.00</span><br><span class="line">[products valueForKeyPath:@&quot;@avg.price&quot;]; // 804.5714285714286</span><br><span class="line">[products valueForKeyPath:@&quot;@max.price&quot;]; // 1699.00</span><br><span class="line">[products valueForKeyPath:@&quot;@min.launchedOn&quot;]; // June 11, 2012</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Pro提示：你可以简单的通过把 self 作为操作符后面的 key path
+来获取一个由 NSNumber 组成的数组或者集合的总值，例如对于数组 @[@(1),
+@(2), @(3)] 可使用 <code>valueForKeyPath:@"@max.self"</code>
+来获取最大值。</p>
+</blockquote>
+<h1 id="对象操作符">对象操作符</h1>
+<p>对象操作符包括 <code>@distinctUnionOfObjects</code> 和
+<code>@unionOfObjects</code>, 返回一个由操作符右边的 key path
+所指定的对象属性组成的数组。其中 <code>@distinctUnionOfObjects</code>
+会对数组去重，而 <code>@unionOfObjects</code> 不会。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray *unionOfObjects = [products valueForKeyPath:@&quot;@unionOfObjects.name&quot;]; // 1. </span><br><span class="line">NSArray *distinctUnionObjects = [products valueForKeyPath:@&quot;@distinctUnionOfObjects.name&quot;];  //2.</span><br></pre></td></tr></table></figure>
+<p><em>unionOfObjects</em> 中会包含 "iPhone5", "iPhone5","iPhone5",
+"iPad Mini", "MacBook Pro", "MacBook Pro", "iMac"</p>
+<p><em>distinctUnionObjects</em> 中会包含 "iPhone5", "iPad Mini",
+"MacBook Pro", "iMac", 相当于对 <em>unionOfObjects</em>
+数组进行去重处理。</p>
+<h1 id="数组和集合操作符">数组和集合操作符</h1>
+<p>数组和集合操作符作用对象是嵌套的集合，也就是说，是一个集合且其内部每个元素是一个集合。数组和集合操作符包括
+<code>@distinctUnionOfArrays</code>，<code>@unionOfArrays</code>，<code>@distinctUnionOfSets</code>:</p>
+<ul>
+<li><span class="citation"
+data-cites="distinctUnionOfArrays">@distinctUnionOfArrays</span> / <span
+class="citation" data-cites="unionOfArrays">@unionOfArrays</span>
+返回一个数组，其中包含这个集合中每个数组对于这个操作符右面指定的 key
+path 进行操作之后的值。 distinct 版本会移除重复的值。</li>
+<li><span class="citation"
+data-cites="distinctUnionOfSets">@distinctUnionOfSets</span> 和 <span
+class="citation"
+data-cites="distinctUnionOfArrays">@distinctUnionOfArrays</span> 差不多,
+但是它期望的是一个包含着 NSSet 对象的 NSSet ，并且会返回一个 NSSet
+对象。因为集合不能包含重复的值，所以它只有 distinct 操作。</li>
+</ul>
+<p>假定有个 <em>totalProducts</em> 数组，其包含两个数组
+<em>products</em> 和 <em>products2</em>，以下代码片段展示了
+<em>totalProducts</em> 的创建。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">totalProducts = [NSMutableArray array];</span><br><span class="line">[totalProducts addObject:products];</span><br><span class="line">[totalProducts addObject:products2];</span><br></pre></td></tr></table></figure>
+<p>其中 <em>products</em> 和 <em>products2</em> 中元素都是 Product
+类对象，其内部数据使用的是<a
+href="#data-used-in-examples">示例数据</a>的数据内容。</p>
+<p>对于以下操作:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray *distinctUnionOfArrays = [totalProducts valueForKeyPath:@&quot;@distinctUnionOfArrays.name&quot;];</span><br><span class="line">NSArray *unionOfArrays = [totalProducts valueForKeyPath:@&quot;@unionOfArrays.name&quot;];</span><br></pre></td></tr></table></figure>
+<p>那么 <em>unionOfArrays</em> 中包含 "iPhone5", "iPhone5", "iPhone5",
+"iPad Mini", "MacBook Pro", "MacBook Pro", "iMac", "iPhone5", "iPad
+Mini", "MacBook Pro", "iMac", "iMac", "iMac" 共 13 个元素。而
+<em>distinctUnionOfArrays</em> 中仅包含 "iPhone5", "iPad Mini", "MacBook
+Pro", "iMac" 共 4 个元素。</p>
+<blockquote>
+<p>注意: 如果操作符右侧 key path 指定的对象为
+nil，那么返回的数组中会包含 NSNull 对象.</p>
+</blockquote>
+<p>参考:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://nshipster.cn/kvc-collection-operators/">KVC
+Collection Operators</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/CollectionOperators.html#//apple_ref/doc/uid/20002176-BAJEAIEE">Key-Value
+Coding Programming Guide</a></li>
+</ul>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -437,7 +643,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

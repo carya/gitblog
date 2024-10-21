@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,11 +254,9 @@
                     <p>本文记录Java中关闭Chained-Streams的正确方式。</p>
 <p>在Java开发过程中，我们时常使用这样的方式创建输入输出流，如下方式1:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));</span><br></pre></td></tr></table></figure>
-
 <p>或者如下方式2创建:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FileOutputStream fos = new FileOutputStream(...)</span><br><span class="line">BufferedOS bos = new BufferedOS(fos);</span><br><span class="line">ObjectOutputStream oos = new ObjectOutputStream(bos);</span><br></pre></td></tr></table></figure>
-
-<p>使用方式1时，我们仅仅使用<code>br.close()</code>是否会造成流资源的不正确关闭？使用方式2时，是否需要把创建的每个流(oos&#x2F;bos&#x2F;fos)都依次关闭呢？</p>
+<p>使用方式1时，我们仅仅使用<code>br.close()</code>是否会造成流资源的不正确关闭？使用方式2时，是否需要把创建的每个流(oos/bos/fos)都依次关闭呢？</p>
                     
                         <a
                             href="/2014/06/23/java-close-chained-stream/"
@@ -312,7 +311,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

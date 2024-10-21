@@ -15,13 +15,13 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法:\n12345678- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];    self.window.rootViewController = rootViewController;    [self.window makeKeyAndVisible];    return YES;&#125;\n\n\n","dateCreated":"2015-08-04T22:34:15+08:00","dateModified":"2015-10-20T21:13:41+08:00","datePublished":"2015-08-04T22:34:15+08:00","description":"现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法:\n12345678- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];    self.window.rootViewController = rootViewController;    [self.window makeKeyAndVisible];    return YES;&#125;","headline":"iOS代码初始化window的rootViewController","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/04/ios-init-window-rootviewcontroller/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/04/ios-init-window-rootviewcontroller/","keywords":"iOS"}</script>
-    <meta name="description" content="现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法: 12345678- (BOOL)application:(UIApplication *)application didFinishLaunchi">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"现在iOS新建项目工程时，window 默认情况下是以\r\nMain.storyboard 中 initial view controller,\r\n在项目中，如果需要通过代码控制 window 的 rootViewController ，\r\n可以通过如下方法:\r\n12345678- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];    self.window.rootViewController = rootViewController;    [self.window makeKeyAndVisible];    return YES;&#125;\r\n\r\n","dateCreated":"2015-08-04T22:34:15+08:00","dateModified":"2015-10-20T21:13:41+08:00","datePublished":"2015-08-04T22:34:15+08:00","description":"现在iOS新建项目工程时，window 默认情况下是以\r\nMain.storyboard 中 initial view controller,\r\n在项目中，如果需要通过代码控制 window 的 rootViewController ，\r\n可以通过如下方法:\r\n12345678- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];    self.window.rootViewController = rootViewController;    [self.window makeKeyAndVisible];    return YES;&#125;","headline":"iOS代码初始化window的rootViewController","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/04/ios-init-window-rootviewcontroller/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/04/ios-init-window-rootviewcontroller/","keywords":"iOS"}</script>
+    <meta name="description" content="现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法: 12345678- (BOOL)application:(UIApplication *)application didFinishLau">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS代码初始化window的rootViewController">
 <meta property="og:url" content="http://liumh.com/2015/08/04/ios-init-window-rootviewcontroller/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法: 12345678- (BOOL)application:(UIApplication *)application didFinishLaunchi">
+<meta property="og:description" content="现在iOS新建项目工程时，window 默认情况下是以 Main.storyboard 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法: 12345678- (BOOL)application:(UIApplication *)application didFinishLau">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-08-04T14:34:15.000Z">
 <meta property="article:modified_time" content="2015-10-20T13:13:41.000Z">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,9 +251,11 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>现在iOS新建项目工程时，window 默认情况下是以 <code>Main.storyboard</code> 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法:</p>
+            <p>现在iOS新建项目工程时，window 默认情况下是以
+<code>Main.storyboard</code> 中 initial view controller,
+在项目中，如果需要通过代码控制 window 的 rootViewController ，
+可以通过如下方法:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;</span><br><span class="line">    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];</span><br><span class="line">    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];</span><br><span class="line">    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];</span><br><span class="line">    self.window.rootViewController = rootViewController;</span><br><span class="line">    [self.window makeKeyAndVisible];</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <span id="more"></span>
 
             
@@ -426,7 +429,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

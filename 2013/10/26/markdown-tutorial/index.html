@@ -17,13 +17,13 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:\n\n段落和换行\n标题\n区块引用\n列表\n代码\n分隔线\n删除线\n表格\n链接\n强调(斜体和粗体)\n图片\n自动链接\n反斜杠\n\n\n\n段落和换行\n\n一个 Markdown 段落是由一个或多个连续的文本行组成，它的前后要有一个以上空行.\n「由一个或多个连续的文本行组成」这句话其实暗示了 Markdown 允许段落内的强迫换行，Markdown换行有两种方式：  \n\n插入换行符&lt;br /&gt;  \n在插入换行符处先按入两个以上的空格，然后按回车键\n\n标题\n在行首插入1到6个`#`，对应标题1到6阶，例如：\n\n123#这表示H1###这表示H3######这表示H6\n\nMarkdown中只有6阶标题\n区块引用\n\nMarkdown在表示引用的行前门加入&gt;，若需要引用整个段落，则只需要在该段落第一行最前面加上&gt;：\n12&gt;有朋自远方来，不亦说乎&gt;成都，是一个您来了就不想离开的城市\n\n引用段落：\n1&gt;我永远相信只要永不放弃，我们还是有机会的.最后，我们还是坚信一点，这世界上只要有梦想，只要不断努力，只要不断学习，不管你长得如何，不管是这样，还是那样，男人的长相往往和他的的才华成反比。今天很残酷，明天更残酷，后天很美好，但绝对大部分是死在明天晚上，所以每个人不要放弃今天.\n\n区块引用可以嵌套(引用内的引用)，只要根据层次加上不同数量的&gt;:\n12345678&gt;这是第一层引用&gt;&gt;&gt;这是第二层引用&gt;&gt;######这是6阶标题&gt;1. 列表第一行&gt;2. 列表第二行&gt;\n\n从上面的例子可以看出，引用的区块内也可以使用其他的Markdown语法，包括标题，列表，代码区块等.\n列表\nMarkdown支持有序列表和无序列表.在列表的开始前和结束后都需要有一行空白行.   \n\n无序列表可使用星号*、加号+或者减号-，并在其后加入一个空格作为列表标记, 例如：\n123* 猫* 狗* 猪\n有序列表则使用数字，接着一个英文句点和空格，例如：\n1231. 北京2. 成都3. 江苏\n无论是有序列表还是无序列表都支持嵌套，内嵌列表行首与上级列表相比需空一格，例如：\n12345678* 北京 + 海淀区 + 朝阳区 + 宣武区* 成都 + 青羊区 + 锦江区 + 高新区\n\n代码\n\n代码块以三个反引号(`)包围，最终效果如图：\n1234while(true) &#123;  print(&quot;this loop is still execute.&quot;);&#125;    print(&quot;continue to do another task.&quot;);\n\n标记一小段行内代码，可以使用反引号(`)将代码包起来, 例如：\n1在C语言中，你可以使用`printf()`函数来输出一些log信息.\n\n代码区段的起始和结束端都可以放入一个空白，起始端后面一个，结束端前面一个，这样你就可以在区段的一开始就插入反引号：\n12在代码段中使用单一反引号: `` ` ``在代码段中使用用反引号分隔的字符串: `` ddd`foo`eee ``\n\n\n分隔线\n\nMarkdown，在一行中使用三个以上的星号或者下划线来建立一个分隔线，该行内不能有其他东西.例如：\n12***___\n\n删除线\n\n在要画删除线的文本前后添加~~, 例如：  \n1~~该任务已完成~~\n\n表格\n\n参考:Markdown之表格的处理.Markdown Reference一文中关于表格的部分.Tables for Markdown and TextMate\n链接\nMarkdown支持两种形式的链接语法：行内式和参考式两种形式.不管是哪一种方式，链接文字都是用`[方括号]`标记.\n\n建立行内式链接，只要在方括号后面紧接着圆括号，在圆括号内插入网址链接，如果想加上链接的title文字，只要在网址后用双引号把title文字包起来，例如：\n123这是我的微博[@CaryaLiu](http://weibo.com/caryaliu/&quot;CaryaLiu&#x27;s Blog&quot;), 大家可以关注我哟    这是我的[LinkedIn](http://www.linkedin.com/in/caryaliu)这个没有链接的title文字\n建立参考式的链接，是在链接文字的方括号后面再接上另一个方括号，在第二个方括号里面要填入用以辨识链接的标记，例如：\n1这是参考式链接，我的微博[@CaryaLiu][id], 欢迎关注我哟.\n\n你可以在文件的任意处定义这个标记的链接内容：\n1[id]: http://weibo.com/caryaliu/ &quot;CaryaLiu&#x27;s Weibo&quot;\n\n链接内容定义的形式为：\n\n方括号，前面可以选择性地加上至多三个空格来缩进，方括号内输入链接标记\n接着是冒号\n接着一个以上的空格或者制表符\n接着链接的网址\n选择性的title文字内容，用双引号包着\n\n链接网址也可以用方括号包起来：\n1[id]: &lt;http://weibo.com/caryaliu/&gt; &quot;CaryaLiu&#x27;s Weibo&quot;\n可以把title文字内容放到下一行，可以增加一些缩进，当网址太长的时候，这样会比较好看：\n12[id]: &lt;http://weibo.com/caryaliu/&gt;  &quot;CaryaLiu&#x27;s Weibo&quot;\n\n链接标记可以有字母、数字，字母不区分大小写.\n链接标记的另一种形式是隐式链接标记，使你可以忽略指定链接标记，这种情形下，链接标记会视为等同于链接文字.使用隐式链接标记只要在链接文字后面加上一个空的方括号，例如：\n1这是我的[博客][], 欢迎关注.\n\n然后定义链接内容:\n1[博客]: http://readus.org\n\n参考式链接的例子如下：\n12345这是我的[Hexo博客][1]，之前有过[网易博客][2], 和[csdn博客][3],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。      [1]: http://readus.org   [2]: http://blog.163.com/liumaohua890413@126/   [3]: http://blog.csdn.net/caryaliu\n\n隐式链接标记的例子如下：\n12345这是我的[Hexo博客][]，之前有过[网易博客][], 和[csdn博客][],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。[Hexo博客]: http://readus.org[网易博客]: http://blog.163.com/liumaohua890413@126/[csdn博客]: http://blog.csdn.net/caryaliu\n\n使用行内式链接标记的例子如下：\n1这是我的[Hexo博客](http://readus.org)，之前有过[网易博客](http://blog.163.com/liumaohua890413@126/), 和[csdn博客](http://blog.csdn.net/caryaliu),最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。\n强调\n\n这里有两种方式，斜体和粗体.斜体，使用单个星号*或者下划线_作为标记，将需要强调的字符包含；粗体，使用两个*或者_作为标记，将需要强调的字符包含；例如：\n12345*这是斜体*  _这也是斜体_  **这是粗体**  __这也是粗体__\n\n如果要在文字前后直接插入普通的星号或者下划线，可以在其之前插入反斜线\\,例如：\n1在使用正则表达式时，可以使用星号\\*表示匹配0个或者多个任意字符\n\n\n图片\nMarkdown使用和链接很相似的语法来标记图片，同样有行内式和参考式两种.  \n行内式的图片语法：\n    \n12![Alt text](/path/to/img.png)![Alt text](/path/to/img.png &quot;Optional title&quot;)\n\n详述如下：  \n\n一个感叹号!\n接着是一个方括号，里面放上图片的替代文字\n接着一个圆括号，里面放上图片的网址，最后可选择性地加上用引号包住的title文字\n\n参考式的图片语法：\n1![Alt text][id]\n\nid是图片参考的名称，图片参考的定义方式和链接参考一样：\n1[id]: ur/to/image &quot;Optional title attribute&quot;\n\n到目前为止，Markdown还没有办法指定图片的宽高，如需要指定图片的宽高，可使用普通的&lt;img&gt;标签.\n自动链接\nMarkdown支持以比较简短的自动链接形式来处理网址和电子邮件地址，只要用方括号包起来，Markdown就会自动把它转成链接，一般网址的链接文字就和链接地址一样，例如：\n  \n1&lt;http://readus.org/&gt;\n\nMarkdown会转为：\n1&lt;a href=&quot;http://readus.org&quot;&gt;http://readus.org&lt;/a&gt;\n\n反斜杠\n\nMarkdown可以利用反斜杠来插入一些在语法中有其它意义的符号，例如：如果你想要用星号加在文字旁边的方式来做出强调效果（但不用  标签），你可以在星号的前面加上反斜杠，例如：\n1\\*literal asterisks\\*\n\nMarkdown支持以下这些符号前面加上反斜杠来帮助插入这些符号，从而将以下字符直接作为文本加入文中.\n123456789101112\\ 反斜线` 反引号* 星号_ 底线&#123;&#125; 花括号[] 方括号() 括弧# 井字号+ 加号- 减号. 英文句点! 感叹号\n\n参考:Markdown 语法说明 (简体中文版)  \nMarkdown Reference\n","dateCreated":"2013-10-26T06:43:05+08:00","dateModified":"2015-09-30T23:52:29+08:00","datePublished":"2013-10-26T06:43:05+08:00","description":"以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:\n\n段落和换行\n标题\n区块引用\n列表\n代码\n分隔线\n删除线\n表格\n链接\n强调(斜体和粗体)\n图片\n自动链接\n反斜杠\n","headline":"Markdown简明教程","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/26/markdown-tutorial/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/26/markdown-tutorial/","keywords":"hexo, markdown"}</script>
-    <meta name="description" content="以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:  段落和换行 标题 区块引用 列表 代码 分隔线 删除线 表格 链接 强调(斜体和粗体) 图片 自动链接 反斜杠">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:\r\n\r\n段落和换行\r\n标题\r\n区块引用\r\n列表\r\n代码\r\n分隔线\r\n删除线\r\n表格\r\n链接\r\n强调(斜体和粗体)\r\n图片\r\n自动链接\r\n反斜杠\r\n\r\n\r\n\r\n段落和换行\r\n\r\n一个 Markdown\r\n段落是由一个或多个连续的文本行组成，它的前后要有一个以上空行.\r\n「由一个或多个连续的文本行组成」这句话其实暗示了 Markdown\r\n允许段落内的强迫换行，Markdown换行有两种方式：\r\n1. 插入换行符&lt;br /&gt;\r\n2. 在插入换行符处先按入两个以上的空格，然后按回车键\r\n\r\n标题\r\n\r\n在行首插入1到6个#，对应标题1到6阶，例如：\r\n123#这表示H1###这表示H3######这表示H6\r\nMarkdown中只有6阶标题\r\n\r\n区块引用\r\n\r\nMarkdown在表示引用的行前门加入&gt;，若需要引用整个段落，则只需要在该段落第一行最前面加上&gt;：\r\n12&gt;有朋自远方来，不亦说乎&gt;成都，是一个您来了就不想离开的城市\r\n引用段落：\r\n1&gt;我永远相信只要永不放弃，我们还是有机会的.最后，我们还是坚信一点，这世界上只要有梦想，只要不断努力，只要不断学习，不管你长得如何，不管是这样，还是那样，男人的长相往往和他的的才华成反比。今天很残酷，明天更残酷，后天很美好，但绝对大部分是死在明天晚上，所以每个人不要放弃今天.\r\n区块引用可以嵌套(引用内的引用)，只要根据层次加上不同数量的&gt;:\r\n12345678&gt;这是第一层引用&gt;&gt;&gt;这是第二层引用&gt;&gt;######这是6阶标题&gt;1. 列表第一行&gt;2. 列表第二行&gt;\r\n从上面的例子可以看出，引用的区块内也可以使用其他的Markdown语法，包括标题，列表，代码区块等.\r\n\r\n列表\r\n\r\nMarkdown支持有序列表和无序列表.在列表的开始前和结束后都需要有一行空白行.\r\n无序列表可使用星号*、加号+或者减号-，并在其后加入一个空格作为列表标记,\r\n例如：\r\n123* 猫* 狗* 猪\r\n有序列表则使用数字，接着一个英文句点和空格，例如：\r\n1231. 北京2. 成都3. 江苏\r\n无论是有序列表还是无序列表都支持嵌套，内嵌列表行首与上级列表相比需空一格，例如：\r\n12345678* 北京 + 海淀区 + 朝阳区 + 宣武区* 成都 + 青羊区 + 锦江区 + 高新区\r\n\r\n代码\r\n\r\n代码块以三个反引号(`)包围，最终效果如图：\r\n1234while(true) &#123;  print(&quot;this loop is still execute.&quot;);&#125;    print(&quot;continue to do another task.&quot;);\r\n标记一小段行内代码，可以使用反引号(`)将代码包起来, 例如：\r\n1在C语言中，你可以使用`printf()`函数来输出一些log信息.\r\n代码区段的起始和结束端都可以放入一个空白，起始端后面一个，结束端前面一个，这样你就可以在区段的一开始就插入反引号：\r\n12在代码段中使用单一反引号: `` ` ``在代码段中使用用反引号分隔的字符串: `` ddd`foo`eee ``\r\n\r\n分隔线\r\n\r\nMarkdown，在一行中使用三个以上的星号或者下划线来建立一个分隔线，该行内不能有其他东西.例如：\r\n12***___\r\n\r\n删除线\r\n\r\n在要画删除线的文本前后添加~~, 例如：\r\n1~~该任务已完成~~\r\n\r\n表格\r\n\r\n参考:\r\nMarkdown之表格的处理.\r\nMarkdown\r\nReference一文中关于表格的部分.\r\nTables\r\nfor Markdown and TextMate\r\n\r\n链接\r\n\r\nMarkdown支持两种形式的链接语法：行内式和参考式两种形式.不管是哪一种方式，链接文字都是用[方括号]标记.\r\n建立行内式链接，只要在方括号后面紧接着圆括号，在圆括号内插入网址链接，如果想加上链接的title文字，只要在网址后用双引号把title文字包起来，例如：\r\n123这是我的微博[@CaryaLiu](http://weibo.com/caryaliu/&quot;CaryaLiu&#x27;s Blog&quot;), 大家可以关注我哟    这是我的[LinkedIn](http://www.linkedin.com/in/caryaliu)这个没有链接的title文字\r\n建立参考式的链接，是在链接文字的方括号后面再接上另一个方括号，在第二个方括号里面要填入用以辨识链接的标记，例如：\r\n1这是参考式链接，我的微博[@CaryaLiu][id], 欢迎关注我哟.\r\n你可以在文件的任意处定义这个标记的链接内容：\r\n1[id]: http://weibo.com/caryaliu/ &quot;CaryaLiu&#x27;s Weibo&quot;\r\n链接内容定义的形式为：\r\n\r\n方括号，前面可以选择性地加上至多三个空格来缩进，方括号内输入链接标记\r\n接着是冒号\r\n接着一个以上的空格或者制表符\r\n接着链接的网址\r\n选择性的title文字内容，用双引号包着\r\n\r\n链接网址也可以用方括号包起来：\r\n1[id]: &lt;http://weibo.com/caryaliu/&gt; &quot;CaryaLiu&#x27;s Weibo&quot;\r\n可以把title文字内容放到下一行，可以增加一些缩进，当网址太长的时候，这样会比较好看：\r\n12[id]: &lt;http://weibo.com/caryaliu/&gt;  &quot;CaryaLiu&#x27;s Weibo&quot;\r\n链接标记可以有字母、数字，字母不区分大小写.\r\n链接标记的另一种形式是隐式链接标记，使你可以忽略指定链接标记，这种情形下，链接标记会视为等同于链接文字.使用隐式链接标记只要在链接文字后面加上一个空的方括号，例如：\r\n1这是我的[博客][], 欢迎关注.\r\n然后定义链接内容:\r\n1[博客]: http://readus.org\r\n参考式链接的例子如下：\r\n12345这是我的[Hexo博客][1]，之前有过[网易博客][2], 和[csdn博客][3],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。      [1]: http://readus.org   [2]: http://blog.163.com/liumaohua890413@126/   [3]: http://blog.csdn.net/caryaliu\r\n隐式链接标记的例子如下：\r\n12345这是我的[Hexo博客][]，之前有过[网易博客][], 和[csdn博客][],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。[Hexo博客]: http://readus.org[网易博客]: http://blog.163.com/liumaohua890413@126/[csdn博客]: http://blog.csdn.net/caryaliu\r\n使用行内式链接标记的例子如下：\r\n1这是我的[Hexo博客](http://readus.org)，之前有过[网易博客](http://blog.163.com/liumaohua890413@126/), 和[csdn博客](http://blog.csdn.net/caryaliu),最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。\r\n\r\n强调\r\n\r\n这里有两种方式，斜体和粗体.\r\n斜体，使用单个星号*或者下划线_作为标记，将需要强调的字符包含；\r\n粗体，使用两个*或者_作为标记，将需要强调的字符包含；\r\n例如：\r\n12345*这是斜体*  _这也是斜体_  **这是粗体**  __这也是粗体__\r\n如果要在文字前后直接插入普通的星号或者下划线，可以在其之前插入反斜线\\,例如：\r\n1在使用正则表达式时，可以使用星号\\*表示匹配0个或者多个任意字符\r\n\r\n图片\r\n\r\nMarkdown使用和链接很相似的语法来标记图片，同样有行内式和参考式两种.\r\n行内式的图片语法：\r\n12![Alt text](/path/to/img.png)![Alt text](/path/to/img.png &quot;Optional title&quot;)\r\n详述如下：\r\n* 一个感叹号! * 接着是一个方括号，里面放上图片的替代文字 *\r\n接着一个圆括号，里面放上图片的网址，最后可选择性地加上用引号包住的title文字\r\n参考式的图片语法：\r\n1![Alt text][id]\r\nid是图片参考的名称，图片参考的定义方式和链接参考一样：\r\n1[id]: ur/to/image &quot;Optional title attribute&quot;\r\n到目前为止，Markdown还没有办法指定图片的宽高，如需要指定图片的宽高，可使用普通的&lt;img&gt;标签.\r\n\r\n自动链接\r\n\r\nMarkdown支持以比较简短的自动链接形式来处理网址和电子邮件地址，只要用方括号包起来，Markdown就会自动把它转成链接，一般网址的链接文字就和链接地址一样，例如：\r\n1&lt;http://readus.org/&gt;\r\nMarkdown会转为：\r\n1&lt;a href=&quot;http://readus.org&quot;&gt;http://readus.org&lt;/a&gt;\r\n\r\n反斜杠\r\n\r\nMarkdown可以利用反斜杠来插入一些在语法中有其它意义的符号，例如：如果你想要用星号加在文字旁边的方式来做出强调效果（但不用\r\n 标签），你可以在星号的前面加上反斜杠，例如：\r\n1\\*literal asterisks\\*\r\nMarkdown支持以下这些符号前面加上反斜杠来帮助插入这些符号，从而将以下字符直接作为文本加入文中.\r\n123456789101112\\ 反斜线` 反引号* 星号_ 底线&#123;&#125; 花括号[] 方括号() 括弧# 井字号+ 加号- 减号. 英文句点! 感叹号\r\n参考:\r\nMarkdown 语法说明\r\n(简体中文版)\r\nMarkdown\r\nReference\r\n","dateCreated":"2013-10-26T06:43:05+08:00","dateModified":"2015-09-30T23:52:29+08:00","datePublished":"2013-10-26T06:43:05+08:00","description":"以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:\r\n\r\n段落和换行\r\n标题\r\n区块引用\r\n列表\r\n代码\r\n分隔线\r\n删除线\r\n表格\r\n链接\r\n强调(斜体和粗体)\r\n图片\r\n自动链接\r\n反斜杠\r\n","headline":"Markdown简明教程","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/26/markdown-tutorial/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/26/markdown-tutorial/","keywords":"hexo, markdown"}</script>
+    <meta name="description" content="以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:  段落和换行 标题 区块引用 列表 代码 分隔线 删除线 表格 链接 强调(斜体和粗体) 图片 自动链接 反斜杠">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="Markdown简明教程">
 <meta property="og:url" content="http://liumh.com/2013/10/26/markdown-tutorial/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:  段落和换行 标题 区块引用 列表 代码 分隔线 删除线 表格 链接 强调(斜体和粗体) 图片 自动链接 反斜杠">
+<meta property="og:description" content="以下是关于Markdown的常用语法，可以在Markdown编辑器选择一个Markdown编辑器边看边练习，推荐使用博客平台简书,因为其支持表格的绘制.涉及到的内容有:  段落和换行 标题 区块引用 列表 代码 分隔线 删除线 表格 链接 强调(斜体和粗体) 图片 自动链接 反斜杠">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2013-10-25T22:43:05.000Z">
 <meta property="article:modified_time" content="2015-09-30T15:52:29.000Z">
@@ -111,7 +111,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,8 +254,10 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>以下是关于Markdown的常用语法，可以在<a href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
-<ol>
+            <p>以下是关于Markdown的常用语法，可以在<a
+href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a
+target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
+<ol type="1">
 <li><a href="#paragraph">段落和换行</a></li>
 <li><a href="#title">标题</a></li>
 <li><a href="#block_cite">区块引用</a></li>
@@ -270,81 +273,84 @@
 <li><a href="#backslash">反斜杠</a></li>
 </ol>
 <span id="more"></span>
-
-<h3 id="paragraph">段落和换行</h3>
-
-<p>一个 Markdown 段落是由一个或多个连续的文本行组成，它的前后要有一个以上空行.</p>
-<p>「由一个或多个连续的文本行组成」这句话其实暗示了 Markdown 允许段落内的强迫换行，Markdown换行有两种方式：  </p>
-<ol>
-<li>插入换行符<code>&lt;br /&gt;</code>  </li>
-<li>在插入换行符处先按入两个以上的空格，然后按回车键</li>
-</ol>
-<h3 id="title">标题</h3>
-在行首插入1到6个`#`，对应标题1到6阶，例如：
-
+<h3 id="paragraph">
+段落和换行
+</h3>
+<p>一个 Markdown
+段落是由一个或多个连续的文本行组成，它的前后要有一个以上空行.</p>
+<p>「由一个或多个连续的文本行组成」这句话其实暗示了 Markdown
+允许段落内的强迫换行，Markdown换行有两种方式：<br />
+1. 插入换行符<code>&lt;br /&gt;</code><br />
+2. 在插入换行符处先按入两个以上的空格，然后按回车键</p>
+<h3 id="title">
+标题
+</h3>
+<p>在行首插入1到6个<code>#</code>，对应标题1到6阶，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#这表示H1</span><br><span class="line">###这表示H3</span><br><span class="line">######这表示H6</span><br></pre></td></tr></table></figure>
-
 <p>Markdown中只有6阶标题</p>
-<h3 id="block_cite">区块引用</h3>
-
+<h3 id="block_cite">
+区块引用
+</h3>
 <p>Markdown在表示引用的行前门加入<code>&gt;</code>，若需要引用整个段落，则只需要在该段落第一行最前面加上<code>&gt;</code>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;有朋自远方来，不亦说乎</span><br><span class="line">&gt;成都，是一个您来了就不想离开的城市</span><br></pre></td></tr></table></figure>
-
 <p>引用段落：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;我永远相信只要永不放弃，我们还是有机会的.最后，我们还是坚信一点，这世界上只要有梦想，只要不断努力，只要不断学习，不管你长得如何，不管是这样，还是那样，男人的长相往往和他的的才华成反比。今天很残酷，明天更残酷，后天很美好，但绝对大部分是死在明天晚上，所以每个人不要放弃今天.</span><br></pre></td></tr></table></figure>
-
 <p>区块引用可以嵌套(引用内的引用)，只要根据层次加上不同数量的<code>&gt;</code>:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;这是第一层引用</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;这是第二层引用</span><br><span class="line">&gt;</span><br><span class="line">&gt;######这是6阶标题</span><br><span class="line">&gt;1. 列表第一行</span><br><span class="line">&gt;2. 列表第二行</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
 <p>从上面的例子可以看出，引用的区块内也可以使用其他的Markdown语法，包括标题，列表，代码区块等.</p>
-<h3 id="list">列表</h3>
-Markdown支持有序列表和无序列表.在列表的开始前和结束后都需要有一行空白行.   
-
-<p>无序列表可使用星号<code>*</code>、加号<code>+</code>或者减号<code>-</code>，并在其后加入一个空格作为列表标记, 例如：</p>
+<h3 id="list">
+列表
+</h3>
+<p>Markdown支持有序列表和无序列表.在列表的开始前和结束后都需要有一行空白行.</p>
+<p>无序列表可使用星号<code>*</code>、加号<code>+</code>或者减号<code>-</code>，并在其后加入一个空格作为列表标记,
+例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* 猫</span><br><span class="line">* 狗</span><br><span class="line">* 猪</span><br></pre></td></tr></table></figure>
 <p>有序列表则使用数字，接着一个英文句点和空格，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 北京</span><br><span class="line">2. 成都</span><br><span class="line">3. 江苏</span><br></pre></td></tr></table></figure>
 <p>无论是有序列表还是无序列表都支持嵌套，内嵌列表行首与上级列表相比需空一格，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">* 北京</span><br><span class="line"> + 海淀区</span><br><span class="line"> + 朝阳区</span><br><span class="line"> + 宣武区</span><br><span class="line">* 成都</span><br><span class="line"> + 青羊区</span><br><span class="line"> + 锦江区</span><br><span class="line"> + 高新区</span><br></pre></td></tr></table></figure>
-
-<h3 id="code_block">代码</h3>
-
+<h3 id="code_block">
+代码
+</h3>
 <p>代码块以三个反引号(`)包围，最终效果如图：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while(true) &#123;</span><br><span class="line">  print(&quot;this loop is still execute.&quot;);</span><br><span class="line">&#125;    </span><br><span class="line">print(&quot;continue to do another task.&quot;);</span><br></pre></td></tr></table></figure>
-
 <p>标记一小段行内代码，可以使用反引号(`)将代码包起来, 例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在C语言中，你可以使用`printf()`函数来输出一些log信息.</span><br></pre></td></tr></table></figure>
-
 <p>代码区段的起始和结束端都可以放入一个空白，起始端后面一个，结束端前面一个，这样你就可以在区段的一开始就插入反引号：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在代码段中使用单一反引号: `` ` ``</span><br><span class="line">在代码段中使用用反引号分隔的字符串: `` ddd`foo`eee ``</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="separator">分隔线</h3>
-
+<h3 id="separator">
+分隔线
+</h3>
 <p>Markdown，在一行中使用三个以上的星号或者下划线来建立一个分隔线，该行内不能有其他东西.例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">***</span><br><span class="line">___</span><br></pre></td></tr></table></figure>
-
-<h3 id="strikethrough">删除线</h3>
-
-<p>在要画删除线的文本前后添加<code>~~</code>, 例如：  </p>
+<h3 id="strikethrough">
+删除线
+</h3>
+<p>在要画删除线的文本前后添加<code>~~</code>, 例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~~该任务已完成~~</span><br></pre></td></tr></table></figure>
-
-<h3 id="table">表格</h3>
-
-<p>参考:<br><a target="_blank" rel="noopener" href="http://www.ituring.com.cn/article/3452">Markdown之表格的处理</a>.<br><a target="_blank" rel="noopener" href="http://etherealmind.com/who-am-i/markdown-reference/">Markdown Reference</a>一文中关于表格的部分.<br><a target="_blank" rel="noopener" href="http://www.leancrew.com/all-this/2008/08/tables-for-markdown-and-textmate/">Tables for Markdown and TextMate</a></p>
-<h3 id="links">链接</h3>
-Markdown支持两种形式的链接语法：行内式和参考式两种形式.不管是哪一种方式，链接文字都是用`[方括号]`标记.
-
+<h3 id="table">
+表格
+</h3>
+<p>参考:<br />
+<a
+target="_blank" rel="noopener" href="http://www.ituring.com.cn/article/3452">Markdown之表格的处理</a>.<br />
+<a target="_blank" rel="noopener" href="http://etherealmind.com/who-am-i/markdown-reference/">Markdown
+Reference</a>一文中关于表格的部分.<br />
+<a
+target="_blank" rel="noopener" href="http://www.leancrew.com/all-this/2008/08/tables-for-markdown-and-textmate/">Tables
+for Markdown and TextMate</a></p>
+<h3 id="links">
+链接
+</h3>
+<p>Markdown支持两种形式的链接语法：行内式和参考式两种形式.不管是哪一种方式，链接文字都是用<code>[方括号]</code>标记.</p>
 <p>建立行内式链接，只要在方括号后面紧接着圆括号，在圆括号内插入网址链接，如果想加上链接的title文字，只要在网址后用双引号把title文字包起来，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">这是我的微博[@CaryaLiu](http://weibo.com/caryaliu/&quot;CaryaLiu&#x27;s Blog&quot;), 大家可以关注我哟</span><br><span class="line">    </span><br><span class="line">这是我的[LinkedIn](http://www.linkedin.com/in/caryaliu)这个没有链接的title文字</span><br></pre></td></tr></table></figure>
 <p>建立参考式的链接，是在链接文字的方括号后面再接上另一个方括号，在第二个方括号里面要填入用以辨识链接的标记，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这是参考式链接，我的微博[@CaryaLiu][id], 欢迎关注我哟.</span><br></pre></td></tr></table></figure>
-
 <p>你可以在文件的任意处定义这个标记的链接内容：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[id]: http://weibo.com/caryaliu/ &quot;CaryaLiu&#x27;s Weibo&quot;</span><br></pre></td></tr></table></figure>
-
 <p>链接内容定义的形式为：</p>
-<ol>
+<ol type="1">
 <li>方括号，前面可以选择性地加上至多三个空格来缩进，方括号内输入链接标记</li>
 <li>接着是冒号</li>
 <li>接着一个以上的空格或者制表符</li>
@@ -355,68 +361,62 @@ Markdown支持两种形式的链接语法：行内式和参考式两种形式.�
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[id]: &lt;http://weibo.com/caryaliu/&gt; &quot;CaryaLiu&#x27;s Weibo&quot;</span><br></pre></td></tr></table></figure>
 <p>可以把title文字内容放到下一行，可以增加一些缩进，当网址太长的时候，这样会比较好看：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[id]: &lt;http://weibo.com/caryaliu/&gt;</span><br><span class="line">  &quot;CaryaLiu&#x27;s Weibo&quot;</span><br></pre></td></tr></table></figure>
-
 <p>链接标记可以有字母、数字，字母不区分大小写.</p>
 <p>链接标记的另一种形式是隐式链接标记，使你可以忽略指定链接标记，这种情形下，链接标记会视为等同于链接文字.使用隐式链接标记只要在链接文字后面加上一个空的方括号，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这是我的[博客][], 欢迎关注.</span><br></pre></td></tr></table></figure>
-
 <p>然后定义链接内容:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[博客]: http://readus.org</span><br></pre></td></tr></table></figure>
-
 <p>参考式链接的例子如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">这是我的[Hexo博客][1]，之前有过[网易博客][2], 和[csdn博客][3],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。</span><br><span class="line">   </span><br><span class="line">   [1]: http://readus.org</span><br><span class="line">   [2]: http://blog.163.com/liumaohua890413@126/</span><br><span class="line">   [3]: http://blog.csdn.net/caryaliu</span><br></pre></td></tr></table></figure>
-
 <p>隐式链接标记的例子如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">这是我的[Hexo博客][]，之前有过[网易博客][], 和[csdn博客][],最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。</span><br><span class="line"></span><br><span class="line">[Hexo博客]: http://readus.org</span><br><span class="line">[网易博客]: http://blog.163.com/liumaohua890413@126/</span><br><span class="line">[csdn博客]: http://blog.csdn.net/caryaliu</span><br></pre></td></tr></table></figure>
-
 <p>使用行内式链接标记的例子如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这是我的[Hexo博客](http://readus.org)，之前有过[网易博客](http://blog.163.com/liumaohua890413@126/), 和[csdn博客](http://blog.csdn.net/caryaliu),最后想弄个比较自主的博客，想起了自己来搭建，尝试过wordpress，现在决定先用Hexo试试。</span><br></pre></td></tr></table></figure>
-<h3 id="emphasize">强调</h3>
-
-<p>这里有两种方式，斜体和粗体.<br>斜体，使用单个星号<code>*</code>或者下划线<code>_</code>作为标记，将需要强调的字符包含；<br>粗体，使用两个<code>*</code>或者<code>_</code>作为标记，将需要强调的字符包含；<br>例如：</p>
+<h3 id="emphasize">
+强调
+</h3>
+<p>这里有两种方式，斜体和粗体.<br />
+斜体，使用单个星号<code>*</code>或者下划线<code>_</code>作为标记，将需要强调的字符包含；<br />
+粗体，使用两个<code>*</code>或者<code>_</code>作为标记，将需要强调的字符包含；<br />
+例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">*这是斜体*  </span><br><span class="line">_这也是斜体_  </span><br><span class="line"></span><br><span class="line">**这是粗体**  </span><br><span class="line">__这也是粗体__</span><br></pre></td></tr></table></figure>
-
 <p>如果要在文字前后直接插入普通的星号或者下划线，可以在其之前插入反斜线<code>\</code>,例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在使用正则表达式时，可以使用星号\*表示匹配0个或者多个任意字符</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="pic">图片</h3>
-Markdown使用和链接很相似的语法来标记图片，同样有行内式和参考式两种.  
-行内式的图片语法：
-    
+<h3 id="pic">
+图片
+</h3>
+<p>Markdown使用和链接很相似的语法来标记图片，同样有行内式和参考式两种.<br />
+行内式的图片语法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">![Alt text](/path/to/img.png)</span><br><span class="line">![Alt text](/path/to/img.png &quot;Optional title&quot;)</span><br></pre></td></tr></table></figure>
-
-<p>详述如下：  </p>
-<ul>
-<li>一个感叹号<code>!</code></li>
-<li>接着是一个方括号，里面放上图片的替代文字</li>
-<li>接着一个圆括号，里面放上图片的网址，最后可选择性地加上用引号包住的title文字</li>
-</ul>
+<p>详述如下：<br />
+* 一个感叹号<code>!</code> * 接着是一个方括号，里面放上图片的替代文字 *
+接着一个圆括号，里面放上图片的网址，最后可选择性地加上用引号包住的title文字</p>
 <p>参考式的图片语法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![Alt text][id]</span><br></pre></td></tr></table></figure>
-
 <p><code>id</code>是图片参考的名称，图片参考的定义方式和链接参考一样：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[id]: ur/to/image &quot;Optional title attribute&quot;</span><br></pre></td></tr></table></figure>
-
 <p>到目前为止，Markdown还没有办法指定图片的宽高，如需要指定图片的宽高，可使用普通的<code>&lt;img&gt;</code>标签.</p>
-<h3 id="auto_link">自动链接</h3>
-Markdown支持以比较简短的自动链接形式来处理网址和电子邮件地址，只要用方括号包起来，Markdown就会自动把它转成链接，一般网址的链接文字就和链接地址一样，例如：
-  
+<h3 id="auto_link">
+自动链接
+</h3>
+<p>Markdown支持以比较简短的自动链接形式来处理网址和电子邮件地址，只要用方括号包起来，Markdown就会自动把它转成链接，一般网址的链接文字就和链接地址一样，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;http://readus.org/&gt;</span><br></pre></td></tr></table></figure>
-
 <p>Markdown会转为：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=&quot;http://readus.org&quot;&gt;http://readus.org&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="backslash">反斜杠</h3>
-
-<p>Markdown可以利用反斜杠来插入一些在语法中有其它意义的符号，例如：如果你想要用星号加在文字旁边的方式来做出强调效果（但不用 <em> 标签），你可以在星号的前面加上反斜杠，例如：</p>
+<h3 id="backslash">
+反斜杠
+</h3>
+<p>Markdown可以利用反斜杠来插入一些在语法中有其它意义的符号，例如：如果你想要用星号加在文字旁边的方式来做出强调效果（但不用
+<em> 标签），你可以在星号的前面加上反斜杠，例如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\*literal asterisks\*</span><br></pre></td></tr></table></figure>
-
 <p>Markdown支持以下这些符号前面加上反斜杠来帮助插入这些符号，从而将以下字符直接作为文本加入文中.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">\ 反斜线</span><br><span class="line">` 反引号</span><br><span class="line">* 星号</span><br><span class="line">_ 底线</span><br><span class="line">&#123;&#125; 花括号</span><br><span class="line">[] 方括号</span><br><span class="line">() 括弧</span><br><span class="line"># 井字号</span><br><span class="line">+ 加号</span><br><span class="line">- 减号</span><br><span class="line">. 英文句点</span><br><span class="line">! 感叹号</span><br></pre></td></tr></table></figure>
-
-<p>参考:<br><a target="_blank" rel="noopener" href="http://wowubuntu.com/markdown/#p">Markdown 语法说明 (简体中文版)</a>  </p>
-<p><a target="_blank" rel="noopener" href="http://etherealmind.com/who-am-i/markdown-reference/">Markdown Reference</a></p>
+<p>参考:<br />
+<a target="_blank" rel="noopener" href="http://wowubuntu.com/markdown/#p">Markdown 语法说明
+(简体中文版)</a></p>
+<p><a
+target="_blank" rel="noopener" href="http://etherealmind.com/who-am-i/markdown-reference/">Markdown
+Reference</a></p>
 
             
 
@@ -589,7 +589,8 @@ Markdown支持以比较简短的自动链接形式来处理网址和电子邮件
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

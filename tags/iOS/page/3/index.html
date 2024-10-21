@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,11 +251,27 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>进一步阅读之前，可以先思考这个问题: 存在数组 <code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
-<p>KVC 的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
-<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 [valueForKeyPath:][] 方法。集合操作是以 <em>@</em> 开始的字符串, 也可理解为: KVC集合操作符允许在 <code>valueForKeyPath:</code> 方法中使用 key path 符号在一个集合中执行方法。无论什么时候你在 key path 中看见了*@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的 key path 一样。下图就是集合操作符的格式:</p>
-<p>![Operator key path format][]</p>
-<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的 NSArray 或者 NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
+                    <p>进一步阅读之前，可以先思考这个问题: 存在数组
+<code>@[@(90), @(31), @(65), @(78), @(76)]</code>，如何取出数组中的最大值或者最小值？</p>
+<p>KVC
+的集合操作符可使用键路径和操作运算作用于集合中的所有元素。本文将描述一些可用的集合操作。</p>
+<p>KVC 的集合操作符实际上就是一些特殊的键路径，以参数的形式传递给 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Protocols/NSKeyValueCoding_Protocol/index.html#//apple_ref/occ/instm/NSObject/valueForKeyPath:">valueForKeyPath:</a>
+方法。集合操作是以 <em><span class="citation" data-cites="*">@*</span>
+开始的字符串, 也可理解为: KVC集合操作符允许在
+<code>valueForKeyPath:</code> 方法中使用 key path
+符号在一个集合中执行方法。无论什么时候你在 key path
+中看见了</em>@*，它都代表了一个特定的集合方法，其结果可以被返回或者链接，就像其他的
+key path 一样。下图就是集合操作符的格式:</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-kvc/ios-kvc-keypath.jpg"
+alt="Operator key path format" />
+<figcaption aria-hidden="true">Operator key path format</figcaption>
+</figure>
+<p>其中左边的键路径(<em>keypathToCollection</em>)指定了相对消息接收者的
+NSArray 或者
+NSSet，右边的键路径(<em>keypathToProperty</em>)指定了相对于集合内对象的键路径，集合操作作用于该键路径。</p>
                     
                         <a
                             href="/2015/09/04/ios-kvc-collection-operators/"
@@ -305,13 +322,24 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。</p>
+                    <p>KVO,
+即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在
+MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller
+会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听
+Model 对象的属性变化。除此之外，在 Model
+对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model
+对象或者其自身的属性变化。</p>
 <p>监听属性变化需要以下几步:</p>
-<ol>
-<li>使用函数 <code>addObserver:forKeyPath:options:context:</code> 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
-<li>为了响应被观察者对象的变化通知，观察者必须实现 <code>observeValueForKeyPath:ofObject:change:context:</code> 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
-<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code> 方法会自动调用。</li>
-<li>调用 <code>– removeObserver:forKeyPath:context:</code> 取消注册。</li>
+<ol type="1">
+<li>使用函数 <code>addObserver:forKeyPath:options:context:</code>
+建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
+<li>为了响应被观察者对象的变化通知，观察者必须实现
+<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
+<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法会自动调用。</li>
+<li>调用 <code>– removeObserver:forKeyPath:context:</code>
+取消注册。</li>
 </ol>
                     
                         <a
@@ -363,9 +391,12 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
+                    <p>在项目，可能会有需求需要监听 NSMutableArray
+的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
 <p>那么如何来监听呢？</p>
-<p>方法1，使用 <code>mutableArrayValueForKey:</code> 代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code> 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
+<p>方法1，使用 <code>mutableArrayValueForKey:</code>
+代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code>
+方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
                     
                         <a
                             href="/2015/08/22/ios-nsmutablearray-kvo/"
@@ -416,9 +447,23 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。</p>
-<p>![NSLayoutConstraint priority 示例][]</p>
-<p>如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
+                    <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint
+的 priority 属性，使用 Storyboard
+提供的默认值就能达到要求。但是最近遇到对 UILabel
+的如下布局要求时，就需要涉及对 priority 的修改。</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-autolayout-priority/iOS-NSLayoutConstraint-priority.png"
+alt="NSLayoutConstraint priority 示例" />
+<figcaption aria-hidden="true">NSLayoutConstraint priority
+示例</figcaption>
+</figure>
+<p>如上所示，我们期望 UILabel
+显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且
+UILabel 的 Trailing 距离 UIButton 的 Leading
+大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和
+UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4
+的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
                     
                         <a
                             href="/2015/08/11/ios-autolayout-priority/"
@@ -469,7 +514,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>iOS 中可获取当前网络接口的 <code>SSID</code> 和 <code>BSSID</code> 信息，如下:</p>
+                    <p>iOS 中可获取当前网络接口的 <code>SSID</code> 和 <code>BSSID</code>
+信息，如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">NSString *ssid = @&quot;&quot;;</span><br><span class="line">NSString *bssid = @&quot;&quot;;</span><br><span class="line">NSArray *ifs = (__bridge_transfer id)CNCopySupportedInterfaces();</span><br><span class="line">NSDictionary *info;</span><br><span class="line">if ([ifs count] &gt; 0) &#123;</span><br><span class="line">    for (NSString *ifname in ifs) &#123;</span><br><span class="line">        info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifname);</span><br><span class="line">        </span><br><span class="line">        NSString *ssidKey =  (__bridge_transfer NSString *)kCNNetworkInfoKeySSID;</span><br><span class="line">        NSString *bssidKey = (__bridge_transfer NSString *)kCNNetworkInfoKeyBSSID;</span><br><span class="line">        if (info) &#123;</span><br><span class="line">            ssid = info[ssidKey];</span><br><span class="line">            bssid = info[bssidKey];</span><br><span class="line">            NSLog(@&quot;ssid: %@&quot;, ssid);</span><br><span class="line">            NSLog(@&quot;bssid: %@&quot;, bssid);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
                         <a
@@ -521,7 +567,9 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 <code>Darwin Notify Center</code> 中注册监听 <code>kNotifySCNetworkChange</code> 通知，如下:</p>
+                    <p>Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App
+内部需要感知设备wifi切换的变化，可以在 <code>Darwin Notify Center</code>
+中注册监听 <code>kNotifySCNetworkChange</code> 通知，如下:</p>
                     
                         <a
                             href="/2015/08/04/ios-monitor-wifichange/"
@@ -572,7 +620,10 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>现在iOS新建项目工程时，window 默认情况下是以 <code>Main.storyboard</code> 中 initial view controller, 在项目中，如果需要通过代码控制 window 的 rootViewController ， 可以通过如下方法:</p>
+                    <p>现在iOS新建项目工程时，window 默认情况下是以
+<code>Main.storyboard</code> 中 initial view controller,
+在项目中，如果需要通过代码控制 window 的 rootViewController ，
+可以通过如下方法:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;</span><br><span class="line">    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];</span><br><span class="line">    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];</span><br><span class="line">    RootViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;RootViewController&quot;];</span><br><span class="line">    self.window.rootViewController = rootViewController;</span><br><span class="line">    [self.window makeKeyAndVisible];</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
                         <a
@@ -624,10 +675,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p><code>+ initialize</code> 和 <code>+ load</code> 是 <code>NSObject</code> 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。</p>
+                    <p><code>+ initialize</code> 和 <code>+ load</code> 是
+<code>NSObject</code>
+类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。</p>
 <p>可以先思考如下示例控制台应该输出什么:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//父类</span><br><span class="line">@interface People : NSObject</span><br><span class="line">@end</span><br><span class="line">@implementation People</span><br><span class="line">+ (void)initialize &#123;</span><br><span class="line">    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//子类</span><br><span class="line">@interface Student : People</span><br><span class="line">@end</span><br><span class="line">@implementation Student</span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
 <p>启动并运行程序，控制台应输出什么呢，见结尾处。</p>
                     
                         <a
@@ -732,8 +784,15 @@
                 <div class="postShorten-excerpt">
                     <p>项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。</p>
 <p>对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png" alt="输入中文时包含选中状态的拼音"></p>
-<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据 UITextInput 协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png"
+alt="输入中文时包含选中状态的拼音" />
+<figcaption aria-hidden="true">输入中文时包含选中状态的拼音</figcaption>
+</figure>
+<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据
+UITextInput
+协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
                     
                         <a
                             href="/2015/07/12/ios-limit-uitextfield-input/"
@@ -809,7 +868,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

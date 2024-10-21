@@ -15,20 +15,27 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。\n其实，我也讨厌修改环境参数啊，😂\n为达成上述目的，主要是使用 Xcode 的 Configurations Setting File(即后缀为 xcconfig 文件) 来配置开发不同阶段下的环境。本文包含的内容如下:\n\n\n\nXcode Target\nXcode Project\nBuild Setting的继承关系\n如何使用xcconfig文件来配置不同开发阶段的环境\n\n包含了一些与 build settings 相关的知识。\nXcode Target","dateCreated":"2016-05-22T09:42:50+08:00","dateModified":"2021-04-18T11:49:29+08:00","datePublished":"2016-05-22T09:42:50+08:00","description":"与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。\n其实，我也讨厌修改环境参数啊，😂\n为达成上述目的，主要是使用 Xcode 的 Configurations Setting File(即后缀为 xcconfig 文件) 来配置开发不同阶段下的环境。本文包含的内容如下:","headline":"Xcode使用xcconfig文件配置环境","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/","keywords":"iOS, Xcode"}</script>
-    <meta name="description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"与公司 QA\r\n聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从\r\nApp\r\n转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于：\r\nwebservice 地址，友盟 AppKey，极光推送 AppKey\r\n和是否是生产环境标志等。\r\n其实，我也讨厌修改环境参数啊，😂\r\n为达成上述目的，主要是使用 Xcode 的 Configurations Setting\r\nFile(即后缀为 xcconfig 文件)\r\n来配置开发不同阶段下的环境。本文包含的内容如下:\r\n\r\n\r\nXcode Target\r\nXcode Project\r\nBuild Setting的继承关系\r\n如何使用xcconfig文件来配置不同开发阶段的环境\r\n\r\n包含了一些与 build settings 相关的知识。\r\nXcode Target\r\ntarget, 官方文档如下解释:\r\n\r\nA target specifies a product to build and contains the instructions\r\nfor building the product from a set of files in a project or workspace.\r\nA target defines a single product; it organizes the inputs into the\r\nbuild system—the source files and instructions for processing those\r\nsource files—required to build that product. Projects can contain one or\r\nmore targets, each of which produces one product.\r\n\r\ntarget 定义了生成的唯一 product, 它将构建该 product\r\n所需的文件和处理这些文件所需的指令集整合进 build system 中。Projects\r\n会包含一个或者多个 targets,每一个 target 将会产出一个 product.\r\n\r\nThe instructions for building a product take the form of build\r\nsettings and build phases, which you can examine and edit in the Xcode\r\nproject editor. A target inherits the project build settings, but\r\nyou can override any of the project settings by specifying different\r\nsettings at the target level. There can be only one active target\r\nat a time; the Xcode scheme specifies the active target.\r\n\r\n这些指令以 build setting 和 build phases 的形式存在，你可在 Xcode\r\n的项目编辑器(TARGETS-&gt;Build Setting, TARGETS-&gt;Build\r\nPhases)中进行查看和编辑。target 中的 build setting 参数继承自\r\nproject 的 build settings, 但是你可以在 target 中修改任意 settings\r\n来重写 project settings，这样，最终生效的 settings 参数以在 target\r\n中设置的为准. Project 可包含多个 target, 但是在同一时刻，只会有一个\r\ntarget 生效，可用 Xcode 的 scheme 来指定是哪一个 target 生效.\r\n\r\nA target and the product it creates can be related to another target.\r\nIf a target requires the output of another target in order to build, the\r\nfirst target is said to depend upon the second. If both targets are in\r\nthe same workspace, Xcode can discover the dependency, in which case it\r\nbuilds the products in the required order. Such a relationship is\r\nreferred to as an implicit dependency. You can also specify explicit\r\ntarget dependencies in your build settings, and you can specify that two\r\ntargets that Xcode might expect to have an implicit dependency are\r\nactually not dependent. For example, you might build both a library and\r\nan application that links against that library in the same workspace.\r\nXcode can discover this relationship and automatically build the library\r\nfirst. However, if you actually want to link against a version of the\r\nlibrary other than the one built in the workspace, you can create an\r\nexplicit dependency in your build settings, which overrides this\r\nimplicit dependency.\r\n\r\ntarget 和其生成的 product 可与另一个 target 有关，如果一个 target 的\r\nbuild 依赖于另一个 target 的输出，那么我们就说前一个 target 依赖于后一个\r\ntarget .如果这些 target 在同一个 workspace 中，那么 Xcode\r\n能够发现这种依赖关系，从而使其以我们期望的顺序生成\r\nproducts.这种关系被称为隐式依赖关系。同时，你可以显示指定 targets\r\n之间的依赖关系，并且这种依赖关系会覆盖 Xcode 推测出的隐式依赖关系。\r\n指定 targets 之间的依赖关系的地方在 Project\r\nEditor-&gt;TRAGETS-&gt;Build Phases-&gt;Target Dependencies 处设置。\r\nXcode Project\r\n官方文档的解释如下:\r\n\r\nAn Xcode project is a repository for all the files, resources, and\r\ninformation required to build one or more software products. A project\r\ncontains all the elements used to build your products and maintains the\r\nrelationships between those elements. It contains one or more targets,\r\nwhich specify how to build products. A project defines default build\r\nsettings for all the targets in the project (each target can also\r\nspecify its own build settings, which override the project build\r\nsettings).\r\n\r\nXcode project\r\n是一个仓库，该仓库包含了所有的文件，资源和用于生成一个或者多个 software\r\nproducts 的信息。它包含一个或者多个 targets，其中的每一个 target\r\n指明了如何生成 products。project 为其拥有的所有 targets 定义了默认的\r\nbuild settings，当然，每一个 target 能够制定其自己的 build settings，且\r\ntarget 的 build settings 会重写 project 的 build settings。\r\nXcode project 文件包含以下信息:\r\n\r\n源文件的引用:\r\n\r\n源码，包括头文件和实现文件\r\n内部和外部的库或者框架\r\n资源文件\r\n图片文件\r\nInterface Builder(nib)文件\r\n\r\n文件结构导航中用来组织源文件的组\r\nProject-level build configurations.你可以为 project 指定多个 build\r\nconfiguration，例如，project 中默认包含 debug 和 release 两种 build\r\nsettings.\r\nTargets, 每一个 target 指定了：\r\n\r\nproject 生成的 product\r\n生成 product 所需的源文件\r\n生成 product 所需的配置文件，包括对其他 targets\r\n的依赖以及一些其他设置；当 targets 的 build configurations 没有重写\r\nproject-level 的 build settings 时，会直接使用 project-level 的 build\r\nsetting.\r\n\r\n可执行环境，该环境用于调试或者测试程序，每个可执行环境会指定：\r\n\r\n运行或者调试程序时加载的可执行程序\r\n传递给可执行程序的命令行参数\r\n运行程序时需设置的环境变量\r\n\r\n\r\nproject 可独立存在，也可被包含在 workspace 中。\r\nBuild Setting 的继承关系\r\n官方文档内容如下:\r\n\r\nA build setting is a variable that contains information about how a\r\nparticular aspect of a product’s build process should be performed. For\r\nexample, the information in a build setting can specify which options\r\nXcode passes to the compiler.\r\nYou can specify build settings at the project or target level. Each\r\nproject-level build setting applies to all targets in the project unless\r\nexplicitly overridden by the build settings for a specific target.\r\n\r\nbuild setting 中包含了 product 生成过程中所需的参数信息。你可以在\r\nproject-level 和 target-level 层指定 build settings。project-level 的\r\nbuild settings 适用于 project 中的所有targets，但是当 target-level 的\r\nbuild settings 重写了 project-level 的 build settings，以 target-level\r\n中的 build settings 中的值为准。\r\n\r\nEach target organizes the source files needed to build one product. A\r\nbuild configuration specifies a set of build settings used to build a\r\ntarget's product in a particular way. For example, it is common to have\r\nseparate build configurations for debug and release builds of a\r\nproduct.\r\n\r\n一个 build configaration 指定了一套 build settings 用于生成某一\r\ntarget 的 product，例如，在 Xcode 创建项目时默认就有两套独立的 build\r\nconfigarations, 分别用于生成 debug 和 release 模式下的 product。\r\n\r\nIn addition to the default build settings provided by Xcode when you\r\ncreate a new project from a project template, you can create\r\nuser-defined build settings for your project or for a particular target.\r\nYou can also specify conditional build settings. The value of a\r\nconditional build setting depends on whether one or more prerequisites\r\nare met. This mechanism allows you to, for example, specify the SDK to\r\nuse to build a product based on the targeted architecture.\r\n\r\n除了创建工程时生成的默认 build settings，你也可以自定义 project-level\r\n或者 target-level 的 build settings.\r\n关于继承关系，The\r\nUnofficial Guide to xcconfig files\r\n这里也有详细的说明，强烈建议阅读。\r\n现在就来看看如何使用自定义的 build settings\r\n来达到本文开始处提到的需求.\r\n如何使用\r\nxcconfig 文件来配置不同开发阶段的环境\r\n目前公司中的开发大致分两个阶段，第一阶段：开发阶段，此时所打包都是使用\r\ndevelopment\r\n的证书，极光和友盟统计的账号都是使用开发者自己申请的账号，webservice\r\n的地址使用开发环境地址；第二阶段：uat\r\n阶段，此时属于预发版阶段，此时打包使用 ad-hoc\r\n的证书，极光和友盟统计的账号使用公司申请生成账号，webservice\r\n使用的特定的预发版环境；另外，打上传到 App Store 的生产包，使用\r\ndistribution 的证书，webservice 的地址使用生产环境的地址。\r\n由此，可新建一种 build configuration, 由 Xcode 自动生成的 Release\r\n复制而来，如下所示:\r\n\r\n新建Configurations\r\n并命名为 PreRelease。\r\n官方文档Adding\r\na Build Configuration 中如下提到：\r\n\r\nA configuration file is a plain text file with a list of build\r\nsetting definitions, one per line. You can base a build configuration\r\nonly on a configuration file that is in your project, not on an external\r\nfile.\r\nWhen you base a target or project’s build configuration on a\r\nconfiguration file, that build configuration automatically inherits the\r\nbuild setting definitions in that configuration file (and any\r\nconfiguration files it includes). If you then modify the value of any of\r\nthose build settings in the target or project, the new value is used\r\ninstead of the value in the configuration file.\r\nBuild settings defined at the target level override any values\r\nassigned to those build settings at the project level. Therefore,\r\ntarget-level configurations take precedence over any project-level\r\nconfigurations.\r\n\r\n这里需要注意的是：当你的 target-level 或者 project-levle 的 build\r\nconfigurations 基于配置文件时，build configuration\r\n会自动继承配置文件(以及配置文件中引入的配置文件)中定义的 build\r\nsettings，但是如果你又在之后 target 或者 project\r\n中修改了配置文件中定义的 build settings\r\n值，那么最终配置文件中的值会失效，实际使用的是 target 或者 project\r\n中设置的值。\r\n这里鉴于公司的情况，新建了\r\nDebug.xcconfig/PreRelease.xcconfig/Release.xcconfig\r\n配置对应于开发阶段、预发版阶段、上传 AppStore 三种情况下的打包。\r\n新建一个 xcconfig 目录，在该目录下新建配置文件:\r\n\r\n创建配置文件\r\n根据项目情况，每个配置文件中都包含同样的 key 值，内容大致如下:\r\n1234567891011//网络请求baseurlWEBSERVICE_URL = @&quot;http:\\/\\/127.0.0.1&quot;//友盟配置UMENG_APPKEY = @&quot;xxxvvv555999==&quot;//极光推送配置JPUSH_DEVELOPMENT_APPKEY = @&quot;nnncccvvvwww&quot;IS_PRODUCATION = NO#include &quot;Generator.xcconfig&quot;\r\n你可在配置文件中包含其他配置文件，其中 Generator.xcconfig\r\n文件的内容是:\r\n1GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WEBSERVICE_URL=&#x27;$(WEBSERVICE_URL)&#x27; MESSAGE_SYSTEM_URL=&#x27;$(MESSAGE_SYSTEM_URL)&#x27; UMENG_APPKEY=&#x27;$(UMENG_APPKEY)&#x27;  IS_PRODUCATION=&#x27;$(IS_PRODUCATION)&#x27;\r\n其作用是将配置文件中定义的常量定义成预编译宏，以便于在代码中获取。\r\n其中 GCC_PREPROCESSOR_DEFINITIONS, 文档如下：\r\n\r\nSpace-separated list of option specifications. Specifies preprocessor\r\nmacros in the form foo (for a simple #define) or foo=1 (for a value\r\ndefinition). This list is passed to the compiler through the gcc -D\r\noption when compiling precompiled headers and implementation files.\r\n\r\nGCC_PREPROCESSOR_DEFINITIONS 是 GCC 预编译头参数，通常我们可以在\r\nProject 文件下的 Build Settings 对预编译宏定义进行默认赋值。在 Xcode7\r\n下的路径为 Build Settings-&gt;Apple LLVM 7.x\r\nPreprocessing-&gt;Preprocessor Macros，\r\n\r\nGCC_PREPROCESSOR_DEFINITIONS\r\n想必大家看这个宏的名字已经知道它的作用了, 使用上和在 pch\r\n头文件中添加宏定义没有太大的区别, 但有以下好处:\r\n\r\nXcode 的 Project 的 Build Settings 是由一个 plist 文件进行描述的,\r\nplist 本质上是一个 XML 配置文件, 通过外部的脚本比较容易去修改。\r\nPreprocessor Macros 可以按照 Configuration 选项进行默认配置,\r\n也就是说可以根据不同的环境预先制定不同定义的宏，或者为不同环境下的相同变量定义不同的值\r\n\r\nxcconfig 支持可以根据不同的 Configuration 选项配置不同的文件。不同的\r\nxcconfig 可以指定不同的 Build Settings 里的属性值,\r\n这样子我们就可以通过项目 xcconfig 去修改 GCC_PREPROCESSOR_DEFINITIONS\r\n的值了(最终目的就达到了)。\r\n配置文件中变量定义好之后，怎么让 Xcode\r\n自动加载呢？如下图设置所示，是将 project-level 的 build settings\r\n基于配置文件，三种情况的 configurations 分别选择与之对应的配置文件。\r\n\r\n将配置文件与项目关联\r\n当我们想把 project-level 或者 target-level 中的 Build Settings\r\n的设置挪动到 xcconfig\r\n配置文件来设置时，是否需要一个个手动输入呢？当然不是，直接在 Build\r\nSettings 中选中你想要在 xcconfig\r\n中配置的键值对所在行（当然也可以选多行），command +\r\nc复制，然后到对应的 xcconfig 中去粘贴就好了，记得在 Build Settings\r\n中改为你想要的值后再复制，如果为默认值的话则只可复制其键。如果需要改回去的话，还是选中这行，command + delete\r\n就恢复默认值了。\r\n现在我们将设置挪动到了配置文件中，所有的配置文件都是键值对类型的文本文件，但是当同一个键同时存在于\r\ntarget-level、project-level\r\n和配置文件中时，到底是哪一个键值对起作用了呢？现在看看下图。\r\n\r\n多个配置项列\r\n注意:\r\nXcode以从左至右的顺序设置解析的优先级，从左至右优先级降低，最左边的具有最高优先级，即\r\ntarget-level &gt; project-level &gt; 自定义配置文件 &gt; iOS\r\n默认配置；且最左列 Resolved 列显示的是最终使用的值。那么如何使 Xcode\r\n使用配置文件中的配置项呢？这需要选中要使用配置文件的行，点击 Delete\r\n按键，你会发现项目的默认设置已经被删除，且 xcconfig\r\n的配置文件列被标记为绿色。标记为绿色代表该列的值生效，其值应该与\r\nResolved 列的值相同。\r\n最后，你可以像如下示例使用 xcconfig 中定义的宏：\r\n1NSLog(@&quot;webservice url: %@, umeng appkey: %@&quot;, WEBSERVICE_URL, UMENG_APPKEY);\r\n通过以上步骤，就达到了使用 xcconfig\r\n文件来配置开发不同阶段时的环境变量的目的了。\r\n文中内容为自己学习总结，如有错误之处请指正。如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^\r\n\r\n\r\n参考:\r\n\r\nXcode\r\nConcepts\r\nUsing\r\nxcconfig files for your XCode Project\r\niOS开发必备\r\n- 环境变量配置\r\nxcconfig-how-to-set-environment-variables\r\n\r\n","dateCreated":"2016-05-22T09:42:50+08:00","dateModified":"2024-10-21T22:51:29+08:00","datePublished":"2016-05-22T09:42:50+08:00","description":"与公司 QA\r\n聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从\r\nApp\r\n转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于：\r\nwebservice 地址，友盟 AppKey，极光推送 AppKey\r\n和是否是生产环境标志等。\r\n其实，我也讨厌修改环境参数啊，😂\r\n为达成上述目的，主要是使用 Xcode 的 Configurations Setting\r\nFile(即后缀为 xcconfig 文件)\r\n来配置开发不同阶段下的环境。本文包含的内容如下:","headline":"Xcode使用xcconfig文件配置环境","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/","keywords":"iOS, Xcode"}</script>
+    <meta name="description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="Xcode使用xcconfig文件配置环境">
 <meta property="og:url" content="http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其实，我也讨厌">
+<meta property="og:description" content="与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。 其">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configfile.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_linkto_configfile.png">
+<meta property="og:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_valid_configuration_default.png">
+<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
 <meta property="article:published_time" content="2016-05-22T01:42:50.000Z">
-<meta property="article:modified_time" content="2021-04-18T03:49:29.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:51:29.217Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Xcode">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://liumh.com/img/use-xcconfig/use_xcconfig_new_configuration.png">
     
     
         
@@ -109,7 +116,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -245,19 +253,295 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。</p>
+            <p>与公司 QA
+聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从
+App
+转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于：
+webservice 地址，友盟 AppKey，极光推送 AppKey
+和是否是生产环境标志等。</p>
 <p>其实，我也讨厌修改环境参数啊，😂</p>
-<p>为达成上述目的，主要是使用 Xcode 的 Configurations Setting File(即后缀为 xcconfig 文件) 来配置开发不同阶段下的环境。本文包含的内容如下:</p>
+<p>为达成上述目的，主要是使用 Xcode 的 Configurations Setting
+File(即后缀为 xcconfig 文件)
+来配置开发不同阶段下的环境。本文包含的内容如下:</p>
 <span id="more"></span>
-
-<ol>
-<li><a href="#xcode-target">Xcode Target</a></li>
-<li><a href="#xcode-project">Xcode Project</a></li>
-<li><a href="#inherits-build-setting">Build Setting的继承关系</a></li>
-<li><a href="#xcconfig-environment">如何使用xcconfig文件来配置不同开发阶段的环境</a></li>
+<ol type="1">
+<li>Xcode Target</li>
+<li>Xcode Project</li>
+<li>Build Setting的继承关系</li>
+<li>如何使用xcconfig文件来配置不同开发阶段的环境</li>
 </ol>
 <p>包含了一些与 build settings 相关的知识。</p>
-<h3 id="Xcode-Target"><a href="#Xcode-Target" class="headerlink" title="Xcode Target"></a>Xcode Target</h3>
+<h3 id="xcode-target">Xcode Target</h3>
+<p>target, 官方文档如下解释:</p>
+<blockquote>
+<p>A target specifies a product to build and contains the instructions
+for building the product from a set of files in a project or workspace.
+A target defines a single product; it organizes the inputs into the
+build system—the source files and instructions for processing those
+source files—required to build that product. Projects can contain one or
+more targets, each of which produces one product.</p>
+</blockquote>
+<p>target 定义了生成的唯一 product, 它将构建该 product
+所需的文件和处理这些文件所需的指令集整合进 build system 中。Projects
+会包含一个或者多个 targets,每一个 target 将会产出一个 product.</p>
+<blockquote>
+<p>The instructions for building a product take the form of build
+settings and build phases, which you can examine and edit in the Xcode
+project editor. <em>A target inherits the project build settings, but
+you can override any of the project settings by specifying different
+settings at the target level.</em> There can be only one active target
+at a time; the Xcode scheme specifies the active target.</p>
+</blockquote>
+<p>这些指令以 build setting 和 build phases 的形式存在，你可在 Xcode
+的项目编辑器(TARGETS-&gt;Build Setting, TARGETS-&gt;Build
+Phases)中进行查看和编辑。<em>target 中的 build setting 参数继承自
+project 的 build settings, 但是你可以在 target 中修改任意 settings
+来重写 project settings，这样，最终生效的 settings 参数以在 target
+中设置的为准</em>. Project 可包含多个 target, 但是在同一时刻，只会有一个
+target 生效，可用 Xcode 的 scheme 来指定是哪一个 target 生效.</p>
+<blockquote>
+<p>A target and the product it creates can be related to another target.
+If a target requires the output of another target in order to build, the
+first target is said to depend upon the second. If both targets are in
+the same workspace, Xcode can discover the dependency, in which case it
+builds the products in the required order. Such a relationship is
+referred to as an implicit dependency. You can also specify explicit
+target dependencies in your build settings, and you can specify that two
+targets that Xcode might expect to have an implicit dependency are
+actually not dependent. For example, you might build both a library and
+an application that links against that library in the same workspace.
+Xcode can discover this relationship and automatically build the library
+first. However, if you actually want to link against a version of the
+library other than the one built in the workspace, you can create an
+explicit dependency in your build settings, which overrides this
+implicit dependency.</p>
+</blockquote>
+<p>target 和其生成的 product 可与另一个 target 有关，如果一个 target 的
+build 依赖于另一个 target 的输出，那么我们就说前一个 target 依赖于后一个
+target .如果这些 target 在同一个 workspace 中，那么 Xcode
+能够发现这种依赖关系，从而使其以我们期望的顺序生成
+products.这种关系被称为隐式依赖关系。同时，你可以显示指定 targets
+之间的依赖关系，并且这种依赖关系会覆盖 Xcode 推测出的隐式依赖关系。</p>
+<p>指定 targets 之间的依赖关系的地方在 Project
+Editor-&gt;TRAGETS-&gt;Build Phases-&gt;Target Dependencies 处设置。</p>
+<h3 id="xcode-project">Xcode Project</h3>
+<p>官方文档的解释如下:</p>
+<blockquote>
+<p>An Xcode project is a repository for all the files, resources, and
+information required to build one or more software products. A project
+contains all the elements used to build your products and maintains the
+relationships between those elements. It contains one or more targets,
+which specify how to build products. A project defines default build
+settings for all the targets in the project (each target can also
+specify its own build settings, which override the project build
+settings).</p>
+</blockquote>
+<p>Xcode project
+是一个仓库，该仓库包含了所有的文件，资源和用于生成一个或者多个 software
+products 的信息。它包含一个或者多个 targets，其中的每一个 target
+指明了如何生成 products。project 为其拥有的所有 targets 定义了默认的
+build settings，当然，每一个 target 能够制定其自己的 build settings，且
+target 的 build settings 会重写 project 的 build settings。</p>
+<p>Xcode project 文件包含以下信息:</p>
+<ul>
+<li>源文件的引用:
+<ul>
+<li>源码，包括头文件和实现文件</li>
+<li>内部和外部的库或者框架</li>
+<li>资源文件</li>
+<li>图片文件</li>
+<li>Interface Builder(nib)文件</li>
+</ul></li>
+<li>文件结构导航中用来组织源文件的组</li>
+<li>Project-level build configurations.你可以为 project 指定多个 build
+configuration，例如，project 中默认包含 debug 和 release 两种 build
+settings.</li>
+<li>Targets, 每一个 target 指定了：
+<ul>
+<li>project 生成的 product</li>
+<li>生成 product 所需的源文件</li>
+<li>生成 product 所需的配置文件，包括对其他 targets
+的依赖以及一些其他设置；当 targets 的 build configurations 没有重写
+project-level 的 build settings 时，会直接使用 project-level 的 build
+setting.</li>
+</ul></li>
+<li>可执行环境，该环境用于调试或者测试程序，每个可执行环境会指定：
+<ul>
+<li>运行或者调试程序时加载的可执行程序</li>
+<li>传递给可执行程序的命令行参数</li>
+<li>运行程序时需设置的环境变量</li>
+</ul></li>
+</ul>
+<p>project 可独立存在，也可被包含在 workspace 中。</p>
+<h3 id="build-setting-的继承关系">Build Setting 的继承关系</h3>
+<p>官方文档内容如下:</p>
+<blockquote>
+<p>A build setting is a variable that contains information about how a
+particular aspect of a product’s build process should be performed. For
+example, the information in a build setting can specify which options
+Xcode passes to the compiler.</p>
+<p>You can specify build settings at the project or target level. Each
+project-level build setting applies to all targets in the project unless
+explicitly overridden by the build settings for a specific target.</p>
+</blockquote>
+<p>build setting 中包含了 product 生成过程中所需的参数信息。你可以在
+project-level 和 target-level 层指定 build settings。project-level 的
+build settings 适用于 project 中的所有targets，但是当 target-level 的
+build settings 重写了 project-level 的 build settings，以 target-level
+中的 build settings 中的值为准。</p>
+<blockquote>
+<p>Each target organizes the source files needed to build one product. A
+build configuration specifies a set of build settings used to build a
+target's product in a particular way. For example, it is common to have
+separate build configurations for debug and release builds of a
+product.</p>
+</blockquote>
+<p>一个 build configaration 指定了一套 build settings 用于生成某一
+target 的 product，例如，在 Xcode 创建项目时默认就有两套独立的 build
+configarations, 分别用于生成 debug 和 release 模式下的 product。</p>
+<blockquote>
+<p>In addition to the default build settings provided by Xcode when you
+create a new project from a project template, you can create
+user-defined build settings for your project or for a particular target.
+You can also specify conditional build settings. The value of a
+conditional build setting depends on whether one or more prerequisites
+are met. This mechanism allows you to, for example, specify the SDK to
+use to build a product based on the targeted architecture.</p>
+</blockquote>
+<p>除了创建工程时生成的默认 build settings，你也可以自定义 project-level
+或者 target-level 的 build settings.</p>
+<p>关于继承关系，<a
+target="_blank" rel="noopener" href="http://pewpewthespells.com/blog/xcconfig_guide.html#BuildSettingInheritance">The
+Unofficial Guide to xcconfig files</a>
+这里也有详细的说明，强烈建议阅读。</p>
+<p>现在就来看看如何使用自定义的 build settings
+来达到本文开始处提到的需求.</p>
+<h3 id="如何使用-xcconfig-文件来配置不同开发阶段的环境">如何使用
+xcconfig 文件来配置不同开发阶段的环境</h3>
+<p>目前公司中的开发大致分两个阶段，第一阶段：开发阶段，此时所打包都是使用
+development
+的证书，极光和友盟统计的账号都是使用开发者自己申请的账号，webservice
+的地址使用开发环境地址；第二阶段：uat
+阶段，此时属于预发版阶段，此时打包使用 ad-hoc
+的证书，极光和友盟统计的账号使用公司申请生成账号，webservice
+使用的特定的预发版环境；另外，打上传到 App Store 的生产包，使用
+distribution 的证书，webservice 的地址使用生产环境的地址。</p>
+<p>由此，可新建一种 build configuration, 由 Xcode 自动生成的 Release
+复制而来，如下所示:</p>
+<!--![新建Configurations](/img/use-xcconfig/use_xcconfig_new_configuration.png)-->
+<div class="figure center" style="width:476;"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_new_configuration.png" style="width:476;height:148;"alt="新建Configurations"><span class="caption">新建Configurations</span></div>
+<p>并命名为 PreRelease。</p>
+<p>官方文档<a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/recipes/xcode_help-project_editor/Articles/BasingBuildConfigurationsonConfigurationFiles.html#//apple_ref/doc/uid/TP40010155-CH13-SW1">Adding
+a Build Configuration</a> 中如下提到：</p>
+<blockquote>
+<p>A configuration file is a plain text file with a list of build
+setting definitions, one per line. You can base a build configuration
+only on a configuration file that is in your project, not on an external
+file.</p>
+<p><em>When you base a target or project’s build configuration on a
+configuration file, that build configuration automatically inherits the
+build setting definitions in that configuration file (and any
+configuration files it includes). If you then modify the value of any of
+those build settings in the target or project, the new value is used
+instead of the value in the configuration file.</em></p>
+<p>Build settings defined at the target level override any values
+assigned to those build settings at the project level. Therefore,
+target-level configurations take precedence over any project-level
+configurations.</p>
+</blockquote>
+<p>这里需要注意的是：<em>当你的 target-level 或者 project-levle 的 build
+configurations 基于配置文件时，build configuration
+会自动继承配置文件(以及配置文件中引入的配置文件)中定义的 build
+settings，但是如果你又在之后 target 或者 project
+中修改了配置文件中定义的 build settings
+值，那么最终配置文件中的值会失效，实际使用的是 target 或者 project
+中设置的值。</em></p>
+<p>这里鉴于公司的情况，新建了
+Debug.xcconfig/PreRelease.xcconfig/Release.xcconfig
+配置对应于开发阶段、预发版阶段、上传 AppStore 三种情况下的打包。</p>
+<p>新建一个 xcconfig 目录，在该目录下新建配置文件:</p>
+<!--![创建配置文件](/img/use-xcconfig/use_xcconfig_new_configfile.png 476 148)-->
+<div class="figure center" style="width:476;"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_new_configfile.png" style="width:476;height:148;"alt="创建配置文件"><span class="caption">创建配置文件</span></div>
+<p>根据项目情况，每个配置文件中都包含同样的 key 值，内容大致如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//网络请求baseurl</span><br><span class="line">WEBSERVICE_URL = @&quot;http:\/\/127.0.0.1&quot;</span><br><span class="line"></span><br><span class="line">//友盟配置</span><br><span class="line">UMENG_APPKEY = @&quot;xxxvvv555999==&quot;</span><br><span class="line"></span><br><span class="line">//极光推送配置</span><br><span class="line">JPUSH_DEVELOPMENT_APPKEY = @&quot;nnncccvvvwww&quot;</span><br><span class="line">IS_PRODUCATION = NO</span><br><span class="line"></span><br><span class="line">#include &quot;Generator.xcconfig&quot;</span><br></pre></td></tr></table></figure>
+<p>你可在配置文件中包含其他配置文件，其中 Generator.xcconfig
+文件的内容是:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WEBSERVICE_URL=&#x27;$(WEBSERVICE_URL)&#x27; MESSAGE_SYSTEM_URL=&#x27;$(MESSAGE_SYSTEM_URL)&#x27; UMENG_APPKEY=&#x27;$(UMENG_APPKEY)&#x27;  IS_PRODUCATION=&#x27;$(IS_PRODUCATION)&#x27;</span><br></pre></td></tr></table></figure>
+<p>其作用是将配置文件中定义的常量定义成预编译宏，以便于在代码中获取。</p>
+<p>其中 GCC_PREPROCESSOR_DEFINITIONS, 文档如下：</p>
+<blockquote>
+<p>Space-separated list of option specifications. Specifies preprocessor
+macros in the form foo (for a simple #define) or foo=1 (for a value
+definition). This list is passed to the compiler through the gcc -D
+option when compiling precompiled headers and implementation files.</p>
+</blockquote>
+<p>GCC_PREPROCESSOR_DEFINITIONS 是 GCC 预编译头参数，通常我们可以在
+Project 文件下的 Build Settings 对预编译宏定义进行默认赋值。在 Xcode7
+下的路径为 Build Settings-&gt;Apple LLVM 7.x
+Preprocessing-&gt;Preprocessor Macros，</p>
+<!-- ![GCC_PREPROCESSOR_DEFINITIONS](/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png)-->
+<div class="figure center" style="width:514;"><img class="fig-img" src="/img/use-xcconfig/user_xcconfig_gcc_preprocessing.png" style="width:514;height:146;"alt="GCC_PREPROCESSOR_DEFINITIONS"><span class="caption">GCC_PREPROCESSOR_DEFINITIONS</span></div>
+<p>想必大家看这个宏的名字已经知道它的作用了, 使用上和在 pch
+头文件中添加宏定义没有太大的区别, 但有以下好处:</p>
+<ol type="1">
+<li>Xcode 的 Project 的 Build Settings 是由一个 plist 文件进行描述的,
+plist 本质上是一个 XML 配置文件, 通过外部的脚本比较容易去修改。</li>
+<li>Preprocessor Macros 可以按照 Configuration 选项进行默认配置,
+也就是说可以根据不同的环境预先制定不同定义的宏，或者为不同环境下的相同变量定义不同的值</li>
+</ol>
+<p>xcconfig 支持可以根据不同的 Configuration 选项配置不同的文件。不同的
+xcconfig 可以指定不同的 Build Settings 里的属性值,
+这样子我们就可以通过项目 xcconfig 去修改 GCC_PREPROCESSOR_DEFINITIONS
+的值了(最终目的就达到了)。</p>
+<p>配置文件中变量定义好之后，怎么让 Xcode
+自动加载呢？如下图设置所示，是将 project-level 的 build settings
+基于配置文件，三种情况的 configurations 分别选择与之对应的配置文件。</p>
+<!--![将配置文件与项目关联](/img/use-xcconfig/use_xcconfig_linkto_configfile.png 444 232)-->
+<div class="figure center" style="width:444;"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_linkto_configfile.png" style="width:444;height:232;"alt="将配置文件与项目关联"><span class="caption">将配置文件与项目关联</span></div>
+<p>当我们想把 project-level 或者 target-level 中的 Build Settings
+的设置挪动到 xcconfig
+配置文件来设置时，是否需要一个个手动输入呢？当然不是，直接在 Build
+Settings 中选中你想要在 xcconfig
+中配置的键值对所在行（当然也可以选多行），<em>command +
+c</em>复制，然后到对应的 xcconfig 中去粘贴就好了，记得在 Build Settings
+中改为你想要的值后再复制，如果为默认值的话则只可复制其键。如果需要改回去的话，还是选中这行，<code>command + delete</code>
+就恢复默认值了。</p>
+<p>现在我们将设置挪动到了配置文件中，所有的配置文件都是键值对类型的文本文件，但是当同一个键同时存在于
+target-level、project-level
+和配置文件中时，到底是哪一个键值对起作用了呢？现在看看下图。</p>
+<!--![多个配置项列](/img/use-xcconfig/use_xcconfig_valid_configuration_default.png)-->
+<div class="figure center" style="width:583;"><img class="fig-img" src="/img/use-xcconfig/use_xcconfig_valid_configuration_default.png" style="width:583;height:126;"alt="多个配置项列"><span class="caption">多个配置项列</span></div>
+<p>注意:
+Xcode以从左至右的顺序设置解析的优先级，从左至右优先级降低，最左边的具有最高优先级，即
+target-level &gt; project-level &gt; 自定义配置文件 &gt; iOS
+默认配置；且最左列 Resolved 列显示的是最终使用的值。那么如何使 Xcode
+使用配置文件中的配置项呢？这需要选中要使用配置文件的行，点击 Delete
+按键，你会发现项目的默认设置已经被删除，且 xcconfig
+的配置文件列被标记为绿色。标记为绿色代表该列的值生效，其值应该与
+Resolved 列的值相同。</p>
+<p>最后，你可以像如下示例使用 xcconfig 中定义的宏：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;webservice url: %@, umeng appkey: %@&quot;, WEBSERVICE_URL, UMENG_APPKEY);</span><br></pre></td></tr></table></figure>
+<p>通过以上步骤，就达到了使用 xcconfig
+文件来配置开发不同阶段时的环境变量的目的了。</p>
+<p>文中内容为自己学习总结，如有错误之处请指正。如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
+<div class="figure center" style="width:174px;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" style="width:174px;height:174px;"alt=""></div>
+<hr />
+<p>参考:</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/featuredarticles/XcodeConcepts/Concept-Targets.html">Xcode
+Concepts</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://www.jontolof.com/cocoa/using-xcconfig-files-for-you-xcode-project/">Using
+xcconfig files for your XCode Project</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://blog.startry.com/2015/07/24/iOS_EnvWithXcconfig/">iOS开发必备
+- 环境变量配置</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://stackoverflow.com/questions/24668284/xcconfig-how-to-set-environment-variables">xcconfig-how-to-set-environment-variables</a></li>
+</ul>
+
             
 
 
@@ -429,7 +713,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。\n![NSLayoutConstraint priority 示例][]\n如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。\n\n\n本文内容如下:\n\nNSLayoutConstraint priority\nIntrinsic Content Size\nContent Compression Resistance 与 Content Hugging\n\nNSLayoutConstraint priority","dateCreated":"2015-08-11T23:16:26+08:00","dateModified":"2017-12-02T10:49:29+08:00","datePublished":"2015-08-11T23:16:26+08:00","description":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。\n![NSLayoutConstraint priority 示例][]\n如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。","headline":"iOS NSLayoutConstraint priority","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/11/ios-autolayout-priority/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/11/ios-autolayout-priority/","keywords":"iOS, AutoLayout"}</script>
-    <meta name="description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。 ![NSLayoutConstraint priority 示例][] 如上所示，我们期望 UILabel 显示字符串较短时，">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint\r\n的 priority 属性，使用 Storyboard\r\n提供的默认值就能达到要求。但是最近遇到对 UILabel\r\n的如下布局要求时，就需要涉及对 priority 的修改。\r\n\r\n\r\nNSLayoutConstraint priority\r\n示例\r\n\r\n如上所示，我们期望 UILabel\r\n显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且\r\nUILabel 的 Trailing 距离 UIButton 的 Leading\r\n大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和\r\nUIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4\r\n的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。\r\n\r\n本文内容如下:\r\n\r\nNSLayoutConstraint priority\r\nIntrinsic Content Size\r\nContent Compression Resistance 与 Content Hugging\r\n\r\nNSLayoutConstraint priority\r\n了解约束优先级之前，先来了解一下约束，看看 NSLayoutConstraint\r\nClass Reference 的描述。\r\n\r\nA constraint defines a relationship between two user interface\r\nobjects that must be satisfied by the constraint-based layout system.\r\nEach constraint is a linear equation with the following format:\r\nitem1.attribute1 = multiplier × item2.attribute2 +\r\nconstant\r\nIn this equation, attribute1 and attribute2 are the variables that\r\nAuto Layout can adjust when solving these constraints. The other values\r\nare defined when you create the constraint.\r\n\r\n约束可以理解为，两个界面元素之间必须满足的基于约束布局系统的关系。每个约束都是以下方式的线性表达式:\r\nitem1.attribute1 = multiplier × item2.attribute2 +\r\nconstant\r\n其中 item1, item2\r\n表示两个界面元素，attribute1, attribute2\r\n是两个界面的布局属性，是自动布局系统在满足这些约束的过程中可以调整的变量，由\r\nNSLayoutAttribute 定义，包括 left, right, top, bottom, leading,\r\ntrailing, width, height, centerX, centerY 和 baseline等.\r\n对于诸如英语这种从左至右阅读的语言，leading 和\r\ntrailing 与 left 和 right\r\n完全一样，但是对于诸如 Hebrew 或者 Arabic\r\n这种从右往左阅读的语言，leading 与 right\r\n相同，trailing 与 left 相同，通常情况下，我们使用\r\nleading 和 trailing 较多。\r\nconstant: The physical size or offset, in points, of the\r\nconstraint.\r\nmultiplier: The multiplier applied to the second attribute\r\nparticipating in the constraint.\r\n\r\nA valid layout is defined as a set constraints with one and only one\r\npossible solution. Valid layouts are also referred to as a nonambiguous,\r\nnonconflicting layouts. Constraints with more than one solution are\r\nambiguous. Constraints with no valid solutions are conflicting.\r\n\r\n一个有效的约束是指有且仅有一种方案满足所有约束。如果有多种方案或者没有一个方案满足所有约束，则这些自动布局都无效。对于\r\nview 上的约束都是累加的，对于同一类型的约束不会覆盖，例如，如果你已对\r\nview 添加了一个宽度约束，再次对该 view\r\n添加宽度约束并不会将之前的宽度约束移除或者将之前的宽度约束值修改为新的约束值，你必须将之前添加的宽度约束值手动移除。对于在Storyboard中添加的约束，可以像\r\nUIView 一样在 Class 中声明 IBOutlet\r\n属性进行连接，从而对约束值进行修改。\r\n\r\nAdditionally, constraints are not limited to equality relationships.\r\nThey can also use greater than or equal to (&gt;=) or less than or equal\r\nto (&lt;=) to describe the relationship between the two attributes.\r\nConstraints also have priorities between 1 and 1,000. Constraints with a\r\npriority of 1,000 are required. All priorities less than 1,000 are\r\noptional. By default, all constraints are required (priority =\r\n1,000).\r\nAfter solving for the required constraints, Auto Layout tries to\r\nsolve all the optional constraints in priority order from highest to\r\nlowest. If it cannot solve for an optional constraint, it tries to come\r\nas close as possible to the desired result, and then moves on to the\r\nnext constraint.\r\n\r\n另外，约束不仅限于等量关系，它还可以是(&gt;=)或者(&lt;=)来描述两个属性之间的关系，由\r\nNSLayoutRelation 定义。约束还有 1 ~ 1000\r\n的优先级，优先级为1000的约束为必须满足，优先级为 1 ~ 999\r\n的约束为可选约束，数字越大其优先级越高，其满足的可能性越高，自动布局系统在满足了所有优先级为\r\n1000\r\n的约束后，会按照优先级从高到低的顺序满足可选约束。默认情况下，所有约束优先级都是\r\n1000，即必须满足。\r\nIntrinsic Content Size\r\n要理解内容压缩阻力和内容吸附性这两个概念，首先要理解内部内容尺寸Intrinsic\r\nContent Size这一概念。\r\n每个视图都有内容压缩阻力优先级Content Compression Resistance\r\nPriority和内容吸附性优先级Content Hugging\r\nPriority。但只有当视图定义了内部内容尺寸后，这两种优先级才会起作用；否则如果都没有定义内容尺寸大小，又如何知道应该抗压缩或者吸附至什么大小呢。\r\n那么，内部内容尺寸是指的什么，有什么作用呢？\r\n引用自苹果官方Auto Layout指南里面对内部内容尺寸的描述：\r\n\r\nLeaf-level views such as buttons typically know more about what size\r\nthey should be than does the code that is positioning them. This is\r\ncommunicated through the intrinsic content size, which tells the layout\r\nsystem that a view contains some content that it doesn’t natively\r\nunderstand, and indicates how large that content is, intrinsically.\r\nFor elements such as text labels, you should typically set the\r\nelement to be its intrinsic size (select Editor &gt; Size To Fit\r\nContent). This means that the element will grow and shrink appropriately\r\nwith different content for different languages.\r\n\r\n什么意思呢？\r\n简单来说就是，像按钮、文本标签这类视图控件，在布局的时候，它们自己内部比外部布局代码更清楚自己需要多大的尺寸来显示自己的内容。而这个尺寸就是由内部内容尺寸intrinsic\r\ncontent\r\nsize来传达的。这就相当于，内部内容尺寸告诉布局系统：这个视图里面包含了一些你不能理解的内容，但是我给你指出了那些内容有多大。\r\n由此可见，内部内容尺寸是为了实现视图自适应大小而准备的。\r\nContent\r\nCompression Resistance 与 Content Hugging\r\n关于这两个概念，最容易理解的文档说明在UIView Class\r\nReference文档里面：\r\n\r\n- contentCompressionResistancePriorityForAxis:\r\nReturns the priority with which a view resists being made smaller\r\nthan its intrinsic size.\r\nThe constraint-based layout system uses these priorities when\r\ndetermining the best layout for views that are encountering constraints\r\nthat would require them to be smaller than their intrinsic size.\r\nSubclasses should not override this method. Instead, custom views\r\nshould set default values for their content on creation, typically to\r\nNSLayoutPriorityDefaultLow or NSLayoutPriorityDefaultHigh.\r\n\r\nContentCompressionResistancePriority: 内容压缩阻力优先级,\r\n是指 view 阻止其视图大小被压缩到小于其内部内容尺寸的优先级,\r\n即视图反压缩的优先级，优先级越大，视图就越不容易被压小。当自动布局系统为所有视图布局时，遇到约束要求该\r\nview 的尺寸需要小于其内部内容尺寸会用到。\r\n\r\n- contentHuggingPriorityForAxis:\r\nReturns the priority with which a view resists being made larger than\r\nits intrinsic size.\r\nThe constraint-based layout system uses these priorities when\r\ndetermining the best layout for views that are encountering constraints\r\nthat would require them to be larger than their intrinsic size.\r\n\r\nContentHuggingPriority:内容吸附性优先级, 是指 view\r\n阻止其视图大小被拉伸到大于其内部内容尺寸的优先级，即视图反拉伸的优先级，优先级越大，视图就越不容易被拉大。\r\n回到本文开头的约束冲突问题，在同一水平线上添加了两个定义了内部内容尺寸的视图\r\nUILabel 和 UIButton，并为其添加了5个优先级为\r\nUILayoutPriorityRequired 的约束，且此时 UILabel 和 UIButton\r\nx 轴方向的 ContentCompressionResistancePriority\r\n优先级都是750,\r\n自动布局系统在解决所有约束满足的时候，发现不知道如何处理优先满足 UILabel\r\n不压缩 还是 优先满足 UIButton 不压缩，由此约束冲突产生。需求中，我们需要\r\nUIButton 的 title 不压缩，而 UILabel 的内容可以尾部截断，由此我们可以将\r\nUILabel 的 ContentCompressionResistancePriority\r\n优先级调整到低于 750，此时 UIButton 的\r\nContentCompressionResistancePriority 750 大于 UILbael\r\n的该值，自动布局系统在满足所有约束的过程中优先满足 UIButton\r\n的该约束，即不压缩 UIButton 的内部内容尺寸，由此冲突解决。\r\n参考:Content\r\nCompression Resistance和Content\r\nHugging，该文中有一个很好的示例说明。\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-08-11T23:16:26+08:00","dateModified":"2024-10-21T22:34:58+08:00","datePublished":"2015-08-11T23:16:26+08:00","description":"使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint\r\n的 priority 属性，使用 Storyboard\r\n提供的默认值就能达到要求。但是最近遇到对 UILabel\r\n的如下布局要求时，就需要涉及对 priority 的修改。\r\n\r\n\r\nNSLayoutConstraint priority\r\n示例\r\n\r\n如上所示，我们期望 UILabel\r\n显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且\r\nUILabel 的 Trailing 距离 UIButton 的 Leading\r\n大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和\r\nUIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4\r\n的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。","headline":"iOS NSLayoutConstraint priority","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/11/ios-autolayout-priority/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/11/ios-autolayout-priority/","keywords":"iOS, AutoLayout"}</script>
+    <meta name="description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。   NSLayoutConstraint priority 示例  如上所示，我们期望 UILabel 显">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS NSLayoutConstraint priority">
 <meta property="og:url" content="http://liumh.com/2015/08/11/ios-autolayout-priority/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。 ![NSLayoutConstraint priority 示例][] 如上所示，我们期望 UILabel 显示字符串较短时，">
+<meta property="og:description" content="使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。   NSLayoutConstraint priority 示例  如上所示，我们期望 UILabel 显">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-08-11T15:16:26.000Z">
-<meta property="article:modified_time" content="2017-12-02T02:49:29.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:34:58.240Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="AutoLayout">
@@ -109,7 +109,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,18 +252,168 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。</p>
-<p>![NSLayoutConstraint priority 示例][]</p>
-<p>如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
+            <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint
+的 priority 属性，使用 Storyboard
+提供的默认值就能达到要求。但是最近遇到对 UILabel
+的如下布局要求时，就需要涉及对 priority 的修改。</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-autolayout-priority/iOS-NSLayoutConstraint-priority.png"
+alt="NSLayoutConstraint priority 示例" />
+<figcaption aria-hidden="true">NSLayoutConstraint priority
+示例</figcaption>
+</figure>
+<p>如上所示，我们期望 UILabel
+显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且
+UILabel 的 Trailing 距离 UIButton 的 Leading
+大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和
+UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4
+的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
 <span id="more"></span>
-
 <p>本文内容如下:</p>
 <ul>
-<li><a href="#layoutconstraint-priority">NSLayoutConstraint priority</a></li>
-<li><a href="#intrinsic-content-size">Intrinsic Content Size</a></li>
-<li><a href="#content-compressin-resistance-hugging">Content Compression Resistance 与 Content Hugging</a></li>
+<li>NSLayoutConstraint priority</li>
+<li>Intrinsic Content Size</li>
+<li>Content Compression Resistance 与 Content Hugging</li>
 </ul>
-<h3 id="NSLayoutConstraint-priority"><a href="#NSLayoutConstraint-priority" class="headerlink" title="NSLayoutConstraint priority"></a>NSLayoutConstraint priority</h3>
+<h3 id="nslayoutconstraint-priority">NSLayoutConstraint priority</h3>
+<p>了解约束优先级之前，先来了解一下约束，看看 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/AppKit/Reference/NSLayoutConstraint_Class/#//apple_ref/occ/instp/NSLayoutConstraint/multiplier">NSLayoutConstraint
+Class Reference</a> 的描述。</p>
+<blockquote>
+<p>A constraint defines a relationship between two user interface
+objects that must be satisfied by the constraint-based layout system.
+Each constraint is a linear equation with the following format:</p>
+<p><em>item1.attribute1 = multiplier × item2.attribute2 +
+constant</em></p>
+<p>In this equation, attribute1 and attribute2 are the variables that
+Auto Layout can adjust when solving these constraints. The other values
+are defined when you create the constraint.</p>
+</blockquote>
+<p>约束可以理解为，两个界面元素之间必须满足的基于约束布局系统的关系。每个约束都是以下方式的线性表达式:</p>
+<p><em>item1.attribute1 = multiplier × item2.attribute2 +
+constant</em></p>
+<p>其中 <em>item1</em>, <em>item2</em>
+表示两个界面元素，<em>attribute1</em>, <em>attribute2</em>
+是两个界面的布局属性，是自动布局系统在满足这些约束的过程中可以调整的变量，由
+<em>NSLayoutAttribute</em> 定义，包括 left, right, top, bottom, leading,
+trailing, width, height, centerX, centerY 和 baseline等.
+对于诸如英语这种从左至右阅读的语言，<em>leading</em> 和
+<em>trailing</em> 与 <em>left</em> 和 <em>right</em>
+完全一样，但是对于诸如 Hebrew 或者 Arabic
+这种从右往左阅读的语言，<em>leading</em> 与 <em>right</em>
+相同，<em>trailing</em> 与 <em>left</em> 相同，通常情况下，我们使用
+<em>leading</em> 和 <em>trailing</em> 较多。</p>
+<p><em>constant: The physical size or offset, in points, of the
+constraint.</em></p>
+<p><em>multiplier: The multiplier applied to the second attribute
+participating in the constraint.</em></p>
+<blockquote>
+<p>A valid layout is defined as a set constraints with one and only one
+possible solution. Valid layouts are also referred to as a nonambiguous,
+nonconflicting layouts. Constraints with more than one solution are
+ambiguous. Constraints with no valid solutions are conflicting.</p>
+</blockquote>
+<p>一个有效的约束是指有且仅有一种方案满足所有约束。如果有多种方案或者没有一个方案满足所有约束，则这些自动布局都无效。对于
+view 上的约束都是累加的，对于同一类型的约束不会覆盖，例如，如果你已对
+view 添加了一个宽度约束，再次对该 view
+添加宽度约束并不会将之前的宽度约束移除或者将之前的宽度约束值修改为新的约束值，你必须将之前添加的宽度约束值手动移除。对于在Storyboard中添加的约束，可以像
+UIView 一样在 Class 中声明 IBOutlet
+属性进行连接，从而对约束值进行修改。</p>
+<blockquote>
+<p>Additionally, constraints are not limited to equality relationships.
+They can also use greater than or equal to (&gt;=) or less than or equal
+to (&lt;=) to describe the relationship between the two attributes.
+Constraints also have priorities between 1 and 1,000. Constraints with a
+priority of 1,000 are required. All priorities less than 1,000 are
+optional. By default, all constraints are required (priority =
+1,000).</p>
+<p>After solving for the required constraints, Auto Layout tries to
+solve all the optional constraints in priority order from highest to
+lowest. If it cannot solve for an optional constraint, it tries to come
+as close as possible to the desired result, and then moves on to the
+next constraint.</p>
+</blockquote>
+<p>另外，约束不仅限于等量关系，它还可以是(<em>&gt;=</em>)或者(<em>&lt;=</em>)来描述两个属性之间的关系，由
+<em>NSLayoutRelation</em> 定义。约束还有 <em>1 ~ 1000</em>
+的优先级，优先级为1000的约束为必须满足，优先级为 <em>1 ~ 999</em>
+的约束为可选约束，数字越大其优先级越高，其满足的可能性越高，自动布局系统在满足了所有优先级为
+1000
+的约束后，会按照优先级从高到低的顺序满足可选约束。默认情况下，所有约束优先级都是
+1000，即必须满足。</p>
+<h3 id="intrinsic-content-size">Intrinsic Content Size</h3>
+<p>要理解内容压缩阻力和内容吸附性这两个概念，首先要理解内部内容尺寸<em>Intrinsic
+Content Size</em>这一概念。</p>
+<p>每个视图都有内容压缩阻力优先级<em>Content Compression Resistance
+Priority</em>和内容吸附性优先级<em>Content Hugging
+Priority</em>。但只有当视图定义了内部内容尺寸后，这两种优先级才会起作用；否则如果都没有定义内容尺寸大小，又如何知道应该抗压缩或者吸附至什么大小呢。</p>
+<p>那么，内部内容尺寸是指的什么，有什么作用呢？</p>
+<p>引用自苹果官方Auto Layout指南里面对内部内容尺寸的描述：</p>
+<blockquote>
+<p>Leaf-level views such as buttons typically know more about what size
+they should be than does the code that is positioning them. This is
+communicated through the intrinsic content size, which tells the layout
+system that a view contains some content that it doesn’t natively
+understand, and indicates how large that content is, intrinsically.</p>
+<p>For elements such as text labels, you should typically set the
+element to be its intrinsic size (select Editor &gt; Size To Fit
+Content). This means that the element will grow and shrink appropriately
+with different content for different languages.</p>
+</blockquote>
+<p>什么意思呢？</p>
+<p>简单来说就是，像按钮、文本标签这类视图控件，在布局的时候，它们自己内部比外部布局代码更清楚自己需要多大的尺寸来显示自己的内容。而这个尺寸就是由内部内容尺寸<em>intrinsic
+content
+size</em>来传达的。这就相当于，内部内容尺寸告诉布局系统：这个视图里面包含了一些你不能理解的内容，但是我给你指出了那些内容有多大。</p>
+<p>由此可见，内部内容尺寸是为了实现视图自适应大小而准备的。</p>
+<h3 id="content-compression-resistance-与-content-hugging">Content
+Compression Resistance 与 Content Hugging</h3>
+<p>关于这两个概念，最容易理解的文档说明在UIView Class
+Reference文档里面：</p>
+<blockquote>
+<p><code>- contentCompressionResistancePriorityForAxis:</code></p>
+<p>Returns the priority with which a view resists being made smaller
+than its intrinsic size.</p>
+<p>The constraint-based layout system uses these priorities when
+determining the best layout for views that are encountering constraints
+that would require them to be smaller than their intrinsic size.</p>
+<p>Subclasses should not override this method. Instead, custom views
+should set default values for their content on creation, typically to
+NSLayoutPriorityDefaultLow or NSLayoutPriorityDefaultHigh.</p>
+</blockquote>
+<p><em>ContentCompressionResistancePriority</em>: 内容压缩阻力优先级,
+是指 view 阻止其视图大小被压缩到小于其内部内容尺寸的优先级,
+即视图反压缩的优先级，优先级越大，视图就越不容易被压小。当自动布局系统为所有视图布局时，遇到约束要求该
+view 的尺寸需要小于其内部内容尺寸会用到。</p>
+<blockquote>
+<p><em>- contentHuggingPriorityForAxis:</em></p>
+<p>Returns the priority with which a view resists being made larger than
+its intrinsic size.</p>
+<p>The constraint-based layout system uses these priorities when
+determining the best layout for views that are encountering constraints
+that would require them to be larger than their intrinsic size.</p>
+</blockquote>
+<p><em>ContentHuggingPriority</em>:内容吸附性优先级, 是指 view
+阻止其视图大小被拉伸到大于其内部内容尺寸的优先级，即视图反拉伸的优先级，优先级越大，视图就越不容易被拉大。</p>
+<p>回到本文开头的约束冲突问题，在同一水平线上添加了两个定义了内部内容尺寸的视图
+UILabel 和 UIButton，并为其添加了5个优先级为
+<em>UILayoutPriorityRequired</em> 的约束，且此时 UILabel 和 UIButton
+<em>x</em> 轴方向的 <em>ContentCompressionResistancePriority</em>
+优先级都是750,
+自动布局系统在解决所有约束满足的时候，发现不知道如何处理优先满足 UILabel
+不压缩 还是 优先满足 UIButton 不压缩，由此约束冲突产生。需求中，我们需要
+UIButton 的 title 不压缩，而 UILabel 的内容可以尾部截断，由此我们可以将
+UILabel 的 <em>ContentCompressionResistancePriority</em>
+优先级调整到低于 750，此时 UIButton 的
+<em>ContentCompressionResistancePriority</em> 750 大于 UILbael
+的该值，自动布局系统在满足所有约束的过程中优先满足 UIButton
+的该约束，即不压缩 UIButton 的内部内容尺寸，由此冲突解决。</p>
+<p>参考:<a
+target="_blank" rel="noopener" href="http://codingobjc.com/blog/2015/01/28/autolayoutzhong-de-content-compression-resistancehe-content-huggingdao-di-shi-shi-yao-yi-si">Content
+Compression Resistance和Content
+Hugging</a>，该文中有一个很好的示例说明。</p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -434,7 +585,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

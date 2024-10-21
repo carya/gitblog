@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,7 +251,9 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: <a href="/2013/12/12/usage-of-jdk-urlconnection/">JDK中URLConnection使用详解</a>.</p>
+                    <p>本文记录的是使用HttpURLConnection发送Get和Post请求的示例,
+关于HttpURLConnection的使用请参考: <a
+href="/2013/12/12/usage-of-jdk-urlconnection/">JDK中URLConnection使用详解</a>.</p>
 <p>这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.DataOutputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.net.HttpURLConnection;</span><br><span class="line">import java.net.URL;</span><br></pre></td></tr></table></figure>
                     
@@ -303,7 +306,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本打算自己写一篇博客记录Java中URLConnection的使用，网上搜索了一番，发现这篇<a target="_blank" rel="noopener" href="http://www.blogjava.net/supercrsky/articles/247449.html">JDK中的URLConnection参数详解</a>写得很好了，转载该文如下。</p>
+                    <p>本打算自己写一篇博客记录Java中URLConnection的使用，网上搜索了一番，发现这篇<a
+target="_blank" rel="noopener" href="http://www.blogjava.net/supercrsky/articles/247449.html">JDK中的URLConnection参数详解</a>写得很好了，转载该文如下。</p>
 <p>针对JDK中的URLConnection连接Servlet的问题,网上虽然有所涉及,但是只是说明了某一个或几个问题，是以FAQ的方式来解决的，而且比较零散，现在对这个类的使用就本人在项目中的使用经验做如下总结。</p>
                     
                         <a
@@ -355,9 +359,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>在<a href="/2013/11/27/send-email-with-java/">使用JavaMail发送邮件</a>一文中，记录了使用JavaMail发送普通文本给多个链接人。这里记录如何使用JavaMail发送带附件的邮件,只是在SendMail类中添加一个新的方法:</p>
+                    <p>在<a
+href="/2013/11/27/send-email-with-java/">使用JavaMail发送邮件</a>一文中，记录了使用JavaMail发送普通文本给多个链接人。这里记录如何使用JavaMail发送带附件的邮件,只是在SendMail类中添加一个新的方法:</p>
 <p><code>public void sendMail(List&lt;String&gt; recipients, String subject, String sendContent, List&lt;String&gt; filePaths)</code></p>
-<p><code>recipients</code>表示联系人列表，<code>subject</code>代表邮件主题，<code>sendContent</code>代表发送的邮件正文，<code>filePaths</code>代表添加为邮件附件的文件地址列表, 其代码如下:</p>
+<p><code>recipients</code>表示联系人列表，<code>subject</code>代表邮件主题，<code>sendContent</code>代表发送的邮件正文，<code>filePaths</code>代表添加为邮件附件的文件地址列表,
+其代码如下:</p>
                     
                         <a
                             href="/2013/12/04/send-email-with-attachments/"
@@ -408,7 +414,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用java实现发送简单文本内容邮件给一个或者多个联系人。邮件服务 Java API 支持使用 JavaMail(javax.mail)接口来发送电子邮件。</p>
+                    <p>本文记录的是如何使用java实现发送简单文本内容邮件给一个或者多个联系人。邮件服务
+Java API 支持使用 JavaMail(javax.mail)接口来发送电子邮件。</p>
 <p>在使用javax.mail接口时，需要设置发件人，涉及到发件人的授权认证，于是创建了MailAuthenticator类，其代码如下：</p>
                     
                         <a
@@ -460,8 +467,15 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型: 动态和静态. 动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图). 静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.</p>
-<p>静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型: 花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行. UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生. 分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论. 因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.</p>
+                    <p>开始之前，先简单说说什么是静态和动态建模. 对象模型有两种类型:
+动态和静态.
+动态模型有助于设计逻辑、代码行为或方法体，例如UML交互图(顺序图或通信图).
+静态模型有助于设计包、类名、属性和方法特征标记(但不是方法体)的定义，例如UML类图.</p>
+<p>静态和动态建模之间具有关系，敏捷建模对此的实践是并行创建模型:
+花费较短的时间创建交互图(动态), 然后转到对应的类图(静态), 交替进行.
+UML初学者一般会认为静态视图的类图是重要的图形，但事实上，大部分具有挑战性、有益和有效的设计工作都会在绘制UML动态视图的交互图的时候发生.
+分析需要哪些对象、发送哪些消息、发送给谁、以何种顺序发送等具体问题，确定它们是如何通过消息和方法进行协作，通过动态对象建模(例如绘制顺序图)才能真正落实这些准确和详细的结论.
+因此应该花费时间使用交互图进行动态对象建模，而不仅是使用类图进行静态对象建模.</p>
                     
                         <a
                             href="/2013/11/04/uml-interaction-diagrams/"
@@ -513,11 +527,11 @@
             
                 <div class="postShorten-excerpt">
                     <p>类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.</p>
-<h3 id="UML属性的表示方式"><a href="#UML属性的表示方式" class="headerlink" title="UML属性的表示方式"></a>UML属性的表示方式</h3><p>UML的属性有两种表示方式：属性文本和关联线.</p>
+<h3 id="uml属性的表示方式">UML属性的表示方式</h3>
+<p>UML的属性有两种表示方式：属性文本和关联线.</p>
 <p>属性文本表示属性的完整格式是：</p>
 <pre><code>visibility name : type multiplicity = default &#123;property-string&#125;
-可见性      属性名: 属性类型              默认值     特性字符串
-</code></pre>
+可见性      属性名: 属性类型              默认值     特性字符串</code></pre>
                     
                         <a
                             href="/2013/10/29/uml-class-diagram/"
@@ -568,8 +582,10 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>以下是关于Markdown的常用语法，可以在<a href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
-<ol>
+                    <p>以下是关于Markdown的常用语法，可以在<a
+href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a
+target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
+<ol type="1">
 <li><a href="#paragraph">段落和换行</a></li>
 <li><a href="#title">标题</a></li>
 <li><a href="#block_cite">区块引用</a></li>
@@ -697,25 +713,19 @@
             
                 <div class="postShorten-content">
                     <p>Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令:</p>
-<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;
-</code></pre>
+<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;</code></pre>
 <p>. : 表示在当前目录下</p>
-<pre><code>-name &quot;*.txt&quot;
-</code></pre>
+<pre><code>-name &quot;*.txt&quot;</code></pre>
 <p>表示查找所有后缀为txt的文件</p>
-<pre><code>-type f
-</code></pre>
+<pre><code>-type f</code></pre>
 <p>表示文件类型为一般正规文件</p>
-<pre><code>-print
-</code></pre>
+<pre><code>-print</code></pre>
 <p>表示将查询结果打印到屏幕上</p>
-<pre><code>-exec command
-</code></pre>
-<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是<br><code>rm -rf</code></p>
-
-                    
-                        
-
+<pre><code>-exec command</code></pre>
+<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是
+<code>rm -rf</code></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
                     
                     
@@ -784,7 +794,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

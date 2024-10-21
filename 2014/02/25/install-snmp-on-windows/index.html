@@ -17,16 +17,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。\n安装net-snmp 5.7.1之前需要先安装  \n\nVS2010\nWin32 OpenSSL v1.0.1f\nActivePerl 5.16.3\n\n\n\n安装步骤如下:\n\n停止Windows7系统自带的Windows SNMP Service，在 我的电脑-&gt; 管理 -&gt; 服务中可以找到 SNMP Service。\n\n打开命令行终端cmd,或者PowerCMD，any other you like\n\n如果build OpenSSL，设置INCLUDE和LIB，使其指向合适OpenSSL安装目录，如下面所示:\n\n\n12E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;set INCLUDE=C:\\OpenSSL-Win32\\includeE:\\install_snmp\\net-snmp-5.7.1\\win32&gt;set LIB=C:\\OpenSSL-Win32\\lib\\VC\\static\n\n运行vcvarsall.bat初始化 Visual Studio build environment, 该脚本可在Visual Studio的安装目录中找到:\n\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;&quot;C:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat&quot;\n\n运行源码包中的win32\\build.bat:\n\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;build.bat\n\n预期会在屏幕上出现设置向导，最终结果如下，需要注意的是要 enable winExtDLL agent，否则会有一些常用MIB无法获取:\n123456789101112131415161718192021222324Net-SNMP build and install options==================================1.  OpenSSL support:                enabled2.  Platform SDK support:           enabled3.  Install path:                   c:/usr4.  Install after build:            enabled5.  Perl modules:                   enabled6.  Install perl modules:           enabled7.  Quiet build (logged):           enabled8.  Debug mode:                     disabled9.  IPv6 transports (requires SDK): disabled10. winExtDLL agent (requires SDK): enabled11. Link type:                      static12. Install development files       disabledF.  Finished - start buildQ.  Quit - abort build\n\n\nbuild结束后会出现一个运行脚本的提示，按照提示运行，然后运行源代码包中的install-net-snmp.bat脚本。\n\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;install-net-snmp.bat\n\n在PATH环境变量中加入net-snmp的bin目录，使其可以直接在终端运行snmp命令。\n\n检测net-snmp的版本:\n\n\n12E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -vE:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpwalk --version\n\n将net-snmp注册为Windows服务:\n\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -register \nun-register the service:\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -unregister\n\n\n启动net-snmp:\n\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;net start &quot;Net-SNMP Agent&quot;\n停止net-snmp可用如下命令:\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;net stop &quot;Net-SNMP Agent&quot;\n\n上述操作参考net-snmp源代码包中README.win32文档，如有疑问可直接查看此文档。\n","dateCreated":"2014-02-25T20:16:45+08:00","dateModified":"2014-07-03T15:00:39+08:00","datePublished":"2014-02-25T20:16:45+08:00","description":"本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。\n安装net-snmp 5.7.1之前需要先安装  \n\nVS2010\nWin32 OpenSSL v1.0.1f\nActivePerl 5.16.3\n","headline":"Windows上安装Net-SNMP5.7","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/02/25/install-snmp-on-windows/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/02/25/install-snmp-on-windows/","keywords":"snmp, snmpd"}</script>
-    <meta name="description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装    VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文简要记录了在Windows上安装 net-snmp\r\n5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。\r\n安装net-snmp 5.7.1之前需要先安装\r\n\r\nVS2010\r\nWin32\r\nOpenSSL v1.0.1f\r\nActivePerl\r\n5.16.3\r\n\r\n\r\n安装步骤如下:\r\n\r\n停止Windows7系统自带的Windows SNMP Service，在\r\n我的电脑-&gt; 管理 -&gt;\r\n服务中可以找到 SNMP Service。\r\n打开命令行终端cmd,或者PowerCMD，any other you like\r\n如果build\r\nOpenSSL，设置INCLUDE和LIB，使其指向合适OpenSSL安装目录，如下面所示:\r\n\r\n12E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;set INCLUDE=C:\\OpenSSL-Win32\\includeE:\\install_snmp\\net-snmp-5.7.1\\win32&gt;set LIB=C:\\OpenSSL-Win32\\lib\\VC\\static\r\n\r\n运行vcvarsall.bat初始化 Visual Studio build\r\nenvironment, 该脚本可在Visual Studio的安装目录中找到:\r\n\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;&quot;C:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat&quot;\r\n\r\n运行源码包中的win32\\build.bat:\r\n\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;build.bat\r\n预期会在屏幕上出现设置向导，最终结果如下，需要注意的是要 enable\r\nwinExtDLL agent，否则会有一些常用MIB无法获取:\r\n123456789101112131415161718192021222324Net-SNMP build and install options==================================1.  OpenSSL support:                enabled2.  Platform SDK support:           enabled3.  Install path:                   c:/usr4.  Install after build:            enabled5.  Perl modules:                   enabled6.  Install perl modules:           enabled7.  Quiet build (logged):           enabled8.  Debug mode:                     disabled9.  IPv6 transports (requires SDK): disabled10. winExtDLL agent (requires SDK): enabled11. Link type:                      static12. Install development files       disabledF.  Finished - start buildQ.  Quit - abort build\r\n\r\nbuild结束后会出现一个运行脚本的提示，按照提示运行，然后运行源代码包中的install-net-snmp.bat脚本。\r\n\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;install-net-snmp.bat\r\n\r\n在PATH环境变量中加入net-snmp的bin目录，使其可以直接在终端运行snmp命令。\r\n检测net-snmp的版本:\r\n\r\n12E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -vE:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpwalk --version\r\n\r\n将net-snmp注册为Windows服务:\r\n\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -register \r\nun-register the service:\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;snmpd -unregister\r\n\r\n启动net-snmp:\r\n\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;net start &quot;Net-SNMP Agent&quot;\r\n停止net-snmp可用如下命令:\r\n1E:\\install_snmp\\net-snmp-5.7.1\\win32&gt;net stop &quot;Net-SNMP Agent&quot;\r\n上述操作参考net-snmp源代码包中README.win32文档，如有疑问可直接查看此文档。\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2014-02-25T20:16:45+08:00","dateModified":"2024-10-21T22:25:56+08:00","datePublished":"2014-02-25T20:16:45+08:00","description":"本文简要记录了在Windows上安装 net-snmp\r\n5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。\r\n安装net-snmp 5.7.1之前需要先安装\r\n\r\nVS2010\r\nWin32\r\nOpenSSL v1.0.1f\r\nActivePerl\r\n5.16.3\r\n","headline":"Windows上安装Net-SNMP5.7","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/02/25/install-snmp-on-windows/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/02/25/install-snmp-on-windows/","keywords":"snmp, snmpd"}</script>
+    <meta name="description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装  VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="Windows上安装Net-SNMP5.7">
 <meta property="og:url" content="http://liumh.com/2014/02/25/install-snmp-on-windows/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装    VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3">
+<meta property="og:description" content="本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上net-snmp官方网站下载。 安装net-snmp 5.7.1之前需要先安装  VS2010 Win32 OpenSSL v1.0.1f ActivePerl 5.16.3">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2014-02-25T12:16:45.000Z">
-<meta property="article:modified_time" content="2014-07-03T07:00:39.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:25:56.694Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="snmp">
 <meta property="article:tag" content="snmpd">
@@ -111,7 +111,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,63 +254,64 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
-<p>安装net-snmp 5.7.1之前需要先安装  </p>
-<ol>
+            <p>本文简要记录了在Windows上安装 net-snmp
+5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/"
+title="snmp官网">net-snmp官方网站</a>下载。</p>
+<p>安装net-snmp 5.7.1之前需要先安装</p>
+<ol type="1">
 <li><a target="_blank" rel="noopener" href="http://xoyozo.me/blog/vs2010.html">VS2010</a></li>
-<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32 OpenSSL v1.0.1f</a></li>
-<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl 5.16.3</a></li>
+<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32
+OpenSSL v1.0.1f</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl
+5.16.3</a></li>
 </ol>
 <span id="more"></span>
-
 <p>安装步骤如下:</p>
-<ol>
-<li><p>停止Windows7系统自带的Windows SNMP Service，在 <code>我的电脑</code>-&gt; <code>管理</code> -&gt; <code>服务</code>中可以找到 SNMP Service。</p>
-</li>
-<li><p>打开命令行终端cmd,或者PowerCMD，any other you like</p>
-</li>
-<li><p>如果build OpenSSL，设置INCLUDE和LIB，使其指向合适OpenSSL安装目录，如下面所示:</p>
-</li>
+<ol type="1">
+<li><p>停止Windows7系统自带的Windows SNMP Service，在
+<code>我的电脑</code>-&gt; <code>管理</code> -&gt;
+<code>服务</code>中可以找到 SNMP Service。</p></li>
+<li><p>打开命令行终端cmd,或者PowerCMD，any other you like</p></li>
+<li><p>如果build
+OpenSSL，设置INCLUDE和LIB，使其指向合适OpenSSL安装目录，如下面所示:</p></li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;set INCLUDE=C:\OpenSSL-Win32\include</span><br><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;set LIB=C:\OpenSSL-Win32\lib\VC\static</span><br></pre></td></tr></table></figure>
-<ol start="4">
-<li>运行<code>vcvarsall.bat</code>初始化 Visual Studio build environment, 该脚本可在Visual Studio的安装目录中找到:</li>
+<ol start="4" type="1">
+<li>运行<code>vcvarsall.bat</code>初始化 Visual Studio build
+environment, 该脚本可在Visual Studio的安装目录中找到:</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;&quot;C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat&quot;</span><br></pre></td></tr></table></figure>
-<ol start="5">
+<ol start="5" type="1">
 <li>运行源码包中的<code>win32\build.bat</code>:</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;build.bat</span><br></pre></td></tr></table></figure>
-
-<p>预期会在屏幕上出现设置向导，最终结果如下，需要注意的是要 enable winExtDLL agent，否则会有一些常用MIB无法获取:</p>
+<p>预期会在屏幕上出现设置向导，最终结果如下，需要注意的是要 enable
+winExtDLL agent，否则会有一些常用MIB无法获取:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Net-SNMP build and install options</span><br><span class="line">==================================</span><br><span class="line"></span><br><span class="line">1.  OpenSSL support:                enabled</span><br><span class="line">2.  Platform SDK support:           enabled</span><br><span class="line"></span><br><span class="line">3.  Install path:                   c:/usr</span><br><span class="line">4.  Install after build:            enabled</span><br><span class="line"></span><br><span class="line">5.  Perl modules:                   enabled</span><br><span class="line">6.  Install perl modules:           enabled</span><br><span class="line"></span><br><span class="line">7.  Quiet build (logged):           enabled</span><br><span class="line">8.  Debug mode:                     disabled</span><br><span class="line"></span><br><span class="line">9.  IPv6 transports (requires SDK): disabled</span><br><span class="line">10. winExtDLL agent (requires SDK): enabled</span><br><span class="line"></span><br><span class="line">11. Link type:                      static</span><br><span class="line"></span><br><span class="line">12. Install development files       disabled</span><br><span class="line"></span><br><span class="line">F.  Finished - start build</span><br><span class="line">Q.  Quit - abort build</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
+<ol start="6" type="1">
 <li>build结束后会出现一个运行脚本的提示，按照提示运行，然后运行源代码包中的<code>install-net-snmp.bat</code>脚本。</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;install-net-snmp.bat</span><br></pre></td></tr></table></figure>
-<ol start="7">
-<li><p>在PATH环境变量中加入net-snmp的bin目录，使其可以直接在终端运行snmp命令。</p>
-</li>
-<li><p>检测net-snmp的版本:</p>
-</li>
+<ol start="7" type="1">
+<li><p>在PATH环境变量中加入net-snmp的bin目录，使其可以直接在终端运行snmp命令。</p></li>
+<li><p>检测net-snmp的版本:</p></li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -v</span><br><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpwalk --version</span><br></pre></td></tr></table></figure>
-<ol start="9">
+<ol start="9" type="1">
 <li>将net-snmp注册为Windows服务:</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -register </span><br></pre></td></tr></table></figure>
 <p>un-register the service:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;snmpd -unregister</span><br></pre></td></tr></table></figure>
-
-<ol start="10">
+<ol start="10" type="1">
 <li>启动net-snmp:</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;net start &quot;Net-SNMP Agent&quot;</span><br></pre></td></tr></table></figure>
 <p>停止net-snmp可用如下命令:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\install_snmp\net-snmp-5.7.1\win32&gt;net stop &quot;Net-SNMP Agent&quot;</span><br></pre></td></tr></table></figure>
-
 <p>上述操作参考net-snmp源代码包中README.win32文档，如有疑问可直接查看此文档。</p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -482,7 +484,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

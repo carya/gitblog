@@ -17,16 +17,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令:\nfind . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \\;\n\n. : 表示在当前目录下\n-name &quot;*.txt&quot;\n\n表示查找所有后缀为txt的文件\n-type f\n\n表示文件类型为一般正规文件\n-print\n\n表示将查询结果打印到屏幕上\n-exec command\n\ncommand为其他命令，-exec后可再接其他的命令来处理查找到的结果，上式中，&#123;&#125;表示”由find命令查找到的结果“，如上所示，find所查找到的结果放置到{}位置，-exec一直到\\;是关键字，表示find额外命令的开始-exec到结束\\;，这中间的就是find命令的额外命令，上式中就是rm -rf\n","dateCreated":"2013-10-19T11:14:52+08:00","dateModified":"2014-06-24T17:03:33+08:00","datePublished":"2013-10-19T11:14:52+08:00","description":"","headline":"linux下删除目录及其子目录下某种类型文件","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/19/delete-certain-file/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/19/delete-certain-file/","keywords":"shell, linux"}</script>
-    <meta name="description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;  . : 表示在当前目录下 -name &quot;*.txt&quot;  表示查找所有后缀为txt的文件 -type f  表示文件类型为一般">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令:\r\nfind . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \\;\r\n. : 表示在当前目录下\r\n-name &quot;*.txt&quot;\r\n表示查找所有后缀为txt的文件\r\n-type f\r\n表示文件类型为一般正规文件\r\n-print\r\n表示将查询结果打印到屏幕上\r\n-exec command\r\ncommand为其他命令，-exec后可再接其他的命令来处理查找到的结果，上式中，&#123;&#125;表示”由find命令查找到的结果“，如上所示，find所查找到的结果放置到{}位置，-exec一直到\\;是关键字，表示find额外命令的开始-exec到结束\\;，这中间的就是find命令的额外命令，上式中就是\r\nrm -rf\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2013-10-19T11:14:52+08:00","dateModified":"2024-10-21T22:20:37+08:00","datePublished":"2013-10-19T11:14:52+08:00","description":"","headline":"linux下删除目录及其子目录下某种类型文件","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/19/delete-certain-file/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/19/delete-certain-file/","keywords":"shell, linux"}</script>
+    <meta name="description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \; . : 表示在当前目录下 -name &quot;*.txt&quot; 表示查找所有后缀为txt的文件 -type f 表示文件类型">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="linux下删除目录及其子目录下某种类型文件">
 <meta property="og:url" content="http://liumh.com/2013/10/19/delete-certain-file/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;  . : 表示在当前目录下 -name &quot;*.txt&quot;  表示查找所有后缀为txt的文件 -type f  表示文件类型为一般">
+<meta property="og:description" content="Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令: find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \; . : 表示在当前目录下 -name &quot;*.txt&quot; 表示查找所有后缀为txt的文件 -type f 表示文件类型">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2013-10-19T03:14:52.000Z">
-<meta property="article:modified_time" content="2014-06-24T09:03:33.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:20:37.003Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="shell">
 <meta property="article:tag" content="linux">
@@ -111,7 +111,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -254,21 +255,19 @@
     <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>Linux下，如果想要删除目录及其子目录下某种类型文件，比如说所有的txt文件，则可以使用下面的命令:</p>
-<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;
-</code></pre>
+<pre><code>find . -name &quot;*.txt&quot; -type f -print -exec rm -rf &#123;&#125; \;</code></pre>
 <p>. : 表示在当前目录下</p>
-<pre><code>-name &quot;*.txt&quot;
-</code></pre>
+<pre><code>-name &quot;*.txt&quot;</code></pre>
 <p>表示查找所有后缀为txt的文件</p>
-<pre><code>-type f
-</code></pre>
+<pre><code>-type f</code></pre>
 <p>表示文件类型为一般正规文件</p>
-<pre><code>-print
-</code></pre>
+<pre><code>-print</code></pre>
 <p>表示将查询结果打印到屏幕上</p>
-<pre><code>-exec command
-</code></pre>
-<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是<br><code>rm -rf</code></p>
+<pre><code>-exec command</code></pre>
+<p><code>command</code>为其他命令，<code>-exec</code>后可再接其他的命令来处理查找到的结果，上式中，<code>&#123;&#125;</code>表示”由find命令查找到的结果“，如上所示，<code>find</code>所查找到的结果放置到{}位置，<code>-exec</code>一直到<code>\;</code>是关键字，表示find额外命令的开始<code>-exec</code>到结束<code>\;</code>，这中间的就是<code>find</code>命令的额外命令，上式中就是
+<code>rm -rf</code></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -435,7 +434,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

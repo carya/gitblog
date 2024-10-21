@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,12 +252,25 @@
             
                 <div class="postShorten-excerpt">
                     <p>iOS开发中，屏幕适配也是项很重要的工作，本文记录了一些在屏幕适配的过程中与图片相关的工作。</p>
-<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>首先，理解几个概念: Points, Rendered Pixels, Physical Pixels, Physical Device。</p>
+<h3 id="基本概念">基本概念</h3>
+<p>首先，理解几个概念: Points, Rendered Pixels, Physical Pixels,
+Physical Device。</p>
 <ul>
-<li>Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以 point 作为单位，在iPhone 2G,3G,3GS的年代，point 和屏幕上的像素是完全一一对应的，即 320 * 480 (points), 也是 320 * 480 (pixels)</li>
-<li>Rendered Pixels: 渲染像素， 以 point 为单位的绘制最终都会渲染成 pixels，这个过程被称为光栅化。基于 point 的坐标系乘以比例因子可以得到基于像素的坐标系，高比例因子会使更多的细节展示，目前的比例因子会是 1x，2x，3x</li>
+<li>Points:
+是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以
+point 作为单位，在iPhone 2G,3G,3GS的年代，point
+和屏幕上的像素是完全一一对应的，即 320 * 480 (points), 也是 320 * 480
+(pixels)</li>
+<li>Rendered Pixels: 渲染像素， 以 point 为单位的绘制最终都会渲染成
+pixels，这个过程被称为光栅化。基于 point
+的坐标系乘以比例因子可以得到基于像素的坐标系，高比例因子会使更多的细节展示，目前的比例因子会是
+1x，2x，3x</li>
 <li>Physical Pixels: 物理像素，就是设备屏幕实际的像素</li>
-<li>Physical Device: 设备屏幕的物理长度，使用英寸作为单位。比如iPhone 4屏幕是3.5英寸，iPhone 5 是4英寸，iphone 6是4.7英寸，这里的数字是指手机屏幕对角线的物理长度。实际上会是Physical Pixels的像素值(而不是Rendered Pixels的像素值)会渲染到该屏幕上, 屏幕会有 PPI(pixels-per-inch) 的特性，PPI 的值告诉你每英寸会有多少像素渲染。</li>
+<li>Physical Device: 设备屏幕的物理长度，使用英寸作为单位。比如iPhone
+4屏幕是3.5英寸，iPhone 5 是4英寸，iphone
+6是4.7英寸，这里的数字是指手机屏幕对角线的物理长度。实际上会是Physical
+Pixels的像素值(而不是Rendered Pixels的像素值)会渲染到该屏幕上, 屏幕会有
+PPI(pixels-per-inch) 的特性，PPI 的值告诉你每英寸会有多少像素渲染。</li>
 </ul>
                     
                         <a
@@ -311,9 +325,12 @@
                     <p>本文记录如何在 UIStoryboard 或者 xib 中进行百分比布局，包括</p>
 <ul>
 <li>View.Width 占其 Superview.Width 的百分比</li>
-<li>View.Leading 与 Superview.Leading 间距占 Superview.Width 的百分比</li>
-<li>View.Trailing 与 Superview.Trailing 间距占 Superview.Width 的百分比</li>
-<li>View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width 的百分比</li>
+<li>View.Leading 与 Superview.Leading 间距占 Superview.Width
+的百分比</li>
+<li>View.Trailing 与 Superview.Trailing 间距占 Superview.Width
+的百分比</li>
+<li>View.Leading 与 Superview.CenterX 间距占父视图 Superview.Width
+的百分比</li>
 <li>限定View的宽高比</li>
 <li>以 Superview.Width 宽度的某一百分比为 View 之间的间隔</li>
 </ul>
@@ -367,9 +384,23 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint 的 priority 属性，使用 Storyboard 提供的默认值就能达到要求。但是最近遇到对 UILabel 的如下布局要求时，就需要涉及对 priority 的修改。</p>
-<p>![NSLayoutConstraint priority 示例][]</p>
-<p>如上所示，我们期望 UILabel 显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且 UILabel 的 Trailing 距离 UIButton 的 Leading 大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和 UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4 的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
+                    <p>使用 Storyboard 时，通常情况下，可能你不会去关心 NSLayoutConstraint
+的 priority 属性，使用 Storyboard
+提供的默认值就能达到要求。但是最近遇到对 UILabel
+的如下布局要求时，就需要涉及对 priority 的修改。</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-autolayout-priority/iOS-NSLayoutConstraint-priority.png"
+alt="NSLayoutConstraint priority 示例" />
+<figcaption aria-hidden="true">NSLayoutConstraint priority
+示例</figcaption>
+</figure>
+<p>如上所示，我们期望 UILabel
+显示字符串较短时，以内容的多少来决定其宽度；当其显示的字符串较长时，截断其尾部，且
+UILabel 的 Trailing 距离 UIButton 的 Leading
+大于等于30，UIButton的宽度由其title内容决定。在 Storyboard 将 UILabel 和
+UIButton 设置好约束，不改变约束的 priority 的前提下，在 Xcode6.4
+的环境下会出现约束错误提示。你可先考虑为什么会出现约束错误以及如何解决这种错误。</p>
                     
                         <a
                             href="/2015/08/11/ios-autolayout-priority/"
@@ -423,7 +454,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

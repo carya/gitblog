@@ -17,13 +17,13 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是关于shell之echo的知识。\necho是linux中常用的终端命令(command line)，其包括:\n1command_name option argument\n\n首先看看echo的 man page:\n123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [string ...]DESCRIPTION     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed     by a newline (`\\n&#x27;) character, to the standard output.\n从帮助文档可以看出:\n\necho是将其后的arguments输出到(STDOUT),通常就是bash界面.\necho是将所有的操作对象，以单一的空格 分开的字符串，最后紧跟着换行符(‘\\n’)，输出到bash\n\n\n\n通过下面的例子更容易理解:\n12345$ echo &quot;hello     world&quot;    China   &#x27;English&#x27;hello     world China English$ echo$ \n上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开. 第二个例子中，echo后未接任何arguments，输出到bash是一空白行(‘\\n’).\n在echo的man page中提到:\n1-n: Do not print the trailing newline character.  This may also be achieved by appending `\\c&#x27; to the end of the string.\n可以使用 -n option取消打印末尾的换行符，也可通过在字符串末尾添加’\\c’字符实现，如下:\n123$ echo -n$ echo -e &quot;\\c&quot;$ \n\necho 除了 -n option外，常用的选项还有:\n\n-e:启用反斜线控制字符的转换(参考下表)\n-E:关闭反斜线控制字符的转换(默认设置如此)\n-n:取消行末的换行符，与 -e 选项下的 \\c同样效果\n\n关于echo命令所支持的反斜线控制字符如下表:\n\n\\a：ALERT &#x2F; BELL (从系统喇叭送出声音)\n\\b：BACKSPACE ，也就是向左退格鍵\n\\c：取消行末的换行符\n\\E：ESCAPE，跳脱键\n\\f：FORMFEED，换页字符\n\\n：NEWLINE，换行字符\n\\r：RETURN，回车键\n\\t：TAB，水平制表符\n\\v：VERTICAL TAB，垂直制表符\n\\n：ASCII 八进制(以 x 开头为十六进制)\n\\\\：反斜线本身\n\n下面是echo的实例。\n例一, 不带任何option，原样输出字符串\n12$ echo &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a\\tb\\tc\\nd\\te\\bf\\a\n\n例二，使用 -e选项，启用反斜线控制字符的转换\n123$ echo -e &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a  b\tcd  f\n\n例三，启用 -n选项，取消行末换行符\n123$ echo -ne &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a  b\tcd  f$\n\n例四，使用 -e + \\c 达到与例三效果\n123$ echo -e &quot;a\\tb\\tc\\nd\\te\\bf\\a\\c&quot;a  b\tcd  f$ \n\n最后，echo用来检查变量值:\n12345$ A=&quot;hello world&quot;$ echo $Ahello world$ echo $?0\n\n参考:\n\nshell 十三問\n\n","dateCreated":"2014-04-16T21:39:21+08:00","dateModified":"2014-06-24T18:18:12+08:00","datePublished":"2014-04-16T21:39:21+08:00","description":"本文记录的是关于shell之echo的知识。\necho是linux中常用的终端命令(command line)，其包括:\n1command_name option argument\n\n首先看看echo的 man page:\n123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [string ...]DESCRIPTION     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed     by a newline (`\\n&#x27;) character, to the standard output.\n从帮助文档可以看出:\n\necho是将其后的arguments输出到(STDOUT),通常就是bash界面.\necho是将所有的操作对象，以单一的空格 分开的字符串，最后紧跟着换行符(‘\\n’)，输出到bash\n","headline":"shell之echo知多少","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/04/16/shell-about-echo/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/04/16/shell-about-echo/","keywords":"shell"}</script>
-    <meta name="description" content="本文记录的是关于shell之echo的知识。 echo是linux中常用的终端命令(command line)，其包括: 1command_name option argument  首先看看echo的 man page: 123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是关于shell之echo的知识。\r\necho是linux中常用的终端命令(command line)，其包括:\r\n1command_name option argument\r\n首先看看echo的 man page:\r\n123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [string ...]DESCRIPTION     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed     by a newline (`\\n&#x27;) character, to the standard output.\r\n从帮助文档可以看出:\r\n\r\necho是将其后的arguments输出到(STDOUT),通常就是bash界面.\r\necho是将所有的操作对象，以单一的空格分开的字符串，最后紧跟着换行符('')，输出到bash\r\n\r\n\r\n通过下面的例子更容易理解:\r\n12345$ echo &quot;hello     world&quot;    China   &#x27;English&#x27;hello     world China English$ echo$ \r\n上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开.\r\n第二个例子中，echo后未接任何arguments，输出到bash是一空白行('').\r\n在echo的man page中提到:\r\n1-n: Do not print the trailing newline character.  This may also be achieved by appending `\\c&#x27; to the end of the string.\r\n可以使用 -n\r\noption取消打印末尾的换行符，也可通过在字符串末尾添加'字符实现，如下:\r\n123$ echo -n$ echo -e &quot;\\c&quot;$ \r\necho 除了 -n option外，常用的选项还有:\r\n\r\n-e:启用反斜线控制字符的转换(参考下表)\r\n-E:关闭反斜线控制字符的转换(默认设置如此)\r\n-n:取消行末的换行符，与 -e 选项下的\r\n\\c同样效果\r\n\r\n关于echo命令所支持的反斜线控制字符如下表:\r\n\r\n\\a：ALERT / BELL (从系统喇叭送出声音)\r\n\\b：BACKSPACE ，也就是向左退格鍵\r\n\\c：取消行末的换行符\r\n\\E：ESCAPE，跳脱键\r\n\\f：FORMFEED，换页字符\r\n\\n：NEWLINE，换行字符\r\n\\r：RETURN，回车键\r\n\\t：TAB，水平制表符\r\n\\v：VERTICAL TAB，垂直制表符\r\n\\n：ASCII 八进制(以 x 开头为十六进制)\r\n\\\\：反斜线本身\r\n\r\n下面是echo的实例。\r\n例一, 不带任何option，原样输出字符串\r\n12$ echo &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a\\tb\\tc\\nd\\te\\bf\\a\r\n例二，使用 -e选项，启用反斜线控制字符的转换\r\n123$ echo -e &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a  b\tcd  f\r\n例三，启用 -n选项，取消行末换行符\r\n123$ echo -ne &quot;a\\tb\\tc\\nd\\te\\bf\\a&quot;a  b\tcd  f$\r\n例四，使用 -e + \\c 达到与例三效果\r\n123$ echo -e &quot;a\\tb\\tc\\nd\\te\\bf\\a\\c&quot;a  b\tcd  f$ \r\n最后，echo用来检查变量值:\r\n12345$ A=&quot;hello world&quot;$ echo $Ahello world$ echo $?0\r\n参考:\r\n\r\nshell\r\n十三問\r\n\r\n","dateCreated":"2014-04-16T21:39:21+08:00","dateModified":"2014-06-24T18:18:12+08:00","datePublished":"2014-04-16T21:39:21+08:00","description":"本文记录的是关于shell之echo的知识。\r\necho是linux中常用的终端命令(command line)，其包括:\r\n1command_name option argument\r\n首先看看echo的 man page:\r\n123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [string ...]DESCRIPTION     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed     by a newline (`\\n&#x27;) character, to the standard output.\r\n从帮助文档可以看出:\r\n\r\necho是将其后的arguments输出到(STDOUT),通常就是bash界面.\r\necho是将所有的操作对象，以单一的空格分开的字符串，最后紧跟着换行符('')，输出到bash\r\n","headline":"shell之echo知多少","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/04/16/shell-about-echo/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/04/16/shell-about-echo/","keywords":"shell"}</script>
+    <meta name="description" content="本文记录的是关于shell之echo的知识。 echo是linux中常用的终端命令(command line)，其包括: 1command_name option argument 首先看看echo的 man page: 123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="shell之echo知多少">
 <meta property="og:url" content="http://liumh.com/2014/04/16/shell-about-echo/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文记录的是关于shell之echo的知识。 echo是linux中常用的终端命令(command line)，其包括: 1command_name option argument  首先看看echo的 man page: 123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n] [">
+<meta property="og:description" content="本文记录的是关于shell之echo的知识。 echo是linux中常用的终端命令(command line)，其包括: 1command_name option argument 首先看看echo的 man page: 123456789NAME     echo -- write arguments to the standard outputSYNOPSIS     echo [-n">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2014-04-16T13:39:21.000Z">
 <meta property="article:modified_time" content="2014-06-24T10:18:12.000Z">
@@ -110,7 +110,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -255,33 +256,33 @@
             <p>本文记录的是关于shell之echo的知识。</p>
 <p>echo是linux中常用的终端命令(command line)，其包括:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure>
-
 <p>首先看看echo的 man page:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed</span><br><span class="line">     by a newline (`\n&#x27;) character, to the standard output.</span><br></pre></td></tr></table></figure>
 <p>从帮助文档可以看出:</p>
-<ol>
+<ol type="1">
 <li>echo是将其后的arguments输出到(STDOUT),通常就是bash界面.</li>
-<li>echo是将所有的操作对象，以单一的空格<code> </code>分开的字符串，最后紧跟着换行符(‘\n’)，输出到bash</li>
+<li>echo是将所有的操作对象，以单一的空格<code></code>分开的字符串，最后紧跟着换行符('')，输出到bash</li>
 </ol>
 <span id="more"></span>
-
 <p>通过下面的例子更容易理解:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;hello     world&quot;    China   &#x27;English&#x27;</span><br><span class="line">hello     world China English</span><br><span class="line">$ echo</span><br><span class="line"></span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
-<p>上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开. 第二个例子中，echo后未接任何arguments，输出到bash是一空白行(‘\n’).</p>
+<p>上面第一个例子，echo将其后的参数(不论各个参数间有多少个空白符)都一一输出到bash，且各个参数间使用单一空格分隔开.
+第二个例子中，echo后未接任何arguments，输出到bash是一空白行('').</p>
 <p>在echo的man page中提到:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-n: Do not print the trailing newline character.  This may also be achieved by appending `\c&#x27; to the end of the string.</span><br></pre></td></tr></table></figure>
-<p>可以使用 <code>-n</code> option取消打印末尾的换行符，也可通过在字符串末尾添加’\c’字符实现，如下:</p>
+<p>可以使用 <code>-n</code>
+option取消打印末尾的换行符，也可通过在字符串末尾添加'字符实现，如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -n</span><br><span class="line">$ echo -e &quot;\c&quot;</span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
-
 <p>echo 除了 <code>-n</code> option外，常用的选项还有:</p>
 <ul>
 <li>-e:启用反斜线控制字符的转换(参考下表)</li>
 <li>-E:关闭反斜线控制字符的转换(默认设置如此)</li>
-<li>-n:取消行末的换行符，与 <code>-e</code> 选项下的 <code>\c</code>同样效果</li>
+<li>-n:取消行末的换行符，与 <code>-e</code> 选项下的
+<code>\c</code>同样效果</li>
 </ul>
 <p>关于echo命令所支持的反斜线控制字符如下表:</p>
 <ul>
-<li><code>\a</code>：ALERT &#x2F; BELL (从系统喇叭送出声音)</li>
+<li><code>\a</code>：ALERT / BELL (从系统喇叭送出声音)</li>
 <li><code>\b</code>：BACKSPACE ，也就是向左退格鍵</li>
 <li><code>\c</code>：取消行末的换行符</li>
 <li><code>\E</code>：ESCAPE，跳脱键</li>
@@ -296,22 +297,19 @@
 <p>下面是echo的实例。</p>
 <p>例一, 不带任何option，原样输出字符串</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a\tb\tc\nd\te\bf\a</span><br></pre></td></tr></table></figure>
-
 <p>例二，使用 <code>-e</code>选项，启用反斜线控制字符的转换</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a  b	c</span><br><span class="line">d  f</span><br></pre></td></tr></table></figure>
-
 <p>例三，启用 <code>-n</code>选项，取消行末换行符</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -ne &quot;a\tb\tc\nd\te\bf\a&quot;</span><br><span class="line">a  b	c</span><br><span class="line">d  f$</span><br></pre></td></tr></table></figure>
-
 <p>例四，使用 <code>-e</code> + <code>\c</code> 达到与例三效果</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ echo -e &quot;a\tb\tc\nd\te\bf\a\c&quot;</span><br><span class="line">a  b	c</span><br><span class="line">d  f$ </span><br></pre></td></tr></table></figure>
-
 <p>最后，echo用来检查变量值:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ A=&quot;hello world&quot;</span><br><span class="line">$ echo $A</span><br><span class="line">hello world</span><br><span class="line">$ echo $?</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
-
 <p>参考:</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=218853&extra=page=1&filter=digest&digest=1&digest=1">shell 十三問</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://bbs.chinaunix.net/forum.php?mod=viewthread&amp;tid=218853&amp;extra=page%3D1%26filter%3Ddigest%26digest%3D1%26digest%3D1">shell
+十三問</a></li>
 </ul>
 
             
@@ -485,7 +483,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

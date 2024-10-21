@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。\n\n\n\nxcodebuild 简介\n使用xcodebuild和xcrun打包签名\n将打包过程脚本化\n\nxcodebuild 简介","dateCreated":"2015-11-25T21:38:11+08:00","dateModified":"2024-10-20T14:21:41+08:00","datePublished":"2015-11-25T21:38:11+08:00","description":"本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。","headline":"iOS自动打包并发布脚本","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/","keywords":"iOS"}</script>
-    <meta name="description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文最终实现的是使用脚本打 Ad-hoc\r\n包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa\r\n包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。\r\n\r\n\r\nxcodebuild 简介\r\n使用xcodebuild和xcrun打包签名\r\n将打包过程脚本化\r\n\r\nxcodebuild 简介\r\nxcodebuild\r\n是苹果提供的打包项目或者工程的命令，了解该命令最好的方式就是使用\r\nman xcodebuild 查看其 man page.\r\n尽管是英文，一定要老老实实的读一遍就好了。\r\n\r\nDESCRIPTION\r\nxcodebuild builds one or more targets contained in an Xcode project,\r\nor builds a scheme contained in an Xcode workspace or Xcode project.\r\nUsage\r\nTo build an Xcode project, run xcodebuild from the directory\r\ncontaining your project (i.e. the directory containing the\r\nname.xcodeproj package). If you have multiple projects in the this\r\ndirectory you will need to use -project to indicate which project should\r\nbe built. By default, xcodebuild builds the first target listed in the\r\nproject, with the default build configuration. The order of the targets\r\nis a property of the project and is the same for all users of the\r\nproject.\r\nTo build an Xcode workspace, you must pass both the -workspace and\r\n-scheme options to define the build. The parameters of the scheme will\r\ncontrol which targets are built and how they are built, although you may\r\npass other options to xcodebuild to override some parameters of the\r\nscheme.\r\nThere are also several options that display info about the installed\r\nversion of Xcode or about projects or workspaces in the local directory,\r\nbut which do not initiate an action. These include -list,\r\n-showBuildSettings, -showsdks, -usage, and -version.\r\n\r\n总结一下:\r\n\r\n需要在包含 name.xcodeproj 的目录下执行 xcodebuild\r\n命令，且如果该目录下有多个 projects，那么需要使用 -project\r\n指定需要 build 的项目。\r\n在不指定 build 的 target 的时候，默认情况下会 build project\r\n下的第一个 target\r\n当 build workspace 时，需要同时指定 -workspace 和\r\n-scheme 参数，scheme 参数控制了哪些 targets 会被 build\r\n以及以怎样的方式 build。\r\n有一些诸如 -list, -showBuildSettings,\r\n-showsdks 的参数可以查看项目或者工程的信息，不会对 build\r\naction 造成任何影响，放心使用。\r\n\r\n那么，xcodebuild 究竟如何使用呢？ 继续看文档:\r\n\r\nNAME\r\nxcodebuild -- build Xcode projects and workspaces\r\nSYNOPSIS\r\n\r\nxcodebuild [-project name.xcodeproj] [[-target targetname] ... |\r\n-alltargets] [-configuration configurationname] [-sdk [sdkfullpath |\r\nsdkname]] [action ...] [buildsetting=value ...] [-userdefault=value\r\n...]\r\nxcodebuild [-project name.xcodeproj] -scheme schemename\r\n[[-destination destinationspecifier] ...] [-destination-timeout value]\r\n[-configuration configurationname] [-sdk [sdkfullpath | sdkname]]\r\n[action ...] [buildsetting=value ...] [-userdefault=value ...]\r\nxcodebuild -workspace name.xcworkspace -scheme schemename\r\n[[-destination destinationspecifier] ...] [-destination-timeout value]\r\n[-configuration configurationname] [-sdk [sdkfullpath | sdkname]]\r\n[action ...] [buildsetting=value ...] [-userdefault=value ...]\r\nxcodebuild -version [-sdk [sdkfullpath | sdkname]]\r\n[infoitem]\r\nxcodebuild -showsdks\r\nxcodebuild -showBuildSettings [-project name.xcodeproj |\r\n[-workspace name.xcworkspace -scheme schemename]]\r\nxcodebuild -list [-project name.xcodeproj | -workspace\r\nname.xcworkspace]\r\nxcodebuild -exportArchive -archivePath xcarchivepath -exportPath\r\ndestinationpath -exportOptionsPlist path\r\nxcodebuild -exportLocalizations -project name.xcodeproj\r\n-localizationPath path [[-exportLanguage language] ...]\r\nxcodebuild -importLocalizations -project name.xcodeproj\r\n-localizationPath path\r\n\r\n\r\n挑几个我常用的形式介绍一下，较长的使用方式以序列号代替:\r\n\r\nxcodebuild -showsdks: 列出 Xcode 所有可用的\r\nSDKs\r\nxcodebuild -showBuildSettings:\r\n上述序号6的使用方式，查看当前工程 build setting 的配置参数，Xcode 详细的\r\nbuild setting 参数参考官方文档 Xcode\r\nBuild Setting Reference， 已有的配置参数可以在终端中以\r\nbuildsetting=value 的形式进行覆盖重新设置.\r\nxcodebuild -list: 上述序号7的使用方式，查看 project\r\n中的 targets 和 configurations，或者 workspace 中 schemes,\r\n输出如下:\r\n\r\n123456789101112131415Information about project &quot;NavTabBar&quot;:    Targets:        NavTabBar        NavTabBarTests        NavTabBarUITests    Build Configurations:        Debug        Release        Ad-hoc    If no build configuration is specified and -scheme is not passed then &quot;Release&quot; is used.    Schemes:        NavTabBar\r\n\r\nxcodebuild [-project name.xcodeproj] [[-target targetname] ... | -alltargets] build:\r\n上述序号1的使用方式，会 build 指定 project，其中 -target 和\r\n-configuration 参数可以使用 xcodebuild -list\r\n获得，-sdk 参数可由 xcodebuild -showsdks\r\n获得，[buildsetting=value ...]\r\n用来覆盖工程中已有的配置。可覆盖的参数参考官方文档 Xcode\r\nBuild Setting Reference, action... 的可用选项如下,\r\n打包的话当然用 build，这也是默认选项。\r\n\r\nbuild\r\nBuild the target in the build root (SYMROOT). This is the default\r\naction, and is used if no action is given.\r\nanalyze\r\nBuild and analyze a target or scheme from the build root (SYMROOT). This\r\nrequires specifying a scheme.\r\narchive\r\nArchive a scheme from the build root (SYMROOT). This requires specifying\r\na scheme.\r\ntest\r\nTest a scheme from the build root (SYMROOT). This requires specifying a\r\nscheme and optionally a destination.\r\ninstallsrc\r\nCopy the source of the project to the source root (SRCROOT).\r\ninstall\r\nBuild the target and install it into the target's installation directory\r\nin the distribution root (DSTROOT).\r\nclean\r\nRemove build products and intermediate files from the build root\r\n(SYMROOT).\r\n\r\nxcodebuild -workspace name.xcworkspace -scheme schemename build:\r\n上述序号3的使用方式，build 指定 workspace，当我们使用 CocoaPods\r\n来管理第三方库时，会生成 xcworkspace\r\n文件，这样就会用到这种打包方式.\r\n\r\n使用xcodebuild和xcrun打包签名\r\n开始之前，可以新建一个测试工程 TestImg\r\n来练习打包，在使用终端命令打包之前，请确认该工程也可以直接使用 Xcode\r\n真机调试成功。\r\n然后，打开终端，进入包含 TestImg.xcodeproj\r\n的目录下，运行以下命令:\r\nxcodebuild -project TestImg.xcodeproj -target TestImg -configuration Release\r\n如果 build 成功，会看到 ** BUILD SUCCEEDED **\r\n字样，且在终端会打印出这次 build 的签名信息，如下:\r\n\r\nSigning Identity: \"iPhone Developer: xxx(59xxxxxx)\"\r\nProvisioning Profile: \"iOS Team Provisioning Profile: *\"\r\n\r\n且在该目录下会多出一个 build 目录，该目录下有\r\nRelease-iphoneos 和 TestImg.build\r\n文件，根据我们 build -configuration\r\n配置的参数不同，Release-iphoneos 的文件名会不同。\r\n在 Release-iphoneos\r\n文件夹下，有我们需要的TestImg.app文件，但是要安装到真机上，我们需要将该文件导出为ipa文件，这里使用\r\nxcrun 命令。\r\nxcrun -sdk iphoneos -v PackageApplication ./build/Release-iphoneos/TestImg.app -o ~/Desktop/TestImg.ipa\r\n这里又冒出一个 PackageApplication,\r\n我刚开始也不知道这是个什么玩意儿，万能的google告诉我，这是 Xcode\r\n包里自带的工具，使用\r\nxcrun -sdk iphoneos -v PackageApplication -help\r\n查看帮助信息.\r\n\r\nUsage:\r\nPackageApplication [-s signature] application [-o output_directory]\r\n[-verbose] [-plugin plugin] || -man || -help\r\nOptions:\r\n[-s signature]: certificate name to resign application\r\nbefore packaging\r\n[-o output_directory]: specify output filename\r\n[-plugin plugin]: specify an optional plugin\r\n-help: brief help message\r\n-man: full documentation\r\n-v[erbose]: provide details during operation\r\n\r\n如果执行成功，则会在你的桌面生成 TestImg.ipa\r\n文件，这样就可以发布测试了。如果你遇到以下警告信息:\r\n\r\nWarning: --resource-rules has been deprecated in Mac OS X &gt;=\r\n10.10! ResourceRules.plist: cannot read resources\r\n\r\n请参考 stackoverflow 这个回答\r\n将打包过程脚本化\r\n工作中，特别是所做项目进入测试阶段，肯定会经常打 Ad-hoc\r\n包给测试人员进行测试，但是我们肯定不想每次进行打包的时候都要进行一些工程的设置修改，以及一系列的\r\nnext 按钮点击操作，现在就让这些操作都交给脚本化吧。\r\n\r\n脚本化中使用如下的命令打包:\r\n\r\nxcodebuild -project name.xcodeproj -target targetname -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY=\"$(CODE_SIGN_IDENTITY)\" PROVISIONING_PROFILE=\"$(PROVISIONING_PROFILE)\"\r\n或者\r\nxcodebuild -workspace name.xcworkspace -scheme schemename -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY=\"$(CODE_SIGN_IDENTITY)\" PROVISIONING_PROFILE=\"$(PROVISIONING_PROFILE)\"\r\n\r\n然后使用 xcrun 生成 ipa 文件:\r\n\r\n`xcrun -sdk iphoneos -v PackageApplication\r\n./build/Release-iphoneos/$(target|scheme).app\"\r\n\r\n清除 build 过程中产生的中间文件\r\n结合蒲公英分发平台，将 ipa\r\n文件上传至蒲公英分发平台，同时在终端会打印上传结果以及上传应用后该应用的\r\nURL。蒲公英分发平台能够方便地将 ipa 文件尽快分发到测试人员，该平台有开放\r\nAPI，可避免人工上传。\r\n\r\n该脚本的使用可使用 python autobuild.py -h 查看，与\r\nxcodebuild 的使用相似:\r\n\r\nUsage: autobuild.py [options]\r\nOptions:\r\n-h, --help: show this help message and exit\r\n-w name.xcworkspace, --workspace=name.xcworkspace: Build\r\nthe workspace name.xcworkspace.\r\n-p name.xcodeproj, --project=name.xcodeproj: Build the\r\nproject name.xcodeproj.\r\n-s schemename, --scheme=schemename: Build the scheme\r\nspecified by schemename. Required if building a workspace.\r\n-t targetname, --target=targetname: Build the target\r\nspecified by targetname. Required if building a project.\r\n-o output_filename, --output=output_filename: specify\r\noutput filename\r\n\r\n在脚本顶部，有几个全局变量，根据自己的项目情况修改。\r\n1234567CODE_SIGN_IDENTITY = &quot;iPhone Distribution: companyname (9xxxxxxx9A)&quot;PROVISIONING_PROFILE = &quot;xxxxx-xxxx-xxx-xxxx-xxxxxxxxx&quot;CONFIGURATION = &quot;Release&quot;SDK = &quot;iphoneos&quot;USER_KEY = &quot;15d6xxxxxxxxxxxxxxxxxx&quot;API_KEY = &quot;efxxxxxxxxxxxxxxxxxxxx&quot;\r\n其中，CODE_SIGN_IDENTITY 为开发者证书标识，可以在\r\nKeychain Access -&gt; Certificates -&gt; 选中证书右键弹出菜单 -&gt; Get\r\nInfo -&gt; Common Name 获取，类似\r\niPhone Distribution: Company name Co. Ltd (xxxxxxxx9A),\r\n包括括号内的内容。\r\nPROVISIONING_PROFILE: 这个是 mobileprovision 文件的\r\nidentifier，获取方式：\r\nXcode -&gt; Preferences -&gt; 选中申请开发者证书的 Apple ID -&gt;\r\n选中开发者证书 -&gt; View Details... -&gt; 根据 Provisioning Profiles\r\n的名字选中打包所需的 mobileprovision 文件 -&gt; 右键菜单 -&gt; Show in\r\nFinder -&gt; 找到该文件后，除了该文件后缀名的字符串就是\r\nPROVISIONING_PROFILE 字段的内容。\r\n当然也可以使用脚本获取, 此处参考 命令行获取mobileprovision文件的UUID:\r\n12345678910#!/bin/bashif [ $# -ne 1 ]then  echo &quot;Usage: getmobileuuid the-mobileprovision-file-path&quot;  exit 1fimobileprovision_uuid=`/usr/libexec/PlistBuddy -c &quot;Print UUID&quot; /dev/stdin &lt;&lt;&lt; $(/usr/bin/security cms -D -i $1)`echo &quot;UUID is:&quot;echo $&#123;mobileprovision_uuid&#125;\r\nUSER_KEY, API_KEY: 是蒲公英开放 API\r\n的密钥。\r\n将autobuild.py脚本放在你项目的根目录下，进入根目录，如下使用：\r\n1./autobuild.py -w yourname.xcworkspace -s schemename -o ~/Desktop/yourname.ipa\r\n或者\r\n1./autobuild.py -p yourname.xcodeproj -t targetname -o ~/Desktop/yourname.ipa\r\n该脚本可在 github\r\n查看，如有任何问题，请留言回复。\r\n\r\n常见问题:\r\n\r\n找不到request module. 12import requestsImportError: No module named requests 找不到request\r\nmodule，参考stackoverflow,\r\n使用\r\n$ sudo pip install requests或者sudo easy_install -U requests;\r\n如果使用了上传蒲公英，且安装需要密码，请打开脚本，搜一下脚本里的password，将其值设置为空。\r\n\r\n========== update 2016-12-28 ==========\r\ngithub上脚本进行更新：\r\n\r\n使用xcodebuild -exportArchive替换PackageApplication进行打包.\r\n解析传入参数使用argparse替换OptionParser.\r\n去掉对PROVISIONING_PROFILE和CODE_SIGN_IDENTITY的配置，请使用Xcode8的自动证书管理。\r\n新增exportOptions.plist文件，用于设置导出ipa文件的参数，该文件中的可配置参数可使用xcodebuild --help查看。\r\n脚本传入参数去掉--target和--output，ipa文件默认会存放在Desktop创建诸如{scheme}{2016-12-28_08-08-10}格式的文件夹中。\r\n\r\n假如你的项目目录如下所示：\r\n123456789101112131415|____AOP| |____AppDelegate.h| |____AppDelegate.m| |____Base.lproj| | |____LaunchScreen.xib| | |____Main.storyboard| |____Images.xcassets| |____Info.plist| |____main.m| |____ViewController.h| |____ViewController.m|____AOP.xcodeproj|____autobuild| |____autobuild.py| |____exportOptions.plist\r\n先进入autobuild目录，使用脚本打包的命令如下:\r\npython autobuild.py -p ../AOP.xcodeproj -s AOP\r\n脚本执行完毕，若成功，则会在桌面生成ipa文件。\r\n若是打包xcworkspace项目，则打包命令格式如下所示:\r\npython autobuild.py -w ../yourworkspace.xcworkspace -s yourscheme\r\nexportOptions.plist文件中的可选配置参数如下:\r\n123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354compileBitcode : Bool  For non-App Store exports, should Xcode re-compile the app from bitcode? Defaults to YES.embedOnDemandResourcesAssetPacksInBundle : Bool  For non-App Store exports, if the app uses On Demand Resources and this is YES, asset     packs are embedded in the app bundle so that the app can be tested without a server to     host asset packs. Defaults to YES unless onDemandResourcesAssetPacksBaseURL is specified.iCloudContainerEnvironment  For non-App Store exports, if the app is using CloudKit, this configures the     &quot;com.apple.developer.icloud-container-environment&quot; entitlement. Available options:     Development and Production. Defaults to Development.manifest : Dictionary  For non-App Store exports, users can download your app over the web by opening your     distribution manifest file in a web browser. To generate a distribution manifest, the     value of this key should be a dictionary with three sub-keys: appURL, displayImageURL,     fullSizeImageURL. The additional sub-key assetPackManifestURL is required when using on demand resources.method : String  Describes how Xcode should export the archive. Available options: app-store, ad-hoc,     package, enterprise, development, and developer-id. The list of options varies based on     the type of archive. Defaults to development.onDemandResourcesAssetPacksBaseURL : String  For non-App Store exports, if the app uses On Demand Resources and     embedOnDemandResourcesAssetPacksInBundle isn&#x27;t YES, this should be a base URL specifying     where asset packs are going to be hosted. This configures the app to download asset     packs from the specified URL.teamID : String  The Developer Portal team to use for this export. Defaults to the team used to build the archive.thinning : String  For non-App Store exports, should Xcode thin the package for one or more device     variants? Available options: &lt;none&gt; (Xcode produces a non-thinned universal app),     &lt;thin-for-all-variants&gt; (Xcode produces a universal app and all available thinned     variants), or a model identifier for a specific device (e.g. &quot;iPhone7,1&quot;). Defaults to &lt;none&gt;.uploadBitcode : Bool  For App Store exports, should the package include bitcode? Defaults to YES.uploadSymbols : Bool  For App Store exports, should the package include symbols? Defaults to YES.\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-11-25T21:38:11+08:00","dateModified":"2024-10-21T22:27:49+08:00","datePublished":"2015-11-25T21:38:11+08:00","description":"本文最终实现的是使用脚本打 Ad-hoc\r\n包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa\r\n包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。","headline":"iOS自动打包并发布脚本","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/11/25/ios-auto-archive-ipa/","keywords":"iOS"}</script>
+    <meta name="description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS自动打包并发布脚本">
 <meta property="og:url" content="http://liumh.com/2015/11/25/ios-auto-archive-ipa/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
+<meta property="og:description" content="本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-11-25T13:38:11.000Z">
-<meta property="article:modified_time" content="2024-10-20T06:21:41.547Z">
+<meta property="article:modified_time" content="2024-10-21T14:27:49.991Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,15 +251,286 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>本文最终实现的是使用脚本打 Ad-hoc 包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa 包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。</p>
+            <p>本文最终实现的是使用脚本打 Ad-hoc
+包，并发布测试，当然稍微修改一下脚本参数就可以打其他类型的 ipa
+包了。另外该脚本还实现了将生成的 ipa 包上传至蒲公英进行测试分发。</p>
 <span id="more"></span>
-
-<ol>
-<li><a href="#overview-about-xcodebuild">xcodebuild 简介</a></li>
-<li><a href="#build-and-sign-ipa">使用xcodebuild和xcrun打包签名</a></li>
-<li><a href="#script-build">将打包过程脚本化</a></li>
+<ol type="1">
+<li><a href="#xcodebuild-简介">xcodebuild 简介</a></li>
+<li><a
+href="#使用xcodebuild和xcrun打包签名">使用xcodebuild和xcrun打包签名</a></li>
+<li><a href="#将打包过程脚本化">将打包过程脚本化</a></li>
 </ol>
-<h2 id="xcodebuild-简介"><a href="#xcodebuild-简介" class="headerlink" title="xcodebuild 简介"></a>xcodebuild 简介</h2>
+<h2 id="xcodebuild-简介">xcodebuild 简介</h2>
+<p><code>xcodebuild</code>
+是苹果提供的打包项目或者工程的命令，了解该命令最好的方式就是使用
+<code>man xcodebuild</code> 查看其 man page.
+尽管是英文，一定要老老实实的读一遍就好了。</p>
+<blockquote>
+<p>DESCRIPTION</p>
+<p>xcodebuild builds one or more targets contained in an Xcode project,
+or builds a scheme contained in an Xcode workspace or Xcode project.</p>
+<p>Usage</p>
+<p>To build an Xcode project, run xcodebuild from the directory
+containing your project (i.e. the directory containing the
+name.xcodeproj package). If you have multiple projects in the this
+directory you will need to use -project to indicate which project should
+be built. By default, xcodebuild builds the first target listed in the
+project, with the default build configuration. The order of the targets
+is a property of the project and is the same for all users of the
+project.</p>
+<p>To build an Xcode workspace, you must pass both the -workspace and
+-scheme options to define the build. The parameters of the scheme will
+control which targets are built and how they are built, although you may
+pass other options to xcodebuild to override some parameters of the
+scheme.</p>
+<p>There are also several options that display info about the installed
+version of Xcode or about projects or workspaces in the local directory,
+but which do not initiate an action. These include -list,
+-showBuildSettings, -showsdks, -usage, and -version.</p>
+</blockquote>
+<p>总结一下:</p>
+<ol type="1">
+<li>需要在包含 name.xcodeproj 的目录下执行 <code>xcodebuild</code>
+命令，且如果该目录下有多个 projects，那么需要使用 <code>-project</code>
+指定需要 build 的项目。</li>
+<li>在不指定 build 的 target 的时候，默认情况下会 build project
+下的第一个 target</li>
+<li>当 build workspace 时，需要同时指定 <code>-workspace</code> 和
+<code>-scheme</code> 参数，scheme 参数控制了哪些 targets 会被 build
+以及以怎样的方式 build。</li>
+<li>有一些诸如 <code>-list</code>, <code>-showBuildSettings</code>,
+<code>-showsdks</code> 的参数可以查看项目或者工程的信息，不会对 build
+action 造成任何影响，放心使用。</li>
+</ol>
+<p>那么，<code>xcodebuild</code> 究竟如何使用呢？ 继续看文档:</p>
+<blockquote>
+<p>NAME</p>
+<p>xcodebuild -- build Xcode projects and workspaces</p>
+<p>SYNOPSIS</p>
+<ol type="1">
+<li><p>xcodebuild [-project name.xcodeproj] [[-target targetname] ... |
+-alltargets] [-configuration configurationname] [-sdk [sdkfullpath |
+sdkname]] [action ...] [buildsetting=value ...] [-userdefault=value
+...]</p></li>
+<li><p>xcodebuild [-project name.xcodeproj] -scheme schemename
+[[-destination destinationspecifier] ...] [-destination-timeout value]
+[-configuration configurationname] [-sdk [sdkfullpath | sdkname]]
+[action ...] [buildsetting=value ...] [-userdefault=value ...]</p></li>
+<li><p>xcodebuild -workspace name.xcworkspace -scheme schemename
+[[-destination destinationspecifier] ...] [-destination-timeout value]
+[-configuration configurationname] [-sdk [sdkfullpath | sdkname]]
+[action ...] [buildsetting=value ...] [-userdefault=value ...]</p></li>
+<li><p>xcodebuild -version [-sdk [sdkfullpath | sdkname]]
+[infoitem]</p></li>
+<li><p>xcodebuild -showsdks</p></li>
+<li><p>xcodebuild -showBuildSettings [-project name.xcodeproj |
+[-workspace name.xcworkspace -scheme schemename]]</p></li>
+<li><p>xcodebuild -list [-project name.xcodeproj | -workspace
+name.xcworkspace]</p></li>
+<li><p>xcodebuild -exportArchive -archivePath xcarchivepath -exportPath
+destinationpath -exportOptionsPlist path</p></li>
+<li><p>xcodebuild -exportLocalizations -project name.xcodeproj
+-localizationPath path [[-exportLanguage language] ...]</p></li>
+<li><p>xcodebuild -importLocalizations -project name.xcodeproj
+-localizationPath path</p></li>
+</ol>
+</blockquote>
+<p>挑几个我常用的形式介绍一下，较长的使用方式以序列号代替:</p>
+<ul>
+<li><p><code>xcodebuild -showsdks</code>: 列出 Xcode 所有可用的
+SDKs</p></li>
+<li><p><code>xcodebuild -showBuildSettings</code>:
+上述序号6的使用方式，查看当前工程 build setting 的配置参数，Xcode 详细的
+build setting 参数参考官方文档 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/">Xcode
+Build Setting Reference</a>， 已有的配置参数可以在终端中以
+<code>buildsetting=value</code> 的形式进行覆盖重新设置.</p></li>
+<li><p><code>xcodebuild -list</code>: 上述序号7的使用方式，查看 project
+中的 targets 和 configurations，或者 workspace 中 schemes,
+输出如下:</p></li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Information about project &quot;NavTabBar&quot;:</span><br><span class="line">    Targets:</span><br><span class="line">        NavTabBar</span><br><span class="line">        NavTabBarTests</span><br><span class="line">        NavTabBarUITests</span><br><span class="line"></span><br><span class="line">    Build Configurations:</span><br><span class="line">        Debug</span><br><span class="line">        Release</span><br><span class="line">        Ad-hoc</span><br><span class="line"></span><br><span class="line">    If no build configuration is specified and -scheme is not passed then &quot;Release&quot; is used.</span><br><span class="line"></span><br><span class="line">    Schemes:</span><br><span class="line">        NavTabBar</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>xcodebuild [-project name.xcodeproj] [[-target targetname] ... | -alltargets] build</code>:
+上述序号1的使用方式，会 build 指定 project，其中 <code>-target</code> 和
+<code>-configuration</code> 参数可以使用 <code>xcodebuild -list</code>
+获得，<code>-sdk</code> 参数可由 <code>xcodebuild -showsdks</code>
+获得，<code>[buildsetting=value ...]</code>
+用来覆盖工程中已有的配置。可覆盖的参数参考官方文档 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/">Xcode
+Build Setting Reference</a>, <code>action...</code> 的可用选项如下,
+打包的话当然用 build，这也是默认选项。</p>
+<ul>
+<li><p>build<br />
+Build the target in the build root (SYMROOT). This is the default
+action, and is used if no action is given.</p></li>
+<li><p>analyze<br />
+Build and analyze a target or scheme from the build root (SYMROOT). This
+requires specifying a scheme.</p></li>
+<li><p>archive<br />
+Archive a scheme from the build root (SYMROOT). This requires specifying
+a scheme.</p></li>
+<li><p>test<br />
+Test a scheme from the build root (SYMROOT). This requires specifying a
+scheme and optionally a destination.</p></li>
+<li><p>installsrc<br />
+Copy the source of the project to the source root (SRCROOT).</p></li>
+<li><p>install<br />
+Build the target and install it into the target's installation directory
+in the distribution root (DSTROOT).</p></li>
+<li><p>clean<br />
+Remove build products and intermediate files from the build root
+(SYMROOT).</p></li>
+</ul></li>
+<li><p><code>xcodebuild -workspace name.xcworkspace -scheme schemename build</code>:
+上述序号3的使用方式，build 指定 workspace，当我们使用 CocoaPods
+来管理第三方库时，会生成 xcworkspace
+文件，这样就会用到这种打包方式.</p></li>
+</ul>
+<h2
+id="使用xcodebuild和xcrun打包签名">使用xcodebuild和xcrun打包签名</h2>
+<p>开始之前，可以新建一个测试工程 TestImg
+来练习打包，在使用终端命令打包之前，请确认该工程也可以直接使用 Xcode
+真机调试成功。</p>
+<p>然后，打开终端，进入包含 TestImg.xcodeproj
+的目录下，运行以下命令:</p>
+<p><code>xcodebuild -project TestImg.xcodeproj -target TestImg -configuration Release</code></p>
+<p>如果 build 成功，会看到 <code>** BUILD SUCCEEDED **</code>
+字样，且在终端会打印出这次 build 的签名信息，如下:</p>
+<blockquote>
+<p>Signing Identity: "iPhone Developer: xxx(59xxxxxx)"<br />
+Provisioning Profile: "iOS Team Provisioning Profile: *"</p>
+</blockquote>
+<p>且在该目录下会多出一个 <code>build</code> 目录，该目录下有
+<code>Release-iphoneos</code> 和 <code>TestImg.build</code>
+文件，根据我们 build <code>-configuration</code>
+配置的参数不同，<code>Release-iphoneos</code> 的文件名会不同。</p>
+<p>在 <code>Release-iphoneos</code>
+文件夹下，有我们需要的<code>TestImg.app</code>文件，但是要安装到真机上，我们需要将该文件导出为ipa文件，这里使用
+xcrun 命令。</p>
+<p><code>xcrun -sdk iphoneos -v PackageApplication ./build/Release-iphoneos/TestImg.app -o ~/Desktop/TestImg.ipa</code></p>
+<p>这里又冒出一个 <code>PackageApplication</code>,
+我刚开始也不知道这是个什么玩意儿，万能的google告诉我，这是 Xcode
+包里自带的工具，使用
+<code>xcrun -sdk iphoneos -v PackageApplication -help</code>
+查看帮助信息.</p>
+<blockquote>
+<p>Usage:<br />
+PackageApplication [-s signature] application [-o output_directory]
+[-verbose] [-plugin plugin] || -man || -help</p>
+<p>Options:</p>
+<p><code>[-s signature]</code>: certificate name to resign application
+before packaging<br />
+<code>[-o output_directory]</code>: specify output filename<br />
+<code>[-plugin plugin]</code>: specify an optional plugin<br />
+<code>-help</code>: brief help message<br />
+<code>-man</code>: full documentation<br />
+<code>-v[erbose]</code>: provide details during operation</p>
+</blockquote>
+<p>如果执行成功，则会在你的桌面生成 TestImg.ipa
+文件，这样就可以发布测试了。如果你遇到以下警告信息:</p>
+<blockquote>
+<p>Warning: --resource-rules has been deprecated in Mac OS X &gt;=
+10.10! ResourceRules.plist: cannot read resources</p>
+</blockquote>
+<p>请参考 stackoverflow <a
+target="_blank" rel="noopener" href="http://stackoverflow.com/questions/32504355/error-itms-90339-this-bundle-is-invalid-the-info-plist-contains-an-invalid-ke/32762413#32762413">这个回答</a></p>
+<h2 id="将打包过程脚本化">将打包过程脚本化</h2>
+<p>工作中，特别是所做项目进入测试阶段，肯定会经常打 Ad-hoc
+包给测试人员进行测试，但是我们肯定不想每次进行打包的时候都要进行一些工程的设置修改，以及一系列的
+next 按钮点击操作，现在就让这些操作都交给脚本化吧。</p>
+<ol type="1">
+<li>脚本化中使用如下的命令打包:</li>
+</ol>
+<p><code>xcodebuild -project name.xcodeproj -target targetname -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY)" PROVISIONING_PROFILE="$(PROVISIONING_PROFILE)"</code></p>
+<p>或者</p>
+<p><code>xcodebuild -workspace name.xcworkspace -scheme schemename -configuration Release -sdk iphoneos build CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY)" PROVISIONING_PROFILE="$(PROVISIONING_PROFILE)"</code></p>
+<ol start="2" type="1">
+<li>然后使用 xcrun 生成 ipa 文件:</li>
+</ol>
+<p>`xcrun -sdk iphoneos -v PackageApplication
+./build/Release-iphoneos/$(target|scheme).app"</p>
+<ol start="3" type="1">
+<li>清除 build 过程中产生的中间文件</li>
+<li>结合蒲公英分发平台，将 ipa
+文件上传至蒲公英分发平台，同时在终端会打印上传结果以及上传应用后该应用的
+URL。蒲公英分发平台能够方便地将 ipa 文件尽快分发到测试人员，该平台有开放
+API，可避免人工上传。</li>
+</ol>
+<p>该脚本的使用可使用 <code>python autobuild.py -h</code> 查看，与
+<code>xcodebuild</code> 的使用相似:</p>
+<blockquote>
+<p>Usage: autobuild.py [options]</p>
+<p>Options:<br />
+<code>-h, --help</code>: show this help message and exit<br />
+<code>-w name.xcworkspace, --workspace=name.xcworkspace</code>: Build
+the workspace name.xcworkspace.<br />
+<code>-p name.xcodeproj, --project=name.xcodeproj</code>: Build the
+project name.xcodeproj.<br />
+<code>-s schemename, --scheme=schemename</code>: Build the scheme
+specified by schemename. Required if building a workspace.<br />
+<code>-t targetname, --target=targetname</code>: Build the target
+specified by targetname. Required if building a project.<br />
+<code>-o output_filename, --output=output_filename</code>: specify
+output filename</p>
+</blockquote>
+<p>在脚本顶部，有几个全局变量，根据自己的项目情况修改。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CODE_SIGN_IDENTITY = &quot;iPhone Distribution: companyname (9xxxxxxx9A)&quot;</span><br><span class="line">PROVISIONING_PROFILE = &quot;xxxxx-xxxx-xxx-xxxx-xxxxxxxxx&quot;</span><br><span class="line">CONFIGURATION = &quot;Release&quot;</span><br><span class="line">SDK = &quot;iphoneos&quot;</span><br><span class="line"></span><br><span class="line">USER_KEY = &quot;15d6xxxxxxxxxxxxxxxxxx&quot;</span><br><span class="line">API_KEY = &quot;efxxxxxxxxxxxxxxxxxxxx&quot;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>CODE_SIGN_IDENTITY</code> 为开发者证书标识，可以在
+Keychain Access -&gt; Certificates -&gt; 选中证书右键弹出菜单 -&gt; Get
+Info -&gt; Common Name 获取，类似
+<code>iPhone Distribution: Company name Co. Ltd (xxxxxxxx9A)</code>,
+包括括号内的内容。</p>
+<p><code>PROVISIONING_PROFILE</code>: 这个是 mobileprovision 文件的
+identifier，获取方式：</p>
+<p>Xcode -&gt; Preferences -&gt; 选中申请开发者证书的 Apple ID -&gt;
+选中开发者证书 -&gt; View Details... -&gt; 根据 Provisioning Profiles
+的名字选中打包所需的 mobileprovision 文件 -&gt; 右键菜单 -&gt; Show in
+Finder -&gt; 找到该文件后，除了该文件后缀名的字符串就是
+<code>PROVISIONING_PROFILE</code> 字段的内容。</p>
+<p>当然也可以使用脚本获取, 此处参考 <a
+target="_blank" rel="noopener" href="http://my.oschina.net/ioslighter/blog/494342">命令行获取mobileprovision文件的UUID</a>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">if [ $# -ne 1 ]</span><br><span class="line">then</span><br><span class="line">  echo &quot;Usage: getmobileuuid the-mobileprovision-file-path&quot;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">mobileprovision_uuid=`/usr/libexec/PlistBuddy -c &quot;Print UUID&quot; /dev/stdin &lt;&lt;&lt; $(/usr/bin/security cms -D -i $1)`</span><br><span class="line">echo &quot;UUID is:&quot;</span><br><span class="line">echo $&#123;mobileprovision_uuid&#125;</span><br></pre></td></tr></table></figure>
+<p><code>USER_KEY</code>, <code>API_KEY</code>: 是蒲公英开放 API
+的密钥。</p>
+<p>将<code>autobuild.py</code>脚本放在你项目的根目录下，进入根目录，如下使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./autobuild.py -w yourname.xcworkspace -s schemename -o ~/Desktop/yourname.ipa</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./autobuild.py -p yourname.xcodeproj -t targetname -o ~/Desktop/yourname.ipa</span><br></pre></td></tr></table></figure>
+<p>该脚本可在 <a target="_blank" rel="noopener" href="https://github.com/carya/Util.git">github</a>
+查看，如有任何问题，请留言回复。</p>
+<hr />
+<p>常见问题:</p>
+<ol type="1">
+<li><p>找不到<em>request module</em>. <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">ImportError: No module named requests</span><br></pre></td></tr></table></figure> 找不到<em>request
+module</em>，参考<a
+target="_blank" rel="noopener" href="http://stackoverflow.com/questions/17309288/importerror-no-module-named-requests">stackoverflow</a>,
+使用
+<code>$ sudo pip install requests</code>或者<code>sudo easy_install -U requests</code>;</p></li>
+<li><p>如果使用了上传蒲公英，且安装需要密码，请打开脚本，搜一下脚本里的<em>password</em>，将其值设置为空。</p></li>
+</ol>
+<p>========== update 2016-12-28 ==========</p>
+<p>github上脚本进行更新：</p>
+<ol type="1">
+<li>使用<code>xcodebuild -exportArchive</code>替换<em>PackageApplication</em>进行打包.</li>
+<li>解析传入参数使用<em>argparse</em>替换<em>OptionParser</em>.</li>
+<li>去掉对<em>PROVISIONING_PROFILE</em>和<em>CODE_SIGN_IDENTITY</em>的配置，请使用<em>Xcode8</em>的自动证书管理。</li>
+<li>新增<em>exportOptions.plist</em>文件，用于设置导出<em>ipa</em>文件的参数，该文件中的可配置参数可使用<code>xcodebuild --help</code>查看。</li>
+<li>脚本传入参数去掉<code>--target</code>和<code>--output</code>，<em>ipa</em>文件默认会存放在<em>Desktop</em>创建诸如<em>{scheme}{2016-12-28_08-08-10}</em>格式的文件夹中。</li>
+</ol>
+<p>假如你的项目目录如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">|____AOP</span><br><span class="line">| |____AppDelegate.h</span><br><span class="line">| |____AppDelegate.m</span><br><span class="line">| |____Base.lproj</span><br><span class="line">| | |____LaunchScreen.xib</span><br><span class="line">| | |____Main.storyboard</span><br><span class="line">| |____Images.xcassets</span><br><span class="line">| |____Info.plist</span><br><span class="line">| |____main.m</span><br><span class="line">| |____ViewController.h</span><br><span class="line">| |____ViewController.m</span><br><span class="line">|____AOP.xcodeproj</span><br><span class="line">|____autobuild</span><br><span class="line">| |____autobuild.py</span><br><span class="line">| |____exportOptions.plist</span><br></pre></td></tr></table></figure>
+<p>先进入<em>autobuild</em>目录，使用脚本打包的命令如下:</p>
+<p><code>python autobuild.py -p ../AOP.xcodeproj -s AOP</code></p>
+<p>脚本执行完毕，若成功，则会在桌面生成<em>ipa</em>文件。</p>
+<p>若是打包<em>xcworkspace</em>项目，则打包命令格式如下所示:</p>
+<p><code>python autobuild.py -w ../yourworkspace.xcworkspace -s yourscheme</code></p>
+<p><em>exportOptions.plist</em>文件中的可选配置参数如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">compileBitcode : Bool</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, should Xcode re-compile the app from bitcode? Defaults to YES.</span><br><span class="line"></span><br><span class="line">embedOnDemandResourcesAssetPacksInBundle : Bool</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app uses On Demand Resources and this is YES, asset   </span><br><span class="line">  packs are embedded in the app bundle so that the app can be tested without a server to   </span><br><span class="line">  host asset packs. Defaults to YES unless onDemandResourcesAssetPacksBaseURL is specified.</span><br><span class="line"></span><br><span class="line">iCloudContainerEnvironment</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app is using CloudKit, this configures the   </span><br><span class="line">  &quot;com.apple.developer.icloud-container-environment&quot; entitlement. Available options:   </span><br><span class="line">  Development and Production. Defaults to Development.</span><br><span class="line"></span><br><span class="line">manifest : Dictionary</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, users can download your app over the web by opening your   </span><br><span class="line">  distribution manifest file in a web browser. To generate a distribution manifest, the   </span><br><span class="line">  value of this key should be a dictionary with three sub-keys: appURL, displayImageURL,   </span><br><span class="line">  fullSizeImageURL. The additional sub-key assetPackManifestURL is required when using on demand resources.</span><br><span class="line"></span><br><span class="line">method : String</span><br><span class="line"></span><br><span class="line">  Describes how Xcode should export the archive. Available options: app-store, ad-hoc,   </span><br><span class="line">  package, enterprise, development, and developer-id. The list of options varies based on   </span><br><span class="line">  the type of archive. Defaults to development.</span><br><span class="line"></span><br><span class="line">onDemandResourcesAssetPacksBaseURL : String</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, if the app uses On Demand Resources and   </span><br><span class="line">  embedOnDemandResourcesAssetPacksInBundle isn&#x27;t YES, this should be a base URL specifying   </span><br><span class="line">  where asset packs are going to be hosted. This configures the app to download asset   </span><br><span class="line">  packs from the specified URL.</span><br><span class="line"></span><br><span class="line">teamID : String</span><br><span class="line"></span><br><span class="line">  The Developer Portal team to use for this export. Defaults to the team used to build the archive.</span><br><span class="line"></span><br><span class="line">thinning : String</span><br><span class="line"></span><br><span class="line">  For non-App Store exports, should Xcode thin the package for one or more device   </span><br><span class="line">  variants? Available options: &lt;none&gt; (Xcode produces a non-thinned universal app),   </span><br><span class="line">  &lt;thin-for-all-variants&gt; (Xcode produces a universal app and all available thinned   </span><br><span class="line">  variants), or a model identifier for a specific device (e.g. &quot;iPhone7,1&quot;). Defaults to &lt;none&gt;.</span><br><span class="line"></span><br><span class="line">uploadBitcode : Bool</span><br><span class="line"></span><br><span class="line">  For App Store exports, should the package include bitcode? Defaults to YES.</span><br><span class="line"></span><br><span class="line">uploadSymbols : Bool</span><br><span class="line"></span><br><span class="line">  For App Store exports, should the package include symbols? Defaults to YES.</span><br></pre></td></tr></table></figure>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
+
             
 
 
@@ -430,7 +702,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

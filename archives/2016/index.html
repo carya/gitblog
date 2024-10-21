@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,7 +251,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是对下图所示的<em>Kind</em>, <em>Presentation</em>, <em>Transition</em>的理解：</p>
+                    <p>本文记录的是对下图所示的<em>Kind</em>, <em>Presentation</em>,
+<em>Transition</em>的理解：</p>
 <div class="figure left" style="width:260;"><img class="fig-img" src="/img/system-presentation/system-presentation.png" style="width:260;height:250;"alt="iOS系统转场"><span class="caption">iOS系统转场</span></div><div style="clear:both;"></div>
                     
                         <a
@@ -347,9 +349,16 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>与公司 QA 聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从 App 转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于： webservice 地址，友盟 AppKey，极光推送 AppKey 和是否是生产环境标志等。</p>
+                    <p>与公司 QA
+聊天，已不止一次被吐槽说移动端从开发环境转到生产环境时，还要靠修改代码来配置对应的环境参数。她认为，从
+App
+转测试之后，就不应该再修改代码，可以把所有的环境配置都整合到配置文件中，这样打不同环境下的安装包时，会自动选择对应的环境参数。这里说到的环境参数包括但不仅限于：
+webservice 地址，友盟 AppKey，极光推送 AppKey
+和是否是生产环境标志等。</p>
 <p>其实，我也讨厌修改环境参数啊，😂</p>
-<p>为达成上述目的，主要是使用 Xcode 的 Configurations Setting File(即后缀为 xcconfig 文件) 来配置开发不同阶段下的环境。本文包含的内容如下:</p>
+<p>为达成上述目的，主要是使用 Xcode 的 Configurations Setting
+File(即后缀为 xcconfig 文件)
+来配置开发不同阶段下的环境。本文包含的内容如下:</p>
                     
                         <a
                             href="/2016/05/22/use-xcconfig-config-specific-variable/"
@@ -400,7 +409,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>使用 <code>==</code> 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:</p>
+                    <p>使用 <code>==</code> 比较 iOS
+中的对象时，比较的是对象的指针。例如有如下比较时:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSString *str = @&quot;origin1&quot;;</span><br><span class="line">NSString *strCopy = [str copy];</span><br><span class="line">NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];</span><br><span class="line">    </span><br><span class="line">BOOL equalA = (str == strCopy);</span><br><span class="line">BOOL equalB = (str == str1);</span><br><span class="line"></span><br><span class="line">BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */</span><br><span class="line">BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */</span><br></pre></td></tr></table></figure>
                     
                         <a
@@ -456,7 +466,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -15,21 +15,19 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:\n\n\n12345678910111213141516171819202122232425static void onNotifyCallback(CFNotificationCenterRef center,                             void *observer,                             CFStringRef name,                             const void *object,                             CFDictionaryRef userInfo) &#123;    if (CFStringCompare(name, CFSTR(kNotifySCNetworkChange), kCFCompareCaseInsensitive) == kCFCompareEqualTo) &#123;        //TODO when wifi changed    &#125;&#125;+ (void)startMonitorWifiChange &#123;    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),                                    NULL,                                    &amp;onNotifyCallback,                                    CFSTR(kNotifySCNetworkChange),                                    NULL,                                    CFNotificationSuspensionBehaviorDeliverImmediately);&#125;+ (void)stopMonitorWifiChange &#123;    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(),                                       NULL,                                       CFSTR(kNotifySCNetworkChange),                                       NULL);&#125;\n\n需要:\n1#import &quot;/usr/include/notify_keys.h&quot;\n\n上述代码中 kNotifySCNetworkChange 在该头文件中定义，跳至该头文件还可看到:\n1234567891011121314151617181920212223242526272829303132/* * File System notifications * These advise clients of various filesystem events. */#define kNotifyVFSMount &quot;com.apple.system.kernel.mount&quot;#define kNotifyVFSUnmount &quot;com.apple.system.kernel.unmount&quot;#define kNotifyVFSUpdate &quot;com.apple.system.kernel.mountupdate&quot;#define kNotifyVFSLowDiskSpace &quot;com.apple.system.lowdiskspace&quot;#define kNotifyVFSLowDiskSpaceRootFS &quot;com.apple.system.lowdiskspace.system&quot;#define kNotifyVFSLowDiskSpaceOtherFS &quot;com.apple.system.lowdiskspace.user&quot;/* * System Configuration notifications * These advise clients of changes in the system configuration * managed by the system configuration server (configd). * Note that a much richer set of notifications are available to * clients using the SCDynamicStore API. */#define kNotifySCHostNameChange &quot;com.apple.system.hostname&quot;#define kNotifySCNetworkChange &quot;com.apple.system.config.network_change&quot;/* * Time Zone change notification * Sent by notifyd when the system&#x27;s timezone changes. */#define kNotifyTimeZoneChange &quot;com.apple.system.timezone&quot;/* * System clock change notification * Sent when a process modifies the system clock using the settimeofday system call. */#define kNotifyClockSet &quot;com.apple.system.clock_set&quot;\n\n由此可猜测在 Darwin Notify Center 中还可监听系统时区改变，系统时间改变，系统 hostname 改变的通知，未验证。\n在 CFNotificationCenter Reference 中有关于 CFNotificationCenterGetDarwinNotifyCenter 的描述如下:\n\n\nThis notification center is used to cover the &lt;notify.h&gt; Core OS notification mechanism (see &#x2F;usr&#x2F;include&#x2F;notify.h). An application has only one Darwin notification center, so this function returns the same value each time it is called.\n\nThe Darwin Notify Center has no notion of per-user sessions, all notifications are system-wide. As with distributed notifications, the main thread’s run loop must be running in one of the common modes (usually kCFRunLoopDefaultMode) for Darwin-style notifications to be delivered.\n\n由此可见， Darwin Notify Center 是系统级别，每次使用接口 CFNotificationCenterGetDarwinNotifyCenter 返回的都是同一个 Darwin Notify Center 实例。\n关于 Darwin Notify Center 的更多信息可以参考:\n\nCFNotificationCenter Reference\nDarwin Notification Concepts\nDarwin Notification API Reference\n\n本文参考:\n如何捕获连接某个无线网络的通知 \n\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n\n\n\n","dateCreated":"2015-08-04T23:13:01+08:00","dateModified":"2015-10-20T22:20:06+08:00","datePublished":"2015-08-04T23:13:01+08:00","description":"Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:","headline":"iOS应用内监听wifi的变化","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/04/ios-monitor-wifichange/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/04/ios-monitor-wifichange/","keywords":"iOS"}</script>
-    <meta name="description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App\r\n内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center\r\n中注册监听 kNotifySCNetworkChange 通知，如下:\r\n\r\n12345678910111213141516171819202122232425static void onNotifyCallback(CFNotificationCenterRef center,                             void *observer,                             CFStringRef name,                             const void *object,                             CFDictionaryRef userInfo) &#123;    if (CFStringCompare(name, CFSTR(kNotifySCNetworkChange), kCFCompareCaseInsensitive) == kCFCompareEqualTo) &#123;        //TODO when wifi changed    &#125;&#125;+ (void)startMonitorWifiChange &#123;    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),                                    NULL,                                    &amp;onNotifyCallback,                                    CFSTR(kNotifySCNetworkChange),                                    NULL,                                    CFNotificationSuspensionBehaviorDeliverImmediately);&#125;+ (void)stopMonitorWifiChange &#123;    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(),                                       NULL,                                       CFSTR(kNotifySCNetworkChange),                                       NULL);&#125;\r\n需要:\r\n1#import &quot;/usr/include/notify_keys.h&quot;\r\n上述代码中 kNotifySCNetworkChange\r\n在该头文件中定义，跳至该头文件还可看到:\r\n1234567891011121314151617181920212223242526272829303132/* * File System notifications * These advise clients of various filesystem events. */#define kNotifyVFSMount &quot;com.apple.system.kernel.mount&quot;#define kNotifyVFSUnmount &quot;com.apple.system.kernel.unmount&quot;#define kNotifyVFSUpdate &quot;com.apple.system.kernel.mountupdate&quot;#define kNotifyVFSLowDiskSpace &quot;com.apple.system.lowdiskspace&quot;#define kNotifyVFSLowDiskSpaceRootFS &quot;com.apple.system.lowdiskspace.system&quot;#define kNotifyVFSLowDiskSpaceOtherFS &quot;com.apple.system.lowdiskspace.user&quot;/* * System Configuration notifications * These advise clients of changes in the system configuration * managed by the system configuration server (configd). * Note that a much richer set of notifications are available to * clients using the SCDynamicStore API. */#define kNotifySCHostNameChange &quot;com.apple.system.hostname&quot;#define kNotifySCNetworkChange &quot;com.apple.system.config.network_change&quot;/* * Time Zone change notification * Sent by notifyd when the system&#x27;s timezone changes. */#define kNotifyTimeZoneChange &quot;com.apple.system.timezone&quot;/* * System clock change notification * Sent when a process modifies the system clock using the settimeofday system call. */#define kNotifyClockSet &quot;com.apple.system.clock_set&quot;\r\n由此可猜测在 Darwin Notify Center\r\n中还可监听系统时区改变，系统时间改变，系统 hostname\r\n改变的通知，未验证。\r\n在 CFNotificationCenter\r\nReference 中有关于\r\nCFNotificationCenterGetDarwinNotifyCenter 的描述如下:\r\n\r\nThis notification center is used to cover the &lt;notify.h&gt; Core\r\nOS notification mechanism (see /usr/include/notify.h). An application\r\nhas only one Darwin notification center, so this function returns the\r\nsame value each time it is called.\r\nThe Darwin Notify Center has no notion of per-user sessions, all\r\nnotifications are system-wide. As with distributed notifications, the\r\nmain thread's run loop must be running in one of the common modes\r\n(usually kCFRunLoopDefaultMode) for Darwin-style notifications to be\r\ndelivered.\r\n\r\n由此可见， Darwin Notify Center 是系统级别，每次使用接口\r\nCFNotificationCenterGetDarwinNotifyCenter 返回的都是同一个\r\nDarwin Notify Center 实例。\r\n关于 Darwin Notify Center 的更多信息可以参考:\r\n\r\nCFNotificationCenter\r\nReference\r\nDarwin\r\nNotification Concepts\r\nDarwin\r\nNotification API Reference\r\n\r\n本文参考:\r\n如何捕获连接某个无线网络的通知\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-08-04T23:13:01+08:00","dateModified":"2024-10-21T22:41:54+08:00","datePublished":"2015-08-04T23:13:01+08:00","description":"Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App\r\n内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center\r\n中注册监听 kNotifySCNetworkChange 通知，如下:","headline":"iOS应用内监听wifi的变化","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/04/ios-monitor-wifichange/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/04/ios-monitor-wifichange/","keywords":"iOS"}</script>
+    <meta name="description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS应用内监听wifi的变化">
 <meta property="og:url" content="http://liumh.com/2015/08/04/ios-monitor-wifichange/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
+<meta property="og:description" content="Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 Darwin Notify Center 中注册监听 kNotifySCNetworkChange 通知，如下:">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
 <meta property="article:published_time" content="2015-08-04T15:13:01.000Z">
-<meta property="article:modified_time" content="2015-10-20T14:20:06.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:41:54.844Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
     
     
         
@@ -110,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -252,40 +251,54 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App 内部需要感知设备wifi切换的变化，可以在 <code>Darwin Notify Center</code> 中注册监听 <code>kNotifySCNetworkChange</code> 通知，如下:</p>
+            <p>Apple 设备可在用户不感知的情况下进行wifi的切换，如果我们在App
+内部需要感知设备wifi切换的变化，可以在 <code>Darwin Notify Center</code>
+中注册监听 <code>kNotifySCNetworkChange</code> 通知，如下:</p>
 <span id="more"></span>
-
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">static void onNotifyCallback(CFNotificationCenterRef center,</span><br><span class="line">                             void *observer,</span><br><span class="line">                             CFStringRef name,</span><br><span class="line">                             const void *object,</span><br><span class="line">                             CFDictionaryRef userInfo) &#123;</span><br><span class="line">    if (CFStringCompare(name, CFSTR(kNotifySCNetworkChange), kCFCompareCaseInsensitive) == kCFCompareEqualTo) &#123;</span><br><span class="line">        //TODO when wifi changed</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (void)startMonitorWifiChange &#123;</span><br><span class="line">    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),</span><br><span class="line">                                    NULL,</span><br><span class="line">                                    &amp;onNotifyCallback,</span><br><span class="line">                                    CFSTR(kNotifySCNetworkChange),</span><br><span class="line">                                    NULL,</span><br><span class="line">                                    CFNotificationSuspensionBehaviorDeliverImmediately);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (void)stopMonitorWifiChange &#123;</span><br><span class="line">    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(),</span><br><span class="line">                                       NULL,</span><br><span class="line">                                       CFSTR(kNotifySCNetworkChange),</span><br><span class="line">                                       NULL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>需要:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;/usr/include/notify_keys.h&quot;</span><br></pre></td></tr></table></figure>
-
-<p>上述代码中 <code>kNotifySCNetworkChange</code> 在该头文件中定义，跳至该头文件还可看到:</p>
+<p>上述代码中 <code>kNotifySCNetworkChange</code>
+在该头文件中定义，跳至该头文件还可看到:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * File System notifications</span><br><span class="line"> * These advise clients of various filesystem events.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyVFSMount &quot;com.apple.system.kernel.mount&quot;</span><br><span class="line">#define kNotifyVFSUnmount &quot;com.apple.system.kernel.unmount&quot;</span><br><span class="line">#define kNotifyVFSUpdate &quot;com.apple.system.kernel.mountupdate&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpace &quot;com.apple.system.lowdiskspace&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpaceRootFS &quot;com.apple.system.lowdiskspace.system&quot;</span><br><span class="line">#define kNotifyVFSLowDiskSpaceOtherFS &quot;com.apple.system.lowdiskspace.user&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * System Configuration notifications</span><br><span class="line"> * These advise clients of changes in the system configuration</span><br><span class="line"> * managed by the system configuration server (configd).</span><br><span class="line"> * Note that a much richer set of notifications are available to</span><br><span class="line"> * clients using the SCDynamicStore API.</span><br><span class="line"> */</span><br><span class="line">#define kNotifySCHostNameChange &quot;com.apple.system.hostname&quot;</span><br><span class="line">#define kNotifySCNetworkChange &quot;com.apple.system.config.network_change&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * Time Zone change notification</span><br><span class="line"> * Sent by notifyd when the system&#x27;s timezone changes.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyTimeZoneChange &quot;com.apple.system.timezone&quot;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> * System clock change notification</span><br><span class="line"> * Sent when a process modifies the system clock using the settimeofday system call.</span><br><span class="line"> */</span><br><span class="line">#define kNotifyClockSet &quot;com.apple.system.clock_set&quot;</span><br></pre></td></tr></table></figure>
-
-<p>由此可猜测在 <code>Darwin Notify Center</code> 中还可监听系统时区改变，系统时间改变，系统 <code>hostname</code> 改变的通知，未验证。</p>
-<p>在 <a target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter">CFNotificationCenter Reference</a> 中有关于 <code>CFNotificationCenterGetDarwinNotifyCenter</code> 的描述如下:</p>
+<p>由此可猜测在 <code>Darwin Notify Center</code>
+中还可监听系统时区改变，系统时间改变，系统 <code>hostname</code>
+改变的通知，未验证。</p>
+<p>在 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter">CFNotificationCenter
+Reference</a> 中有关于
+<code>CFNotificationCenterGetDarwinNotifyCenter</code> 的描述如下:</p>
 <blockquote>
+<p>This notification center is used to cover the &lt;notify.h&gt; Core
+OS notification mechanism (see /usr/include/notify.h). An application
+has only one Darwin notification center, so this function returns the
+same value each time it is called.</p>
+<p>The Darwin Notify Center has no notion of per-user sessions, all
+notifications are system-wide. As with distributed notifications, the
+main thread's run loop must be running in one of the common modes
+(usually kCFRunLoopDefaultMode) for Darwin-style notifications to be
+delivered.</p>
 </blockquote>
-<p>This notification center is used to cover the &lt;notify.h&gt; Core OS notification mechanism (see &#x2F;usr&#x2F;include&#x2F;notify.h). An application has only one Darwin notification center, so this function returns the same value each time it is called.</p>
-<blockquote>
-<p>The Darwin Notify Center has no notion of per-user sessions, all notifications are system-wide. As with distributed notifications, the main thread’s run loop must be running in one of the common modes (usually kCFRunLoopDefaultMode) for Darwin-style notifications to be delivered.</p>
-</blockquote>
-<p>由此可见， <code>Darwin Notify Center</code> 是系统级别，每次使用接口 <code>CFNotificationCenterGetDarwinNotifyCenter</code> 返回的都是同一个 <code>Darwin Notify Center</code> 实例。</p>
+<p>由此可见， <code>Darwin Notify Center</code> 是系统级别，每次使用接口
+<code>CFNotificationCenterGetDarwinNotifyCenter</code> 返回的都是同一个
+<code>Darwin Notify Center</code> 实例。</p>
 <p>关于 <code>Darwin Notify Center</code> 的更多信息可以参考:</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter">CFNotificationCenter Reference</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/mac/documentation/Darwin/Conceptual/MacOSXNotifcationOv/DarwinNotificationConcepts/DarwinNotificationConcepts.html">Darwin Notification Concepts</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/DarwinNotify/index.html#//apple_ref/c/func/notify_post">Darwin Notification API Reference</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFNotificationCenterRef/index.html#//apple_ref/c/func/CFNotificationCenterGetDarwinNotifyCenter">CFNotificationCenter
+Reference</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/mac/documentation/Darwin/Conceptual/MacOSXNotifcationOv/DarwinNotificationConcepts/DarwinNotificationConcepts.html">Darwin
+Notification Concepts</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/DarwinNotify/index.html#//apple_ref/c/func/notify_post">Darwin
+Notification API Reference</a></li>
 </ul>
 <p>本文参考:</p>
-<p><a target="_blank" rel="noopener" href="http://www.cocoachina.com/bbs/read.php?tid=182299">如何捕获连接某个无线网络的通知</a> </p>
-<hr>
-<p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117;height:174;"alt=""></div>
-
-
-
+<p><a
+target="_blank" rel="noopener" href="http://www.cocoachina.com/bbs/read.php?tid=182299">如何捕获连接某个无线网络的通知</a></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -458,7 +471,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

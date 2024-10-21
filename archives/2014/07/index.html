@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,10 +251,10 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>使用Gson序列化对象时，默认情况下，对象值为”null”的字段在输出值会被忽略(NOTE:collections和arrays中的null对象会被保留)。如果要使Gson序列化对象输出所有的null值，可使用如下方法进行配置。</p>
+                    <p>使用Gson序列化对象时，默认情况下，对象值为"null"的字段在输出值会被忽略(NOTE:collections和arrays中的null对象会被保留)。如果要使Gson序列化对象输出所有的null值，可使用如下方法进行配置。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new GsonBuilder().serializeNulls().create();</span><br></pre></td></tr></table></figure>
-
-<p>NOTE: 当使用Gson序列化null值时，它会添加JsonNull元素到JsonElement结构中。</p>
+<p>NOTE:
+当使用Gson序列化null值时，它会添加JsonNull元素到JsonElement结构中。</p>
                     
                         <a
                             href="/2014/07/23/gson-null-object-support/"
@@ -304,8 +305,9 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>有时候在调试代码时，需要格式化输出JSON字符串，使其便于开发者&#x2F;测试者查看，本文记录的就是使用Gson如何格式化输出JSON字符串。</p>
-<p>Gson默认的JSON输出是紧凑的JSON格式，这意味着在输出的JSON结构中没有任何空白字符，因此，在JSON输出中，字段名及其字段值，对象字段和数组中的对象间都没有空白字符，另外“null”字段在输出时会忽略(NOTE:collections&#x2F;arrays中的null值会保留)。如果要使用Pretty Print输出JSON，可以使用GsonBuilder配置JsonPrintFormatter，该格式默认会输出80字符宽度，2字符缩进，右边距为4字符。</p>
+                    <p>有时候在调试代码时，需要格式化输出JSON字符串，使其便于开发者/测试者查看，本文记录的就是使用Gson如何格式化输出JSON字符串。</p>
+<p>Gson默认的JSON输出是紧凑的JSON格式，这意味着在输出的JSON结构中没有任何空白字符，因此，在JSON输出中，字段名及其字段值，对象字段和数组中的对象间都没有空白字符，另外“null”字段在输出时会忽略(NOTE:collections/arrays中的null值会保留)。如果要使用Pretty
+Print输出JSON，可以使用GsonBuilder配置JsonPrintFormatter，该格式默认会输出80字符宽度，2字符缩进，右边距为4字符。</p>
                     
                         <a
                             href="/2014/07/21/gson-pretty-printing/"
@@ -360,7 +362,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

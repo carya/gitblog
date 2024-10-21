@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,10 +251,15 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON Array，例如:</p>
+                    <p>本文记录的是如何使用Gson序列化和反序列化包含不同类型对象的 JSON
+Array，例如:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#x27;hello&#x27;,5,&#123;name:&#x27;GREETINGS&#x27;,source:&#x27;guest&#x27;&#125;]</span><br></pre></td></tr></table></figure>
-
-<p>对于这种情况看，使用 Gson <code>toJson(collection)</code> 序列化，无需做额外的工作都能够得到正确的结果，但是，使用 <code>fromJson(json, Collection.class)</code> 反序列化时不能得到期望结果，因为Gson不知道如何将集合中元素与其类型对应起来。可采用如下解决方法: 使用Gson parser API(JsonParser)解析数组中每个元素，然后对数组中每个元素使用<code>Gson.fromJson()</code>进行反序列化。示例如下:</p>
+<p>对于这种情况看，使用 Gson <code>toJson(collection)</code>
+序列化，无需做额外的工作都能够得到正确的结果，但是，使用
+<code>fromJson(json, Collection.class)</code>
+反序列化时不能得到期望结果，因为Gson不知道如何将集合中元素与其类型对应起来。可采用如下解决方法:
+使用Gson parser
+API(JsonParser)解析数组中每个元素，然后对数组中每个元素使用<code>Gson.fromJson()</code>进行反序列化。示例如下:</p>
                     
                         <a
                             href="/2014/03/27/gson-collection-with-arbitrary-types/"
@@ -305,7 +311,8 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是使用Gson如何序列化和反序列化实体中部分属性，有两种方式，使用<code>transient</code>和使用注解<code>@Expose</code>.</p>
-<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽. 如下示例所示:</p>
+<p>默认情况下，如果使用<code>transient</code>标注属性，那个该属性在序列化和反序列化时就会被屏蔽。同样地，如果属性声明为<code>static</code>类型，那么该属性也会被屏蔽.
+如下示例所示:</p>
 <p>Student对象:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private transient int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    </span><br><span class="line">    //......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
@@ -358,7 +365,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson处理List对象数据, 包括序列化List对象以及将Json串反序列化为List对象.</p>
+                    <p>本文记录的是如何使用Gson处理List对象数据,
+包括序列化List对象以及将Json串反序列化为List对象.</p>
 <p>首先定义一个Student类, 其属性都是基本类型, 如下所示:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    private int stuNo;</span><br><span class="line">    private int sex;</span><br><span class="line">    private String name;</span><br><span class="line">    public Student() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public Student(int stuNo, int sex, String name) &#123;</span><br><span class="line">        this.stuNo = stuNo;</span><br><span class="line">        this.sex = sex;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    //getter &amp; setter</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
@@ -411,7 +419,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用Gson处理Array类型数据, 包括将Array对象序列化为Json串以及将Json串反序列化为Array对象.</p>
+                    <p>本文记录的是如何使用Gson处理Array类型数据,
+包括将Array对象序列化为Json串以及将Json串反序列化为Array对象.</p>
 <p>下面的示例是将数组元素序列化为Json串，如下所示:</p>
 <p><code>Serialization:</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = new Gson();</span><br><span class="line">int[] ints = &#123;1, 2, 3, 4, 5&#125;;</span><br><span class="line">String[] strings = &#123;&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;&#125;;    </span><br><span class="line">System.out.println(&quot;json_string: &quot; + gson.toJson(ints));</span><br><span class="line">System.out.println(&quot;json_string: &quot; + gson.toJson(strings));</span><br></pre></td></tr></table></figure>
@@ -466,7 +475,8 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是在进行Net-SNMP配置及测试时经常用到的命令，具体的使用方法可参考命令的帮助文档。</p>
-<p>####1. net-snmp-create-v3-user####<br>正如命令的字面意思，该命令用来创建 Net-SNMP v3用户。</p>
+<p>####1. net-snmp-create-v3-user#### 正如命令的字面意思，该命令用来创建
+Net-SNMP v3用户。</p>
 <p>####2. net-snmp-config####</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">The net-snmp-config shell script is designed to retrieve the  </span><br><span class="line">configuration information about the libraries and binaries dealing  </span><br><span class="line">with the Simple Network Management Protocol (SNMP), built from the  </span><br><span class="line">net-snmp source package. The information is particularily useful  </span><br><span class="line">for applications that need to link against the SNMP libraries and  </span><br><span class="line">hence must know about any other libraries that must be linked in  </span><br><span class="line">as well.</span><br></pre></td></tr></table></figure>
 <p><code>net-snmp-config</code>命令用来获取处理SNMP协议的库和二进制文件的配置信息，其从Net-SNMP的源文件包编译而得。该信息对那些依赖于SNMP库的应用尤其有用.</p>
@@ -520,11 +530,15 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录是如何配置 Net-SNMP VACM. VACM，即 View Based Access Control.分为两部分: 1. VACM的快速配置 2. VACM的综合配置，该配置能够更加精细地配置用户的访问控制权限.</p>
+                    <p>本文记录是如何配置 Net-SNMP VACM. VACM，即 View Based Access
+Control.分为两部分: 1. VACM的快速配置 2.
+VACM的综合配置，该配置能够更加精细地配置用户的访问控制权限.</p>
 <p>###一、VACM的快速配置###</p>
-<p>####1. SNMPv1 and SNMPv2 rocommunity&#x2F;rwcommunity####<br>对于SNMPv1和SNMPv2c，对基于<code>COMMUNITY</code>的请求，能够将其访问权限限定在特定的OID树，且将访问来源限定在特定的IP访问内，通常采用如下格式:</p>
+<p>####1. SNMPv1 and SNMPv2 rocommunity/rwcommunity####
+对于SNMPv1和SNMPv2c，对基于<code>COMMUNITY</code>的请求，能够将其访问权限限定在特定的OID树，且将访问来源限定在特定的IP访问内，通常采用如下格式:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rocommunity6 COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity6 COMMUNITY [SOURCE [OID]]</span><br></pre></td></tr></table></figure>
-<p>对于SNMP 5.3及其以上的版本，该指示符也能够将其访问权限限定在特定的视图VIEW中，语法如下:</p>
+<p>对于SNMP
+5.3及其以上的版本，该指示符也能够将其访问权限限定在特定的视图VIEW中，语法如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rocommunity6 COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity6 COMMUNITY SOURCE -V VIEW</span><br></pre></td></tr></table></figure>
                     
                         <a
@@ -576,8 +590,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
-<p>在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:</p>
+                    <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based
+Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
+<p>在snmpd.conf 中使用 view 标识符加以 mask
+参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man
+page 中的摘要:</p>
                     
                         <a
                             href="/2014/03/14/snmp-vacm-mask/"
@@ -632,7 +649,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

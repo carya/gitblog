@@ -17,22 +17,20 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。\n在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:\n\n\n1234567891011121314151617view NAME TYPE SUBTREE [MASK]The defines the named view. TYPE is either included or  excluded.    MASK is a list of hex octets, separated by &#x27;.&#x27; or &#x27;:&#x27;.  The MASK  defaults to &quot;ff&quot;  if not specified. The  reason  for the mask is, that it allows you to control access   to one row in a table,  in a  relatively  simple  way.  As  an  example, as an ISP you might consider giving each customer   access  to  his or her own interface:view cust1 included interfaces.ifTable.ifEntry.ifIndex.1 ff.a0 view cust2 included interfaces.ifTable.ifEntry.ifIndex.2 ff.a0(interfaces.ifTable.ifEntry.ifIndex.1 == .1.3.6.1.2.1.2.2.1.1.1,ff.a0 == 11111111.10100000. which nicely covers up and includingthe row index, but lets the user vary the field of the row)\n\n文档中指出:\n\nmask 是使用 . 或者 : 分隔的十六进制数\n在未指定的情况下，mask 的默认值是 ff\nmask 的主要作用是使你能够限制用户只允许访问 OID 表中的某一行数据\n\n针对以上的帮助文档，下图能够更加形象化的理解 mask 的作用:\n\nmask 中的每一 bit 都指示 OID 树对应的层级的访问权限，1 表示可访问，0表示不可访问。在上面的例子中，view cust1 允许用户访问 ifTable中第一行的所有列内容, 也就是 ifTable 表中第一行实例内容。\n首先，设置用户可以访问设备的所有 OID，在终端上使用命令查看能获取的数据，如下所示:\n123456789101112131415MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1IF-MIB::ifIndex.1 = INTEGER: 1IF-MIB::ifIndex.2 = INTEGER: 2IF-MIB::ifIndex.3 = INTEGER: 3IF-MIB::ifIndex.4 = INTEGER: 4IF-MIB::ifIndex.5 = INTEGER: 5IF-MIB::ifIndex.6 = INTEGER: 6IF-MIB::ifIndex.7 = INTEGER: 7IF-MIB::ifIndex.8 = INTEGER: 8IF-MIB::ifIndex.9 = INTEGER: 9IF-MIB::ifIndex.10 = INTEGER: 10MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2IF-MIB::ifIndex.2 = INTEGER: 2\n上面的结果显示，用户可以获取 ifTable 中所有的 colum 内容，而当我们定义上例所示的 view:\n1view cust1 included .1.3.6.1.2.1.2.2.1.1.1 ff.a0\n并将用户的访问控制权限限定在 view cust1 中，再次使用上面的命令测试，结果如下:\n123456MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2IF-MIB::ifIndex.2 = No Such Object available on this agent at this OID\n从上面的结果可以看出，此时只能获取 ifTable 的第一行的 colum 内容。用户也可以直接使用如下命令查看结果验证:\n1MacBook-Pro:gitblog carya$ snmptable -v 2c -c public localhost ifTable\n\n本文参考了 Net-SNMP官网VACM文档, 可直接点击查看。\n","dateCreated":"2014-03-14T23:41:11+08:00","dateModified":"2014-07-01T13:52:44+08:00","datePublished":"2014-03-14T23:41:11+08:00","description":"本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。\n在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:","headline":"对Net-SNMP访问权限控制VACM中mask的理解","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/03/14/snmp-vacm-mask/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/03/14/snmp-vacm-mask/","keywords":"snmp, snmpd"}</script>
-    <meta name="description" content="本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。 在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based\r\nAccess Control 的缩写，其用于控制用户访问设备 MIB 树的权限。\r\n在snmpd.conf 中使用 view 标识符加以 mask\r\n参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man\r\npage 中的摘要:\r\n\r\n1234567891011121314151617view NAME TYPE SUBTREE [MASK]The defines the named view. TYPE is either included or  excluded.    MASK is a list of hex octets, separated by &#x27;.&#x27; or &#x27;:&#x27;.  The MASK  defaults to &quot;ff&quot;  if not specified. The  reason  for the mask is, that it allows you to control access   to one row in a table,  in a  relatively  simple  way.  As  an  example, as an ISP you might consider giving each customer   access  to  his or her own interface:view cust1 included interfaces.ifTable.ifEntry.ifIndex.1 ff.a0 view cust2 included interfaces.ifTable.ifEntry.ifIndex.2 ff.a0(interfaces.ifTable.ifEntry.ifIndex.1 == .1.3.6.1.2.1.2.2.1.1.1,ff.a0 == 11111111.10100000. which nicely covers up and includingthe row index, but lets the user vary the field of the row)\r\n文档中指出:\r\n\r\nmask 是使用 . 或者 : 分隔的十六进制数\r\n在未指定的情况下，mask 的默认值是 ff\r\nmask 的主要作用是使你能够限制用户只允许访问 OID\r\n表中的某一行数据\r\n\r\n针对以上的帮助文档，下图能够更加形象化的理解 mask 的作用:\r\n\r\n\r\nVACM mask分析\r\n\r\nmask 中的每一 bit 都指示 OID 树对应的层级的访问权限，1\r\n表示可访问，0表示不可访问。在上面的例子中，view cust1 允许用户访问\r\nifTable中第一行的所有列内容, 也就是 ifTable 表中第一行实例内容。\r\n首先，设置用户可以访问设备的所有\r\nOID，在终端上使用命令查看能获取的数据，如下所示:\r\n123456789101112131415MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1IF-MIB::ifIndex.1 = INTEGER: 1IF-MIB::ifIndex.2 = INTEGER: 2IF-MIB::ifIndex.3 = INTEGER: 3IF-MIB::ifIndex.4 = INTEGER: 4IF-MIB::ifIndex.5 = INTEGER: 5IF-MIB::ifIndex.6 = INTEGER: 6IF-MIB::ifIndex.7 = INTEGER: 7IF-MIB::ifIndex.8 = INTEGER: 8IF-MIB::ifIndex.9 = INTEGER: 9IF-MIB::ifIndex.10 = INTEGER: 10MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2IF-MIB::ifIndex.2 = INTEGER: 2\r\n上面的结果显示，用户可以获取 ifTable 中所有的 colum\r\n内容，而当我们定义上例所示的 view:\r\n1view cust1 included .1.3.6.1.2.1.2.2.1.1.1 ff.a0\r\n并将用户的访问控制权限限定在 view cust1\r\n中，再次使用上面的命令测试，结果如下:\r\n123456MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1IF-MIB::ifIndex.1 = INTEGER: 1MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2IF-MIB::ifIndex.2 = No Such Object available on this agent at this OID\r\n从上面的结果可以看出，此时只能获取 ifTable 的第一行的 colum\r\n内容。用户也可以直接使用如下命令查看结果验证:\r\n1MacBook-Pro:gitblog carya$ snmptable -v 2c -c public localhost ifTable\r\n本文参考了 Net-SNMP官网VACM文档,\r\n可直接点击查看。\r\n","dateCreated":"2014-03-14T23:41:11+08:00","dateModified":"2014-07-01T13:52:44+08:00","datePublished":"2014-03-14T23:41:11+08:00","description":"本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based\r\nAccess Control 的缩写，其用于控制用户访问设备 MIB 树的权限。\r\n在snmpd.conf 中使用 view 标识符加以 mask\r\n参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man\r\npage 中的摘要:","headline":"对Net-SNMP访问权限控制VACM中mask的理解","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2014/03/14/snmp-vacm-mask/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2014/03/14/snmp-vacm-mask/","keywords":"snmp, snmpd"}</script>
+    <meta name="description" content="本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。 在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="对Net-SNMP访问权限控制VACM中mask的理解">
 <meta property="og:url" content="http://liumh.com/2014/03/14/snmp-vacm-mask/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。 在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:">
+<meta property="og:description" content="本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。 在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/snmp-vacm-mask/example-of-vacm-mask.png">
 <meta property="article:published_time" content="2014-03-14T15:41:11.000Z">
 <meta property="article:modified_time" content="2014-07-01T05:52:44.000Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="snmp">
 <meta property="article:tag" content="snmpd">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://readus-org.qiniudn.com/img/snmp-vacm-mask/example-of-vacm-mask.png">
     
     
         
@@ -113,7 +111,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -255,31 +254,45 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
-<p>在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:</p>
+            <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based
+Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
+<p>在snmpd.conf 中使用 view 标识符加以 mask
+参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man
+page 中的摘要:</p>
 <span id="more"></span>
-
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">view NAME TYPE SUBTREE [MASK]</span><br><span class="line"></span><br><span class="line">The defines the named view. TYPE is either included or  excluded.    </span><br><span class="line">MASK is a list of hex octets, separated by &#x27;.&#x27; or &#x27;:&#x27;.  The MASK  </span><br><span class="line">defaults to &quot;ff&quot;  if not specified.</span><br><span class="line"> </span><br><span class="line">The  reason  for the mask is, that it allows you to control access   </span><br><span class="line">to one row in a table,  in a  relatively  simple  way.  As  an  </span><br><span class="line">example, as an ISP you might consider giving each customer   </span><br><span class="line">access  to  his or her own interface:</span><br><span class="line"></span><br><span class="line">view cust1 included interfaces.ifTable.ifEntry.ifIndex.1 ff.a0 </span><br><span class="line">view cust2 included interfaces.ifTable.ifEntry.ifIndex.2 ff.a0</span><br><span class="line"></span><br><span class="line">(interfaces.ifTable.ifEntry.ifIndex.1 == .1.3.6.1.2.1.2.2.1.1.1,</span><br><span class="line">ff.a0 == 11111111.10100000. which nicely covers up and including</span><br><span class="line">the row index, but lets the user vary the field of the row)</span><br></pre></td></tr></table></figure>
-
 <p>文档中指出:</p>
-<ol>
+<ol type="1">
 <li>mask 是使用 <code>.</code> 或者 <code>:</code> 分隔的十六进制数</li>
 <li>在未指定的情况下，mask 的默认值是 <code>ff</code></li>
-<li>mask 的主要作用是使你能够限制用户只允许访问 OID 表中的某一行数据</li>
+<li>mask 的主要作用是使你能够限制用户只允许访问 OID
+表中的某一行数据</li>
 </ol>
 <p>针对以上的帮助文档，下图能够更加形象化的理解 mask 的作用:</p>
-<p><img src="http://readus-org.qiniudn.com/img/snmp-vacm-mask/example-of-vacm-mask.png" alt="VACM mask分析"></p>
-<p>mask 中的每一 bit 都指示 OID 树对应的层级的访问权限，1 表示可访问，0表示不可访问。在上面的例子中，view cust1 允许用户访问 ifTable中第一行的所有列内容, 也就是 ifTable 表中第一行实例内容。</p>
-<p>首先，设置用户可以访问设备的所有 OID，在终端上使用命令查看能获取的数据，如下所示:</p>
+<figure>
+<img
+src="http://readus-org.qiniudn.com/img/snmp-vacm-mask/example-of-vacm-mask.png"
+alt="VACM mask分析" />
+<figcaption aria-hidden="true">VACM mask分析</figcaption>
+</figure>
+<p>mask 中的每一 bit 都指示 OID 树对应的层级的访问权限，1
+表示可访问，0表示不可访问。在上面的例子中，view cust1 允许用户访问
+ifTable中第一行的所有列内容, 也就是 ifTable 表中第一行实例内容。</p>
+<p>首先，设置用户可以访问设备的所有
+OID，在终端上使用命令查看能获取的数据，如下所示:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1</span><br><span class="line">IF-MIB::ifIndex.1 = INTEGER: 1</span><br><span class="line">IF-MIB::ifIndex.2 = INTEGER: 2</span><br><span class="line">IF-MIB::ifIndex.3 = INTEGER: 3</span><br><span class="line">IF-MIB::ifIndex.4 = INTEGER: 4</span><br><span class="line">IF-MIB::ifIndex.5 = INTEGER: 5</span><br><span class="line">IF-MIB::ifIndex.6 = INTEGER: 6</span><br><span class="line">IF-MIB::ifIndex.7 = INTEGER: 7</span><br><span class="line">IF-MIB::ifIndex.8 = INTEGER: 8</span><br><span class="line">IF-MIB::ifIndex.9 = INTEGER: 9</span><br><span class="line">IF-MIB::ifIndex.10 = INTEGER: 10</span><br><span class="line">MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1</span><br><span class="line">IF-MIB::ifIndex.1 = INTEGER: 1</span><br><span class="line">MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2</span><br><span class="line">IF-MIB::ifIndex.2 = INTEGER: 2</span><br></pre></td></tr></table></figure>
-<p>上面的结果显示，用户可以获取 ifTable 中所有的 colum 内容，而当我们定义上例所示的 view:</p>
+<p>上面的结果显示，用户可以获取 ifTable 中所有的 colum
+内容，而当我们定义上例所示的 view:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view cust1 included .1.3.6.1.2.1.2.2.1.1.1 ff.a0</span><br></pre></td></tr></table></figure>
-<p>并将用户的访问控制权限限定在 <code>view cust1</code> 中，再次使用上面的命令测试，结果如下:</p>
+<p>并将用户的访问控制权限限定在 <code>view cust1</code>
+中，再次使用上面的命令测试，结果如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MacBook-Pro:gitblog carya$ snmpwalk -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1</span><br><span class="line">IF-MIB::ifIndex.1 = INTEGER: 1</span><br><span class="line">MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.1</span><br><span class="line">IF-MIB::ifIndex.1 = INTEGER: 1</span><br><span class="line">MacBook-Pro:gitblog carya$ snmpget -v 2c -c public localhost .1.3.6.1.2.1.2.2.1.1.2</span><br><span class="line">IF-MIB::ifIndex.2 = No Such Object available on this agent at this OID</span><br></pre></td></tr></table></figure>
-<p>从上面的结果可以看出，此时只能获取 ifTable 的第一行的 colum 内容。用户也可以直接使用如下命令查看结果验证:</p>
+<p>从上面的结果可以看出，此时只能获取 ifTable 的第一行的 colum
+内容。用户也可以直接使用如下命令查看结果验证:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MacBook-Pro:gitblog carya$ snmptable -v 2c -c public localhost ifTable</span><br></pre></td></tr></table></figure>
-
-<p>本文参考了 <a target="_blank" rel="noopener" href="http://www.net-snmp.org/wiki/index.php/Vacm">Net-SNMP官网VACM文档</a>, 可直接点击查看。</p>
+<p>本文参考了 <a
+target="_blank" rel="noopener" href="http://www.net-snmp.org/wiki/index.php/Vacm">Net-SNMP官网VACM文档</a>,
+可直接点击查看。</p>
 
             
 
@@ -452,7 +465,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

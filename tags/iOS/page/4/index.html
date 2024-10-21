@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -301,7 +302,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用<code>Xcode xcassets</code>的Slicing功能或者 api</p>
+                    <p>项目会遇到给各种UI控件添加渐变背景色的需求，如果只是上下渐变或者左右渐变，可以使用<code>Xcode xcassets</code>的Slicing功能或者
+api</p>
 <p><code>- resizableImageWithCapInsets:</code></p>
 <p>完成功能，但是如果是从左上角到右下角的渐变，或者是右上角到左下角渐变，使用截图恐怕不能完成。下面介绍一种生成渐变颜色UIImage的方法，从而可以使用UIColor的api</p>
 <p><code>+ (UIColor *)colorWithPatternImage:(UIImage *)image</code></p>
@@ -356,9 +358,14 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>iOS UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为 <code>R:60 G:180 B:174</code> 的UIColor，使用UIColor的api可以使用如下的方式:</p>
-<p><code> [UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
-<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>, 使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>, 那么可以使用如下方式创建UIColor:</p>
+                    <p>iOS
+UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为
+<code>R:60 G:180 B:174</code>
+的UIColor，使用UIColor的api可以使用如下的方式:</p>
+<p><code>[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
+<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>,
+使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>,
+那么可以使用如下方式创建UIColor:</p>
 <p><code>[UIColor colorWithHex:0xFF3CB4AE]</code></p>
 <p>实现方式如下:</p>
                     
@@ -463,7 +470,11 @@
             
                 <div class="postShorten-excerpt">
                     <p>有时候需要为UIView添加虚线描边，本文记录一种实现方式，主要是通过对UIView的根layer添加CAShapeLayer来完成。效果图如下:</p>
-<p><img src="http://readus-org.qiniudn.com/img/ios_dash_border_view.png" alt="UIView虚线边框示意图"></p>
+<figure>
+<img src="http://readus-org.qiniudn.com/img/ios_dash_border_view.png"
+alt="UIView虚线边框示意图" />
+<figcaption aria-hidden="true">UIView虚线边框示意图</figcaption>
+</figure>
 <p>核心代码示例如下:</p>
                     
                         <a
@@ -516,9 +527,19 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是如何绘制一个背景颜色渐变的滑动条，最终的效果如下图:</p>
-<p><img src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual-circle-slider.png" alt="背景颜色渐变的滑动条"></p>
+<figure>
+<img
+src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual-circle-slider.png"
+alt="背景颜色渐变的滑动条" />
+<figcaption aria-hidden="true">背景颜色渐变的滑动条</figcaption>
+</figure>
 <p>绘制渐变背景这里用到了CAGradientLayer和CALayer的mask，首先使用两个CAGradientLayer绘制如下的背景:</p>
-<p><img src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual_background.png" alt="渐变背景"></p>
+<figure>
+<img
+src="http://readus-org.qiniudn.com/img/gradual-circle-slider/gradual_background.png"
+alt="渐变背景" />
+<figcaption aria-hidden="true">渐变背景</figcaption>
+</figure>
                     
                         <a
                             href="/2015/04/17/ios-gradual-circle-slider/"
@@ -583,7 +604,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

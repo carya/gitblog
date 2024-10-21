@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,12 +252,25 @@
             
                 <div class="postShorten-excerpt">
                     <p>iOS开发中，屏幕适配也是项很重要的工作，本文记录了一些在屏幕适配的过程中与图片相关的工作。</p>
-<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>首先，理解几个概念: Points, Rendered Pixels, Physical Pixels, Physical Device。</p>
+<h3 id="基本概念">基本概念</h3>
+<p>首先，理解几个概念: Points, Rendered Pixels, Physical Pixels,
+Physical Device。</p>
 <ul>
-<li>Points: 是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以 point 作为单位，在iPhone 2G,3G,3GS的年代，point 和屏幕上的像素是完全一一对应的，即 320 * 480 (points), 也是 320 * 480 (pixels)</li>
-<li>Rendered Pixels: 渲染像素， 以 point 为单位的绘制最终都会渲染成 pixels，这个过程被称为光栅化。基于 point 的坐标系乘以比例因子可以得到基于像素的坐标系，高比例因子会使更多的细节展示，目前的比例因子会是 1x，2x，3x</li>
+<li>Points:
+是iOS开发中引入的抽象单位，称作点。开发过程中所有基于坐标系的绘制都是以
+point 作为单位，在iPhone 2G,3G,3GS的年代，point
+和屏幕上的像素是完全一一对应的，即 320 * 480 (points), 也是 320 * 480
+(pixels)</li>
+<li>Rendered Pixels: 渲染像素， 以 point 为单位的绘制最终都会渲染成
+pixels，这个过程被称为光栅化。基于 point
+的坐标系乘以比例因子可以得到基于像素的坐标系，高比例因子会使更多的细节展示，目前的比例因子会是
+1x，2x，3x</li>
 <li>Physical Pixels: 物理像素，就是设备屏幕实际的像素</li>
-<li>Physical Device: 设备屏幕的物理长度，使用英寸作为单位。比如iPhone 4屏幕是3.5英寸，iPhone 5 是4英寸，iphone 6是4.7英寸，这里的数字是指手机屏幕对角线的物理长度。实际上会是Physical Pixels的像素值(而不是Rendered Pixels的像素值)会渲染到该屏幕上, 屏幕会有 PPI(pixels-per-inch) 的特性，PPI 的值告诉你每英寸会有多少像素渲染。</li>
+<li>Physical Device: 设备屏幕的物理长度，使用英寸作为单位。比如iPhone
+4屏幕是3.5英寸，iPhone 5 是4英寸，iphone
+6是4.7英寸，这里的数字是指手机屏幕对角线的物理长度。实际上会是Physical
+Pixels的像素值(而不是Rendered Pixels的像素值)会渲染到该屏幕上, 屏幕会有
+PPI(pixels-per-inch) 的特性，PPI 的值告诉你每英寸会有多少像素渲染。</li>
 </ul>
                     
                         <a
@@ -312,7 +326,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

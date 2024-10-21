@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,13 +251,24 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>KVO, 即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在 MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller 会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听 Model 对象的属性变化。除此之外，在 Model 对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model 对象或者其自身的属性变化。</p>
+                    <p>KVO,
+即键值观察，提供了一种让一个对象监听另一个对象的特定属性变化的机制。这在
+MVC 的 Model 层 和 Controller 层间通信十分有用。通常情况下，Controller
+会监听 Model 对象的属性变化，或者 View 对象会通过 Controller 来监听
+Model 对象的属性变化。除此之外，在 Model
+对象需要感知其依赖值的改变的时候，该 Model 对象也可以监听其他 Model
+对象或者其自身的属性变化。</p>
 <p>监听属性变化需要以下几步:</p>
-<ol>
-<li>使用函数 <code>addObserver:forKeyPath:options:context:</code> 建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
-<li>为了响应被观察者对象的变化通知，观察者必须实现 <code>observeValueForKeyPath:ofObject:change:context:</code> 方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
-<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code> 方法会自动调用。</li>
-<li>调用 <code>– removeObserver:forKeyPath:context:</code> 取消注册。</li>
+<ol type="1">
+<li>使用函数 <code>addObserver:forKeyPath:options:context:</code>
+建立观察者和被观察者对象之间的连接，这种连接不是建立在这两个类之间，而是两个对象实例之间。</li>
+<li>为了响应被观察者对象的变化通知，观察者必须实现
+<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法，该方法定义了观察者是如何对被观察者的变化做出响应的。</li>
+<li>当被观察的属性发生变化时，<code>observeValueForKeyPath:ofObject:change:context:</code>
+方法会自动调用。</li>
+<li>调用 <code>– removeObserver:forKeyPath:context:</code>
+取消注册。</li>
 </ol>
                     
                         <a
@@ -308,9 +320,12 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>在项目，可能会有需求需要监听 NSMutableArray 的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
+                    <p>在项目，可能会有需求需要监听 NSMutableArray
+的变化，例如在可变数组中加入、删除或者替换了元素，我们需要根据这些变化来更新UI或者做其他操作。</p>
 <p>那么如何来监听呢？</p>
-<p>方法1，使用 <code>mutableArrayValueForKey:</code> 代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code> 方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
+<p>方法1，使用 <code>mutableArrayValueForKey:</code>
+代理，这样，我们在获取定义的数组属性时不再使用其 <code>getter</code>
+方法，而是通过代理方法获取数组属性后，再对数组进行增删改的操作。这是最简单高效的方法，使用示例如下:</p>
                     
                         <a
                             href="/2015/08/22/ios-nsmutablearray-kvo/"
@@ -364,7 +379,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

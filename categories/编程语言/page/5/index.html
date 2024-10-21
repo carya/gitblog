@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,8 +252,7 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是使用Java获取Http请求中的参数，包括Get和Post请求。</p>
-<p>###获取Get请求中的参数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected void doGet(HttpServletRequest req, HttpServletResponse resp)</span><br><span class="line">            throws ServletException, IOException &#123;</span><br><span class="line">    String params = req.getQueryString();</span><br><span class="line"></span><br><span class="line">    PrintWriter pw = resp.getWriter();</span><br><span class="line">    pw.write(&quot;you get request is success: query params = &quot; + params);</span><br><span class="line">    pw.flush();</span><br><span class="line">    pw.close();</span><br><span class="line">    pw = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###获取Get请求中的参数 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected void doGet(HttpServletRequest req, HttpServletResponse resp)</span><br><span class="line">            throws ServletException, IOException &#123;</span><br><span class="line">    String params = req.getQueryString();</span><br><span class="line"></span><br><span class="line">    PrintWriter pw = resp.getWriter();</span><br><span class="line">    pw.write(&quot;you get request is success: query params = &quot; + params);</span><br><span class="line">    pw.flush();</span><br><span class="line">    pw.close();</span><br><span class="line">    pw = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
                     
                         <a
                             href="/2013/12/21/get-request-params/"
@@ -303,7 +303,9 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是使用HttpURLConnection发送Get和Post请求的示例, 关于HttpURLConnection的使用请参考: <a href="/2013/12/12/usage-of-jdk-urlconnection/">JDK中URLConnection使用详解</a>.</p>
+                    <p>本文记录的是使用HttpURLConnection发送Get和Post请求的示例,
+关于HttpURLConnection的使用请参考: <a
+href="/2013/12/12/usage-of-jdk-urlconnection/">JDK中URLConnection使用详解</a>.</p>
 <p>这里将发送请求的方法封装在HttpRequest的类中，使用HttpURLConnection发送Http的Get和Post请求需要引入下面的类:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.DataOutputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.net.HttpURLConnection;</span><br><span class="line">import java.net.URL;</span><br></pre></td></tr></table></figure>
                     
@@ -356,7 +358,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本打算自己写一篇博客记录Java中URLConnection的使用，网上搜索了一番，发现这篇<a target="_blank" rel="noopener" href="http://www.blogjava.net/supercrsky/articles/247449.html">JDK中的URLConnection参数详解</a>写得很好了，转载该文如下。</p>
+                    <p>本打算自己写一篇博客记录Java中URLConnection的使用，网上搜索了一番，发现这篇<a
+target="_blank" rel="noopener" href="http://www.blogjava.net/supercrsky/articles/247449.html">JDK中的URLConnection参数详解</a>写得很好了，转载该文如下。</p>
 <p>针对JDK中的URLConnection连接Servlet的问题,网上虽然有所涉及,但是只是说明了某一个或几个问题，是以FAQ的方式来解决的，而且比较零散，现在对这个类的使用就本人在项目中的使用经验做如下总结。</p>
                     
                         <a
@@ -408,9 +411,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>在<a href="/2013/11/27/send-email-with-java/">使用JavaMail发送邮件</a>一文中，记录了使用JavaMail发送普通文本给多个链接人。这里记录如何使用JavaMail发送带附件的邮件,只是在SendMail类中添加一个新的方法:</p>
+                    <p>在<a
+href="/2013/11/27/send-email-with-java/">使用JavaMail发送邮件</a>一文中，记录了使用JavaMail发送普通文本给多个链接人。这里记录如何使用JavaMail发送带附件的邮件,只是在SendMail类中添加一个新的方法:</p>
 <p><code>public void sendMail(List&lt;String&gt; recipients, String subject, String sendContent, List&lt;String&gt; filePaths)</code></p>
-<p><code>recipients</code>表示联系人列表，<code>subject</code>代表邮件主题，<code>sendContent</code>代表发送的邮件正文，<code>filePaths</code>代表添加为邮件附件的文件地址列表, 其代码如下:</p>
+<p><code>recipients</code>表示联系人列表，<code>subject</code>代表邮件主题，<code>sendContent</code>代表发送的邮件正文，<code>filePaths</code>代表添加为邮件附件的文件地址列表,
+其代码如下:</p>
                     
                         <a
                             href="/2013/12/04/send-email-with-attachments/"
@@ -461,7 +466,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是如何使用java实现发送简单文本内容邮件给一个或者多个联系人。邮件服务 Java API 支持使用 JavaMail(javax.mail)接口来发送电子邮件。</p>
+                    <p>本文记录的是如何使用java实现发送简单文本内容邮件给一个或者多个联系人。邮件服务
+Java API 支持使用 JavaMail(javax.mail)接口来发送电子邮件。</p>
 <p>在使用javax.mail接口时，需要设置发件人，涉及到发件人的授权认证，于是创建了MailAuthenticator类，其代码如下：</p>
                     
                         <a
@@ -513,8 +519,10 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>以下是关于Markdown的常用语法，可以在<a href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
-<ol>
+                    <p>以下是关于Markdown的常用语法，可以在<a
+href="/2013/10/19/markdown-editor/">Markdown编辑器</a>选择一个Markdown编辑器边看边练习，推荐使用博客平台<a
+target="_blank" rel="noopener" href="http://jianshu.io/">简书</a>,因为其支持表格的绘制.涉及到的内容有:</p>
+<ol type="1">
 <li><a href="#paragraph">段落和换行</a></li>
 <li><a href="#title">标题</a></li>
 <li><a href="#block_cite">区块引用</a></li>
@@ -656,7 +664,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

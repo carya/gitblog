@@ -15,21 +15,19 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:\n\n\n- (id)copyWithZone:(nullable NSZone *)zone;\n以前开发程序时，会把内存分成不同的”区”，而对象会创建在某个区里。现在不用了，每个程序只有一个”默认区”(default zone)，实现该方法时，不必担心其中的 zone 参数。例如，我们要让自定义的 ACLStudent 类支持拷贝功能，则可以像如下这样:\n1234567891011121314151617181920212223242526272829303132333435363738ACLStudent.h@interface ACLStudent : NSObject &lt;NSCopying&gt;@property (nonatomic, assign, readonly) NSInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;@end-----ACLStudent.m@implementation ACLStudent- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;    self = [super init];    if (self) &#123;        _studentId = studentId;        _firstName = [firstName copy];        _lastName = [lastName copy];    &#125;        return self;&#125;- (instancetype)copyWithZone:(NSZone *)zone &#123;    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];        return copy;&#125;+ (BOOL)accessInstanceVariablesDirectly &#123;    return YES;&#125;@end\n\n上例中 copyWithZone: 方法使用了全能初始化方法(designated initializer)来执行拷贝对象的所有初始化工作。这里需要注意，对于未能在全能初始化方法中设置好的变量，需要在 copyWithZone: 方法中做特殊处理。例如，如果在 ACLStudent 类中增加一个变量，来存储当前学生所选选修课的科目，完整代码变成如下:\n12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455ACLStudent.h@class ACLCourse;@interface ACLStudent : NSObject &lt;NSCopying&gt;@property (nonatomic, assign, readonly) NSInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;- (void)addElective:(ACLCourse *)course;- (void)removeElective:(ACLCourse *)course;@end--------@implementation ACLStudent &#123;    NSMutableSet *_electives;  /**&lt; 选修科目 */&#125;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;    self = [super init];    if (self) &#123;        _studentId = studentId;        _firstName = [firstName copy];        _lastName = [lastName copy];                _electives = [NSMutableSet new];    &#125;        return self;&#125;- (void)addElective:(ACLCourse *)course &#123;    [_electives addObject:course];&#125;- (void)removeElective:(ACLCourse *)course &#123;    [_electives removeObject:course];&#125;- (instancetype)copyWithZone:(NSZone *)zone &#123;    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];    copy-&gt;_electives = [[NSMutableSet alloc] initWithSet:_electives copyItems:YES];        return copy;&#125;+ (BOOL)accessInstanceVariablesDirectly &#123;    return NO;&#125;@end\n\n注意全能初始化方法和 copyWithZone: 方法实现的变化, 这里我们对 _electives 对象执行的是深拷贝。\n假如我们想让自定义对象支持 mutableCopy 操作，那又应该怎么操作呢?这需要自定义对象遵循 NSMutableCopying 协议, 该协议也只有一个方法:\n- (id)mutableCopyWithZone:(nullable NSZone *)zone;\n其与 copy 相似，也是使用默认的 zone 参数来调用 mutableCopyWithZone:。\n如果类分为可变版本和不可变版本，那么就应该实现 NSMutableCopying, 且在可变类中覆写 copyWithZone: 方法时，应该返回一份不可变的版本。无论当前实例是否可变，若需获取其可变版本的拷贝，均应调用 mutableCopy 方法，若需不可变的拷贝，则总应该调用 copy 方法。例如对于不可变的 NSArray 和可变的 NSMutableArray，以下关系总是成立:\n12- [NSMutableArray copy] =&gt; NSArray- [NSArray mutableCopy] =&gt; NSMutableArray\n\n\n如何对 NSArray 执行深拷贝呢？苹果官方文档 Copying Collections 提供了以下两种方法。\n方法1:\n1NSArray *deepCopyArray=[[NSArray alloc] initWithArray:someArray copyItems:YES];\n\n这种方式执行拷贝时，someArray 中的可变对象是执行深拷贝，而对于不可变对象，仍然执行的是浅拷贝。\n方法2:\n1NSArray *trueDeepCopyArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:oldArray]];\n\n这种方式实现的是真正意义上的深拷贝，oldArray 中所有元素都是深拷贝。         \n那么 copy 和 mutableCopy 返回的对象是执行的深拷贝还是浅拷贝呢？这篇博客 [copy与mutableCopy][] 对系统对象执行 copy 和 mutableCopy 时到底执行的深拷贝还是浅拷贝进行了讨论。其中系统对象分为了两类:\n\n系统的非容器类对象，如 NSString、NSMutableString、NSNumber 等。\n系统的容器类对象，如 NSArray、NSMutableArray、NSDictionary、NSMutableDictionary 等。\n\n现把结论摘抄如下:\n\n对于系统的非容器类对象，如果对一不可变对象(如 NSString)复制，copy 是指针复制(浅拷贝)和 mutableCopy 就是对象复制(深拷贝); 如果是对可变对象(如 NSMutableString)复制，copy 和 mutableCopy 都是深拷贝，但是 copy 返回的对象是不可变的。\n对于系统的容器类对象，对不可变对象(如 NSArray)进行复制，copy 是指针复制(浅拷贝)， mutableCopy 是对象复制(深拷贝), 但是不管是 copy 还是 mutableCopy, 且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。\n对于系统的容器类对象，对可变对象(如 NSMutableArray)进行复制时，copy 和 mutableCopy 都是对象复制(深拷贝)，但是不管是 copy 还是 mutableCopy，且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。\n\n\n如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^\n\n","dateCreated":"2015-12-12T22:04:30+08:00","dateModified":"2021-04-18T11:48:24+08:00","datePublished":"2015-12-12T22:04:30+08:00","description":"如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:","headline":"iOS理解NSCopying协议","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/12/12/ios-understand-copy/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/12/12/ios-understand-copy/","keywords":"iOS"}</script>
-    <meta name="description" content="如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"如何让自定义对象支持 copy 操作？是重写 copy\r\n方法么？当然不是，而是需要让自定义类实现 NSCopying\r\n协议，该协议只有一个方法:\r\n\r\n- (id)copyWithZone:(nullable NSZone *)zone;\r\n以前开发程序时，会把内存分成不同的\"区\"，而对象会创建在某个区里。现在不用了，每个程序只有一个\"默认区\"(default\r\nzone)，实现该方法时，不必担心其中的 zone 参数。例如，我们要让自定义的\r\nACLStudent 类支持拷贝功能，则可以像如下这样:\r\n1234567891011121314151617181920212223242526272829303132333435363738ACLStudent.h@interface ACLStudent : NSObject &lt;NSCopying&gt;@property (nonatomic, assign, readonly) NSInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;@end-----ACLStudent.m@implementation ACLStudent- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;    self = [super init];    if (self) &#123;        _studentId = studentId;        _firstName = [firstName copy];        _lastName = [lastName copy];    &#125;        return self;&#125;- (instancetype)copyWithZone:(NSZone *)zone &#123;    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];        return copy;&#125;+ (BOOL)accessInstanceVariablesDirectly &#123;    return YES;&#125;@end\r\n上例中 copyWithZone: 方法使用了全能初始化方法(designated\r\ninitializer)来执行拷贝对象的所有初始化工作。这里需要注意，对于未能在全能初始化方法中设置好的变量，需要在\r\ncopyWithZone: 方法中做特殊处理。例如，如果在\r\nACLStudent\r\n类中增加一个变量，来存储当前学生所选选修课的科目，完整代码变成如下:\r\n12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455ACLStudent.h@class ACLCourse;@interface ACLStudent : NSObject &lt;NSCopying&gt;@property (nonatomic, assign, readonly) NSInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;- (void)addElective:(ACLCourse *)course;- (void)removeElective:(ACLCourse *)course;@end--------@implementation ACLStudent &#123;    NSMutableSet *_electives;  /**&lt; 选修科目 */&#125;- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;    self = [super init];    if (self) &#123;        _studentId = studentId;        _firstName = [firstName copy];        _lastName = [lastName copy];                _electives = [NSMutableSet new];    &#125;        return self;&#125;- (void)addElective:(ACLCourse *)course &#123;    [_electives addObject:course];&#125;- (void)removeElective:(ACLCourse *)course &#123;    [_electives removeObject:course];&#125;- (instancetype)copyWithZone:(NSZone *)zone &#123;    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];    copy-&gt;_electives = [[NSMutableSet alloc] initWithSet:_electives copyItems:YES];        return copy;&#125;+ (BOOL)accessInstanceVariablesDirectly &#123;    return NO;&#125;@end\r\n注意全能初始化方法和 copyWithZone: 方法实现的变化,\r\n这里我们对 _electives 对象执行的是深拷贝。\r\n假如我们想让自定义对象支持 mutableCopy\r\n操作，那又应该怎么操作呢?这需要自定义对象遵循\r\nNSMutableCopying 协议, 该协议也只有一个方法:\r\n- (id)mutableCopyWithZone:(nullable NSZone *)zone;\r\n其与 copy 相似，也是使用默认的 zone 参数来调用\r\nmutableCopyWithZone:。\r\n如果类分为可变版本和不可变版本，那么就应该实现\r\nNSMutableCopying, 且在可变类中覆写\r\ncopyWithZone:\r\n方法时，应该返回一份不可变的版本。无论当前实例是否可变，若需获取其可变版本的拷贝，均应调用\r\nmutableCopy 方法，若需不可变的拷贝，则总应该调用\r\ncopy 方法。例如对于不可变的 NSArray 和可变的\r\nNSMutableArray，以下关系总是成立:\r\n12- [NSMutableArray copy] =&gt; NSArray- [NSArray mutableCopy] =&gt; NSMutableArray\r\n\r\n如何对 NSArray 执行深拷贝呢？苹果官方文档 Copying\r\nCollections 提供了以下两种方法。\r\n方法1:\r\n1NSArray *deepCopyArray=[[NSArray alloc] initWithArray:someArray copyItems:YES];\r\n这种方式执行拷贝时，someArray\r\n中的可变对象是执行深拷贝，而对于不可变对象，仍然执行的是浅拷贝。\r\n方法2:\r\n1NSArray *trueDeepCopyArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:oldArray]];\r\n这种方式实现的是真正意义上的深拷贝，oldArray\r\n中所有元素都是深拷贝。\r\n那么 copy 和 mutableCopy\r\n返回的对象是执行的深拷贝还是浅拷贝呢？这篇博客 [copy与mutableCopy][]\r\n对系统对象执行 copy 和 mutableCopy\r\n时到底执行的深拷贝还是浅拷贝进行了讨论。其中系统对象分为了两类:\r\n\r\n系统的非容器类对象，如\r\nNSString、NSMutableString、NSNumber\r\n等。\r\n系统的容器类对象，如\r\nNSArray、NSMutableArray、NSDictionary、NSMutableDictionary\r\n等。\r\n\r\n现把结论摘抄如下:\r\n\r\n对于系统的非容器类对象，如果对一不可变对象(如\r\nNSString)复制，copy 是指针复制(浅拷贝)和\r\nmutableCopy 就是对象复制(深拷贝); 如果是对可变对象(如\r\nNSMutableString)复制，copy 和\r\nmutableCopy 都是深拷贝，但是 copy\r\n返回的对象是不可变的。\r\n对于系统的容器类对象，对不可变对象(如\r\nNSArray)进行复制，copy 是指针复制(浅拷贝)，\r\nmutableCopy 是对象复制(深拷贝), 但是不管是\r\ncopy 还是 mutableCopy,\r\n且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。\r\n对于系统的容器类对象，对可变对象(如\r\nNSMutableArray)进行复制时，copy 和\r\nmutableCopy 都是对象复制(深拷贝)，但是不管是\r\ncopy 还是\r\nmutableCopy，且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。\r\n\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-12-12T22:04:30+08:00","dateModified":"2024-10-21T22:46:42+08:00","datePublished":"2015-12-12T22:04:30+08:00","description":"如何让自定义对象支持 copy 操作？是重写 copy\r\n方法么？当然不是，而是需要让自定义类实现 NSCopying\r\n协议，该协议只有一个方法:","headline":"iOS理解NSCopying协议","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/12/12/ios-understand-copy/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/12/12/ios-understand-copy/","keywords":"iOS"}</script>
+    <meta name="description" content="如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS理解NSCopying协议">
 <meta property="og:url" content="http://liumh.com/2015/12/12/ios-understand-copy/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:">
+<meta property="og:description" content="如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
 <meta property="article:published_time" content="2015-12-12T14:04:30.000Z">
-<meta property="article:modified_time" content="2021-04-18T03:48:24.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:46:42.904Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
     
     
         
@@ -110,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -252,47 +251,82 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>如何让自定义对象支持 copy 操作？是重写 copy 方法么？当然不是，而是需要让自定义类实现 NSCopying 协议，该协议只有一个方法:</p>
+            <p>如何让自定义对象支持 copy 操作？是重写 copy
+方法么？当然不是，而是需要让自定义类实现 NSCopying
+协议，该协议只有一个方法:</p>
 <span id="more"></span>
-
 <p><code>- (id)copyWithZone:(nullable NSZone *)zone;</code></p>
-<p>以前开发程序时，会把内存分成不同的”区”，而对象会创建在某个区里。现在不用了，每个程序只有一个”默认区”(default zone)，实现该方法时，不必担心其中的 zone 参数。例如，我们要让自定义的 <code>ACLStudent</code> 类支持拷贝功能，则可以像如下这样:</p>
+<p>以前开发程序时，会把内存分成不同的"区"，而对象会创建在某个区里。现在不用了，每个程序只有一个"默认区"(default
+zone)，实现该方法时，不必担心其中的 zone 参数。例如，我们要让自定义的
+<code>ACLStudent</code> 类支持拷贝功能，则可以像如下这样:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">ACLStudent.h</span><br><span class="line"></span><br><span class="line">@interface ACLStudent : NSObject &lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, assign, readonly) NSInteger studentId;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *firstName;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;</span><br><span class="line">@end</span><br><span class="line">-----</span><br><span class="line"></span><br><span class="line">ACLStudent.m</span><br><span class="line"></span><br><span class="line">@implementation ACLStudent</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;</span><br><span class="line">    self = [super init];</span><br><span class="line">    if (self) &#123;</span><br><span class="line">        _studentId = studentId;</span><br><span class="line">        _firstName = [firstName copy];</span><br><span class="line">        _lastName = [lastName copy];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)copyWithZone:(NSZone *)zone &#123;</span><br><span class="line">    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];</span><br><span class="line">    </span><br><span class="line">    return copy;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (BOOL)accessInstanceVariablesDirectly &#123;</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
-<p>上例中 <code>copyWithZone:</code> 方法使用了全能初始化方法(designated initializer)来执行拷贝对象的所有初始化工作。这里需要注意，对于未能在全能初始化方法中设置好的变量，需要在 <code>copyWithZone:</code> 方法中做特殊处理。例如，如果在 <code>ACLStudent</code> 类中增加一个变量，来存储当前学生所选选修课的科目，完整代码变成如下:</p>
+<p>上例中 <code>copyWithZone:</code> 方法使用了全能初始化方法(designated
+initializer)来执行拷贝对象的所有初始化工作。这里需要注意，对于未能在全能初始化方法中设置好的变量，需要在
+<code>copyWithZone:</code> 方法中做特殊处理。例如，如果在
+<code>ACLStudent</code>
+类中增加一个变量，来存储当前学生所选选修课的科目，完整代码变成如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ACLStudent.h</span><br><span class="line"></span><br><span class="line">@class ACLCourse;</span><br><span class="line">@interface ACLStudent : NSObject &lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property (nonatomic, assign, readonly) NSInteger studentId;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *firstName;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName;</span><br><span class="line"></span><br><span class="line">- (void)addElective:(ACLCourse *)course;</span><br><span class="line"></span><br><span class="line">- (void)removeElective:(ACLCourse *)course;</span><br><span class="line">@end</span><br><span class="line">--------</span><br><span class="line"></span><br><span class="line">@implementation ACLStudent &#123;</span><br><span class="line">    NSMutableSet *_electives;  /**&lt; 选修科目 */</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithStudentId:(NSInteger)studentId firstName:(NSString *)firstName lastName:(NSString *)lastName &#123;</span><br><span class="line">    self = [super init];</span><br><span class="line">    if (self) &#123;</span><br><span class="line">        _studentId = studentId;</span><br><span class="line">        _firstName = [firstName copy];</span><br><span class="line">        _lastName = [lastName copy];</span><br><span class="line">        </span><br><span class="line">        _electives = [NSMutableSet new];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)addElective:(ACLCourse *)course &#123;</span><br><span class="line">    [_electives addObject:course];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)removeElective:(ACLCourse *)course &#123;</span><br><span class="line">    [_electives removeObject:course];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (instancetype)copyWithZone:(NSZone *)zone &#123;</span><br><span class="line">    ACLStudent *copy = [[[self class] allocWithZone:zone] initWithStudentId:_studentId firstName:_firstName lastName:_lastName];</span><br><span class="line">    copy-&gt;_electives = [[NSMutableSet alloc] initWithSet:_electives copyItems:YES];</span><br><span class="line">    </span><br><span class="line">    return copy;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (BOOL)accessInstanceVariablesDirectly &#123;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
-<p>注意全能初始化方法和 <code>copyWithZone:</code> 方法实现的变化, 这里我们对 <code>_electives</code> 对象执行的是深拷贝。</p>
-<p>假如我们想让自定义对象支持 <code>mutableCopy</code> 操作，那又应该怎么操作呢?这需要自定义对象遵循 <code>NSMutableCopying</code> 协议, 该协议也只有一个方法:</p>
+<p>注意全能初始化方法和 <code>copyWithZone:</code> 方法实现的变化,
+这里我们对 <code>_electives</code> 对象执行的是深拷贝。</p>
+<p>假如我们想让自定义对象支持 <code>mutableCopy</code>
+操作，那又应该怎么操作呢?这需要自定义对象遵循
+<code>NSMutableCopying</code> 协议, 该协议也只有一个方法:</p>
 <p><code>- (id)mutableCopyWithZone:(nullable NSZone *)zone;</code></p>
-<p>其与 copy 相似，也是使用默认的 zone 参数来调用 <code>mutableCopyWithZone:</code>。</p>
-<p>如果类分为可变版本和不可变版本，那么就应该实现 <code>NSMutableCopying</code>, 且在可变类中覆写 <code>copyWithZone:</code> 方法时，应该返回一份不可变的版本。无论当前实例是否可变，若需获取其可变版本的拷贝，均应调用 <code>mutableCopy</code> 方法，若需不可变的拷贝，则总应该调用 <code>copy</code> 方法。例如对于不可变的 NSArray 和可变的 NSMutableArray，以下关系总是成立:</p>
+<p>其与 copy 相似，也是使用默认的 zone 参数来调用
+<code>mutableCopyWithZone:</code>。</p>
+<p>如果类分为可变版本和不可变版本，那么就应该实现
+<code>NSMutableCopying</code>, 且在可变类中覆写
+<code>copyWithZone:</code>
+方法时，应该返回一份不可变的版本。无论当前实例是否可变，若需获取其可变版本的拷贝，均应调用
+<code>mutableCopy</code> 方法，若需不可变的拷贝，则总应该调用
+<code>copy</code> 方法。例如对于不可变的 NSArray 和可变的
+NSMutableArray，以下关系总是成立:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- [NSMutableArray copy] =&gt; NSArray</span><br><span class="line">- [NSArray mutableCopy] =&gt; NSMutableArray</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>如何对 <code>NSArray</code> 执行深拷贝呢？苹果官方文档 <a target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html">Copying Collections</a> 提供了以下两种方法。</p>
+<hr />
+<p>如何对 <code>NSArray</code> 执行深拷贝呢？苹果官方文档 <a
+target="_blank" rel="noopener" href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html">Copying
+Collections</a> 提供了以下两种方法。</p>
 <p>方法1:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray *deepCopyArray=[[NSArray alloc] initWithArray:someArray copyItems:YES];</span><br></pre></td></tr></table></figure>
-
-<p>这种方式执行拷贝时，<code>someArray</code> 中的可变对象是执行深拷贝，而对于不可变对象，仍然执行的是浅拷贝。</p>
+<p>这种方式执行拷贝时，<code>someArray</code>
+中的可变对象是执行深拷贝，而对于不可变对象，仍然执行的是浅拷贝。</p>
 <p>方法2:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSArray *trueDeepCopyArray = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:oldArray]];</span><br></pre></td></tr></table></figure>
-
-<p>这种方式实现的是真正意义上的深拷贝，<code>oldArray</code> 中所有元素都是深拷贝。         </p>
-<p>那么 <code>copy</code> 和 <code>mutableCopy</code> 返回的对象是执行的深拷贝还是浅拷贝呢？这篇博客 [copy与mutableCopy][] 对系统对象执行 <code>copy</code> 和 <code>mutableCopy</code> 时到底执行的深拷贝还是浅拷贝进行了讨论。其中系统对象分为了两类:</p>
+<p>这种方式实现的是真正意义上的深拷贝，<code>oldArray</code>
+中所有元素都是深拷贝。</p>
+<p>那么 <code>copy</code> 和 <code>mutableCopy</code>
+返回的对象是执行的深拷贝还是浅拷贝呢？这篇博客 [copy与mutableCopy][]
+对系统对象执行 <code>copy</code> 和 <code>mutableCopy</code>
+时到底执行的深拷贝还是浅拷贝进行了讨论。其中系统对象分为了两类:</p>
 <ul>
-<li>系统的非容器类对象，如 <code>NSString</code>、<code>NSMutableString</code>、<code>NSNumber</code> 等。</li>
-<li>系统的容器类对象，如 <code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code> 等。</li>
+<li>系统的非容器类对象，如
+<code>NSString</code>、<code>NSMutableString</code>、<code>NSNumber</code>
+等。</li>
+<li>系统的容器类对象，如
+<code>NSArray</code>、<code>NSMutableArray</code>、<code>NSDictionary</code>、<code>NSMutableDictionary</code>
+等。</li>
 </ul>
 <p>现把结论摘抄如下:</p>
-<ol>
-<li>对于系统的非容器类对象，如果对一不可变对象(如 <code>NSString</code>)复制，<code>copy</code> 是指针复制(浅拷贝)和 <code>mutableCopy</code> 就是对象复制(深拷贝); 如果是对可变对象(如 <code>NSMutableString</code>)复制，<code>copy</code> 和 <code>mutableCopy</code> 都是深拷贝，但是 <code>copy</code> 返回的对象是不可变的。</li>
-<li>对于系统的容器类对象，对不可变对象(如 <code>NSArray</code>)进行复制，<code>copy</code> 是指针复制(浅拷贝)， <code>mutableCopy</code> 是对象复制(深拷贝), 但是不管是 <code>copy</code> 还是 <code>mutableCopy</code>, 且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。</li>
-<li>对于系统的容器类对象，对可变对象(如 <code>NSMutableArray</code>)进行复制时，<code>copy</code> 和 <code>mutableCopy</code> 都是对象复制(深拷贝)，但是不管是 <code>copy</code> 还是 <code>mutableCopy</code>，且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。</li>
+<ol type="1">
+<li>对于系统的非容器类对象，如果对一不可变对象(如
+<code>NSString</code>)复制，<code>copy</code> 是指针复制(浅拷贝)和
+<code>mutableCopy</code> 就是对象复制(深拷贝); 如果是对可变对象(如
+<code>NSMutableString</code>)复制，<code>copy</code> 和
+<code>mutableCopy</code> 都是深拷贝，但是 <code>copy</code>
+返回的对象是不可变的。</li>
+<li>对于系统的容器类对象，对不可变对象(如
+<code>NSArray</code>)进行复制，<code>copy</code> 是指针复制(浅拷贝)，
+<code>mutableCopy</code> 是对象复制(深拷贝), 但是不管是
+<code>copy</code> 还是 <code>mutableCopy</code>,
+且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。</li>
+<li>对于系统的容器类对象，对可变对象(如
+<code>NSMutableArray</code>)进行复制时，<code>copy</code> 和
+<code>mutableCopy</code> 都是对象复制(深拷贝)，但是不管是
+<code>copy</code> 还是
+<code>mutableCopy</code>，且不论容器内对象是可变还是不可变，返回的容器内对象都是指针复制(浅拷贝)。</li>
 </ol>
-<hr>
-<p>如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
-<div class="figure " style="width:174px;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" style="width:174px;height:174px;"alt=""></div>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -465,7 +499,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -15,7 +15,7 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。\n\n\n现在有四张UIImage，初始化后将其存入数组中:\n12345self.imgs = @[[UIImage imageNamed:@&quot;bg01&quot;],              [UIImage imageNamed:@&quot;bg02&quot;],              [UIImage imageNamed:@&quot;bg03&quot;],              [UIImage imageNamed:@&quot;bg04&quot;]];self.imageView.image = self.imgs[0];\n有一按钮，其事件如下:\n123- (IBAction)switchImg:(id)sender &#123;    &#125;\n\n现在填充其实现来完成UIImageView改变image时加入1秒的淡入淡出\n方法1. 使用CATransition\n12345678910CATransition *transition = [CATransition animation];transition.type = kCATransitionFade;transition.duration = 1.0f;transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];[self.imageView.layer addAnimation:transition forKey:nil];UIImage *currentImage = self.imageView.image;NSUInteger index = [self.imgs indexOfObject:currentImage];index = (index + 1) % [self.imgs count];self.imageView.image = self.imgs[index];\n\n方法2. 使用UIView类方法transitionWithView\n1234567UIImage *currentImage = self.imageView.image;NSUInteger index = [self.imgs indexOfObject:currentImage];index = (index + 1) % [self.imgs count];[UIView transitionWithView:self.imageView duration:1 options:UIViewAnimationOptionTransitionCrossDissolve animations:^&#123;    self.imageView.image = self.imgs[index];&#125; completion:nil];\n\n参考: stackoverflow\n\n如果觉得本文对你有帮助，就请用微信打赏我吧^_^\n\n\n\n","dateCreated":"2015-07-11T19:40:08+08:00","dateModified":"2015-10-20T21:30:10+08:00","datePublished":"2015-07-11T19:40:08+08:00","description":"当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。","headline":"iOS改变UIImageView的image时添加渐变","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/07/11/ios-animate-change-uiimageview-image/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/07/11/ios-animate-change-uiimageview-image/","keywords":"iOS"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。\r\n\r\n现在有四张UIImage，初始化后将其存入数组中:\r\n12345self.imgs = @[[UIImage imageNamed:@&quot;bg01&quot;],              [UIImage imageNamed:@&quot;bg02&quot;],              [UIImage imageNamed:@&quot;bg03&quot;],              [UIImage imageNamed:@&quot;bg04&quot;]];self.imageView.image = self.imgs[0];\r\n有一按钮，其事件如下:\r\n123- (IBAction)switchImg:(id)sender &#123;    &#125;\r\n现在填充其实现来完成UIImageView改变image时加入1秒的淡入淡出\r\n方法1. 使用CATransition\r\n12345678910CATransition *transition = [CATransition animation];transition.type = kCATransitionFade;transition.duration = 1.0f;transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];[self.imageView.layer addAnimation:transition forKey:nil];UIImage *currentImage = self.imageView.image;NSUInteger index = [self.imgs indexOfObject:currentImage];index = (index + 1) % [self.imgs count];self.imageView.image = self.imgs[index];\r\n方法2. 使用UIView类方法transitionWithView\r\n1234567UIImage *currentImage = self.imageView.image;NSUInteger index = [self.imgs indexOfObject:currentImage];index = (index + 1) % [self.imgs count];[UIView transitionWithView:self.imageView duration:1 options:UIViewAnimationOptionTransitionCrossDissolve animations:^&#123;    self.imageView.image = self.imgs[index];&#125; completion:nil];\r\n参考: stackoverflow\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-07-11T19:40:08+08:00","dateModified":"2024-10-21T22:26:16+08:00","datePublished":"2015-07-11T19:40:08+08:00","description":"当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。","headline":"iOS改变UIImageView的image时添加渐变","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/07/11/ios-animate-change-uiimageview-image/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/07/11/ios-animate-change-uiimageview-image/","keywords":"iOS"}</script>
     <meta name="description" content="当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS改变UIImageView的image时添加渐变">
@@ -23,13 +23,11 @@
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
 <meta property="og:description" content="当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
 <meta property="article:published_time" content="2015-07-11T11:40:08.000Z">
-<meta property="article:modified_time" content="2015-10-20T13:30:10.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:26:16.834Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png">
     
     
         
@@ -110,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -254,25 +253,19 @@
         <div class="main-content-wrap">
             <p>当改变UIImageView的image属性时，UI会立刻从一张图片切换到另一张图片，显得十分生硬，本文记录如何为改变UIImageView的image属性时加入淡入淡出的效果。</p>
 <span id="more"></span>
-
 <p>现在有四张UIImage，初始化后将其存入数组中:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">self.imgs = @[[UIImage imageNamed:@&quot;bg01&quot;],</span><br><span class="line">              [UIImage imageNamed:@&quot;bg02&quot;],</span><br><span class="line">              [UIImage imageNamed:@&quot;bg03&quot;],</span><br><span class="line">              [UIImage imageNamed:@&quot;bg04&quot;]];</span><br><span class="line">self.imageView.image = self.imgs[0];</span><br></pre></td></tr></table></figure>
 <p>有一按钮，其事件如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (IBAction)switchImg:(id)sender &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>现在填充其实现来完成UIImageView改变image时加入1秒的淡入淡出</p>
 <p>方法1. 使用<code>CATransition</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CATransition *transition = [CATransition animation];</span><br><span class="line">transition.type = kCATransitionFade;</span><br><span class="line">transition.duration = 1.0f;</span><br><span class="line">transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];</span><br><span class="line">[self.imageView.layer addAnimation:transition forKey:nil];</span><br><span class="line"></span><br><span class="line">UIImage *currentImage = self.imageView.image;</span><br><span class="line">NSUInteger index = [self.imgs indexOfObject:currentImage];</span><br><span class="line">index = (index + 1) % [self.imgs count];</span><br><span class="line">self.imageView.image = self.imgs[index];</span><br></pre></td></tr></table></figure>
-
 <p>方法2. 使用UIView类方法<code>transitionWithView</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">UIImage *currentImage = self.imageView.image;</span><br><span class="line">NSUInteger index = [self.imgs indexOfObject:currentImage];</span><br><span class="line">index = (index + 1) % [self.imgs count];</span><br><span class="line"></span><br><span class="line">[UIView transitionWithView:self.imageView duration:1 options:UIViewAnimationOptionTransitionCrossDissolve animations:^&#123;</span><br><span class="line">    self.imageView.image = self.imgs[index];</span><br><span class="line">&#125; completion:nil];</span><br></pre></td></tr></table></figure>
-
-<p>参考: <a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/2834573/how-to-animate-the-change-of-image-in-an-uiimageview">stackoverflow</a></p>
-<hr>
-<p>如果觉得本文对你有帮助，就请用微信打赏我吧^_^</p>
-<div class="figure " style="width:117;"><img class="fig-img" src="http://7jpr4u.com1.z0.glb.clouddn.com/weixinpay/weixin_3_5.png" style="width:117;height:174;"alt=""></div>
-
-
+<p>参考: <a
+target="_blank" rel="noopener" href="http://stackoverflow.com/questions/2834573/how-to-animate-the-change-of-image-in-an-uiimageview">stackoverflow</a></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -445,7 +438,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

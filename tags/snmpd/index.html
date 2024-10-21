@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -251,7 +252,8 @@
             
                 <div class="postShorten-excerpt">
                     <p>本文记录的是在进行Net-SNMP配置及测试时经常用到的命令，具体的使用方法可参考命令的帮助文档。</p>
-<p>####1. net-snmp-create-v3-user####<br>正如命令的字面意思，该命令用来创建 Net-SNMP v3用户。</p>
+<p>####1. net-snmp-create-v3-user#### 正如命令的字面意思，该命令用来创建
+Net-SNMP v3用户。</p>
 <p>####2. net-snmp-config####</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">The net-snmp-config shell script is designed to retrieve the  </span><br><span class="line">configuration information about the libraries and binaries dealing  </span><br><span class="line">with the Simple Network Management Protocol (SNMP), built from the  </span><br><span class="line">net-snmp source package. The information is particularily useful  </span><br><span class="line">for applications that need to link against the SNMP libraries and  </span><br><span class="line">hence must know about any other libraries that must be linked in  </span><br><span class="line">as well.</span><br></pre></td></tr></table></figure>
 <p><code>net-snmp-config</code>命令用来获取处理SNMP协议的库和二进制文件的配置信息，其从Net-SNMP的源文件包编译而得。该信息对那些依赖于SNMP库的应用尤其有用.</p>
@@ -305,11 +307,15 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录是如何配置 Net-SNMP VACM. VACM，即 View Based Access Control.分为两部分: 1. VACM的快速配置 2. VACM的综合配置，该配置能够更加精细地配置用户的访问控制权限.</p>
+                    <p>本文记录是如何配置 Net-SNMP VACM. VACM，即 View Based Access
+Control.分为两部分: 1. VACM的快速配置 2.
+VACM的综合配置，该配置能够更加精细地配置用户的访问控制权限.</p>
 <p>###一、VACM的快速配置###</p>
-<p>####1. SNMPv1 and SNMPv2 rocommunity&#x2F;rwcommunity####<br>对于SNMPv1和SNMPv2c，对基于<code>COMMUNITY</code>的请求，能够将其访问权限限定在特定的OID树，且将访问来源限定在特定的IP访问内，通常采用如下格式:</p>
+<p>####1. SNMPv1 and SNMPv2 rocommunity/rwcommunity####
+对于SNMPv1和SNMPv2c，对基于<code>COMMUNITY</code>的请求，能够将其访问权限限定在特定的OID树，且将访问来源限定在特定的IP访问内，通常采用如下格式:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity COMMUNITY [SOURCE [OID]]</span><br><span class="line">rocommunity6 COMMUNITY [SOURCE [OID]]</span><br><span class="line">rwcommunity6 COMMUNITY [SOURCE [OID]]</span><br></pre></td></tr></table></figure>
-<p>对于SNMP 5.3及其以上的版本，该指示符也能够将其访问权限限定在特定的视图VIEW中，语法如下:</p>
+<p>对于SNMP
+5.3及其以上的版本，该指示符也能够将其访问权限限定在特定的视图VIEW中，语法如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rocommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity COMMUNITY SOURCE -V VIEW</span><br><span class="line">rocommunity6 COMMUNITY SOURCE -V VIEW</span><br><span class="line">rwcommunity6 COMMUNITY SOURCE -V VIEW</span><br></pre></td></tr></table></figure>
                     
                         <a
@@ -361,8 +367,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
-<p>在snmpd.conf 中使用 view 标识符加以 mask 参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man page 中的摘要:</p>
+                    <p>本文记录的是对 Net-SNMP 中 VACM mask 的理解，VACM 即 View Based
+Access Control 的缩写，其用于控制用户访问设备 MIB 树的权限。</p>
+<p>在snmpd.conf 中使用 view 标识符加以 mask
+参数，能够将用户的访问权限控制在 MIB Table 中的某一特定行，下面是 man
+page 中的摘要:</p>
                     
                         <a
                             href="/2014/03/14/snmp-vacm-mask/"
@@ -413,12 +422,16 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文简要记录了在Windows上安装 net-snmp 5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
-<p>安装net-snmp 5.7.1之前需要先安装  </p>
-<ol>
+                    <p>本文简要记录了在Windows上安装 net-snmp
+5.7.1的步骤，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/"
+title="snmp官网">net-snmp官方网站</a>下载。</p>
+<p>安装net-snmp 5.7.1之前需要先安装</p>
+<ol type="1">
 <li><a target="_blank" rel="noopener" href="http://xoyozo.me/blog/vs2010.html">VS2010</a></li>
-<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32 OpenSSL v1.0.1f</a></li>
-<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl 5.16.3</a></li>
+<li><a target="_blank" rel="noopener" href="http://slproweb.com/products/Win32OpenSSL.html">Win32
+OpenSSL v1.0.1f</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.activestate.com/activeperl/downloads">ActivePerl
+5.16.3</a></li>
 </ol>
                     
                         <a
@@ -470,8 +483,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p>本文记录的是在ubuntu12.04上使用net-snmp 5.7.2源码包安装snmp的过程，最新的源码包可上<a target="_blank" rel="noopener" href="http://www.net-snmp.org/](http://www.net-snmp.org/" title="snmp官网">net-snmp官方网站</a>下载。</p>
-<ol>
+                    <p>本文记录的是在ubuntu12.04上使用net-snmp
+5.7.2源码包安装snmp的过程，最新的源码包可上<a
+target="_blank" rel="noopener" href="http://www.net-snmp.org/%5D(http://www.net-snmp.org/"
+title="snmp官网">net-snmp官方网站</a>下载。</p>
+<ol type="1">
 <li>如果系统自带有低版本的snmp，则可用如下方法卸载:</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cloud@cloud:~$ sudo apt-get purge snmpd snmp</span><br><span class="line">cloud@cloud:~$ sudo apt-get autoremove</span><br></pre></td></tr></table></figure>
@@ -528,7 +544,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

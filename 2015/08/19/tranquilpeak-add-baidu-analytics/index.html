@@ -15,7 +15,7 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"tranquilpeak是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。\n\n\n在 themes/tranquilpeak/layout/_partial/head.ejs 文件末尾， &lt;/head&gt; 之前添加 &lt;%- partial(&#39;baidu-analytics&#39;) %&gt;, 在此处应该也可以看到google统计的东西。\n在 themes/tranquilpeak/layout/_partial 目录下新建文件 baidu-analytics.ejs, 写好如下框架(参考将该目录下 google-analytics.ejs 文件内容):\n12345&lt;% if (theme.baidu_analytics_id) &#123; %&gt;    &lt;script type=&quot;text/javascript&quot;&gt;    &lt;/script&gt;&lt;% &#125; %&gt;\n\n在百度统计注册，在网站列表-&gt;添加网站处添加网站，然后获取该网站的统计代码如下所示:\n123456789&lt;script&gt;var _hmt = _hmt || [];(function() &#123;  var hm = document.createElement(&quot;script&quot;);  hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;  var s = document.getElementsByTagName(&quot;script&quot;)[0];   s.parentNode.insertBefore(hm, s);&#125;)();&lt;/script&gt;\n\n将上述&lt;script&gt;&lt;/script&gt;内部内容复制至 baidu-analytics.ejs 文件的该标签内部，最终 baidu-analytics.ejs 文件如下所示:\n1234567891011&lt;% if (theme.baidu_analytics_id) &#123; %&gt;    &lt;script type=&quot;text/javascript&quot;&gt;        var _hmt = _hmt || [];    (function() &#123;      var hm = document.createElement(&quot;script&quot;);      hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;      var s = document.getElementsByTagName(&quot;script&quot;)[0];       s.parentNode.insertBefore(hm, s);    &#125;)();    &lt;/script&gt;&lt;% &#125; %&gt;\n\n最后在 tranquilpeak 主题的根目录下的 _config.yml 中添加 baidu_analytics_id 字段如下:\n1234# Your Google analystics web property ID : UA-XXXXX-Xgoogle_analytics_id:#百度统计idbaidu_analytics_id: true\n\n完毕!\n","dateCreated":"2015-08-19T22:10:16+08:00","dateModified":"2015-08-19T22:49:02+08:00","datePublished":"2015-08-19T22:10:16+08:00","description":"tranquilpeak是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。","headline":"为tranquilpeak主题添加百度统计","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/19/tranquilpeak-add-baidu-analytics/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/19/tranquilpeak-add-baidu-analytics/","keywords":"hexo"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"tranquilpeak是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。\r\n\r\n在 themes/tranquilpeak/layout/_partial/head.ejs\r\n文件末尾， &lt;/head&gt; 之前添加\r\n&lt;%- partial('baidu-analytics') %&gt;,\r\n在此处应该也可以看到google统计的东西。\r\n在 themes/tranquilpeak/layout/_partial 目录下新建文件\r\nbaidu-analytics.ejs, 写好如下框架(参考将该目录下\r\ngoogle-analytics.ejs 文件内容):\r\n12345&lt;% if (theme.baidu_analytics_id) &#123; %&gt;    &lt;script type=&quot;text/javascript&quot;&gt;    &lt;/script&gt;&lt;% &#125; %&gt;\r\n在百度统计注册，在网站列表-&gt;添加网站处添加网站，然后获取该网站的统计代码如下所示:\r\n123456789&lt;script&gt;var _hmt = _hmt || [];(function() &#123;  var hm = document.createElement(&quot;script&quot;);  hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;  var s = document.getElementsByTagName(&quot;script&quot;)[0];   s.parentNode.insertBefore(hm, s);&#125;)();&lt;/script&gt;\r\n将上述&lt;script&gt;&lt;/script&gt;内部内容复制至\r\nbaidu-analytics.ejs 文件的该标签内部，最终\r\nbaidu-analytics.ejs 文件如下所示:\r\n1234567891011&lt;% if (theme.baidu_analytics_id) &#123; %&gt;    &lt;script type=&quot;text/javascript&quot;&gt;        var _hmt = _hmt || [];    (function() &#123;      var hm = document.createElement(&quot;script&quot;);      hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;      var s = document.getElementsByTagName(&quot;script&quot;)[0];       s.parentNode.insertBefore(hm, s);    &#125;)();    &lt;/script&gt;&lt;% &#125; %&gt;\r\n最后在 tranquilpeak 主题的根目录下的\r\n_config.yml 中添加 baidu_analytics_id\r\n字段如下:\r\n1234# Your Google analystics web property ID : UA-XXXXX-Xgoogle_analytics_id:#百度统计idbaidu_analytics_id: true\r\n完毕!\r\n","dateCreated":"2015-08-19T22:10:16+08:00","dateModified":"2015-08-19T22:49:02+08:00","datePublished":"2015-08-19T22:10:16+08:00","description":"tranquilpeak是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。","headline":"为tranquilpeak主题添加百度统计","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/08/19/tranquilpeak-add-baidu-analytics/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/08/19/tranquilpeak-add-baidu-analytics/","keywords":"hexo"}</script>
     <meta name="description" content="tranquilpeak是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="为tranquilpeak主题添加百度统计">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,22 +251,27 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p><a target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/tranquilpeak-hexo-theme">tranquilpeak</a>是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。</p>
+            <p><a
+target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/tranquilpeak-hexo-theme">tranquilpeak</a>是Hexo的主题，目前版本是1.3.0，其自带google统计，为了适应国情的发展，可以替换为百度统计。</p>
 <span id="more"></span>
-
-<p>在 <code>themes/tranquilpeak/layout/_partial/head.ejs</code> 文件末尾， <code>&lt;/head&gt;</code> 之前添加 <code>&lt;%- partial(&#39;baidu-analytics&#39;) %&gt;</code>, 在此处应该也可以看到google统计的东西。</p>
-<p>在 <code>themes/tranquilpeak/layout/_partial</code> 目录下新建文件 <code>baidu-analytics.ejs</code>, 写好如下框架(参考将该目录下 <code>google-analytics.ejs</code> 文件内容):</p>
+<p>在 <code>themes/tranquilpeak/layout/_partial/head.ejs</code>
+文件末尾， <code>&lt;/head&gt;</code> 之前添加
+<code>&lt;%- partial('baidu-analytics') %&gt;</code>,
+在此处应该也可以看到google统计的东西。</p>
+<p>在 <code>themes/tranquilpeak/layout/_partial</code> 目录下新建文件
+<code>baidu-analytics.ejs</code>, 写好如下框架(参考将该目录下
+<code>google-analytics.ejs</code> 文件内容):</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;% if (theme.baidu_analytics_id) &#123; %&gt;</span><br><span class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
-
 <p>在百度统计注册，在网站列表-&gt;添加网站处添加网站，然后获取该网站的统计代码如下所示:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">var _hmt = _hmt || [];</span><br><span class="line">(function() &#123;</span><br><span class="line">  var hm = document.createElement(&quot;script&quot;);</span><br><span class="line">  hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;</span><br><span class="line">  var s = document.getElementsByTagName(&quot;script&quot;)[0]; </span><br><span class="line">  s.parentNode.insertBefore(hm, s);</span><br><span class="line">&#125;)();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>将上述<code>&lt;script&gt;&lt;/script&gt;</code>内部内容复制至 <code>baidu-analytics.ejs</code> 文件的该标签内部，最终 <code>baidu-analytics.ejs</code> 文件如下所示:</p>
+<p>将上述<code>&lt;script&gt;&lt;/script&gt;</code>内部内容复制至
+<code>baidu-analytics.ejs</code> 文件的该标签内部，最终
+<code>baidu-analytics.ejs</code> 文件如下所示:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;% if (theme.baidu_analytics_id) &#123; %&gt;</span><br><span class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line">        var _hmt = _hmt || [];</span><br><span class="line">    (function() &#123;</span><br><span class="line">      var hm = document.createElement(&quot;script&quot;);</span><br><span class="line">      hm.src = &quot;//hm.baidu.com/hm.js?3303831a7fe9448ec563cb97d630cb4e&quot;;</span><br><span class="line">      var s = document.getElementsByTagName(&quot;script&quot;)[0]; </span><br><span class="line">      s.parentNode.insertBefore(hm, s);</span><br><span class="line">    &#125;)();</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
-
-<p>最后在 <code>tranquilpeak</code> 主题的根目录下的 <code>_config.yml</code> 中添加 <code>baidu_analytics_id</code> 字段如下:</p>
+<p>最后在 <code>tranquilpeak</code> 主题的根目录下的
+<code>_config.yml</code> 中添加 <code>baidu_analytics_id</code>
+字段如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Your Google analystics web property ID : UA-XXXXX-X</span><br><span class="line">google_analytics_id:</span><br><span class="line">#百度统计id</span><br><span class="line">baidu_analytics_id: true</span><br></pre></td></tr></table></figure>
-
 <p>完毕!</p>
 
             
@@ -439,7 +445,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

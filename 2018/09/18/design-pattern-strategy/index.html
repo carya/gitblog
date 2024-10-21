@@ -17,7 +17,7 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-else或switch-case语句。面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。\n\n\n何为策略模式策略模式的使用可以粗暴的分为3个角色。\n\n策略类，或者定义为策略接口、策略协议，它为所有支持的或相关的算法声明了一个共同接口。\n策略对象：它会实现策略协议，策略对象通常存在多个，分别封装实现具体的算法。\n场景(context)类对象：配置有一个具体策略对象的示例，场景对象使用策略接口调用由具体策略类定义的算法。\n\n它们的静态关系如下图所示：\n\n策略模式类图静态关系\n\n\n一组算法，或者说算法的一个层次结构，以ConcreteStrategy(A、B和C)类的形式，共享相同的AlgorithmInterface接口，这样Context就能使用相同的接口访问算法的各种变体。\nContext的实例可以在运行时用不同的ConcreteStrategy对象进行配置，这可以理解成更换context对象的『内容』，因为变更是发生在对象的内部。\n何时使用策略模式在以下情形，考虑使用策略模式。\n\n一个类在其操作中使用多个条件语句来定义许多行为，我们可以把相关的条件分支移动到它们自己的策略类中。\n需要算法的各种变体。\n需要避免把复杂的、与算法相关的数据结构暴露给客户端。\n\n在UITextField中应用策略模式类图设计如下图所示：\n\n策略模式在输入验证中的应用\n\n策略接口这里策略类抽象了两个接口：\n12345678910@protocol ACITextFieldInputValidator &lt;NSObject&gt;- (BOOL)validateInput:(UITextField *)textField    charactersInRange:(NSRange)range    replacementString:(NSString *)string                error:(NSError **)error;- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;@end\n\n其中\n1234- (BOOL)validateInput:(UITextField *)textField    charactersInRange:(NSRange)range    replacementString:(NSString *)string                error:(NSError **)error;\n\n在UITextFieldDelegate的- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string方法中进行验证。\n- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;在UITextFieldDelegate的- (void)textFieldDidEndEditing:(UITextField *)textField方法中进行验证。\n这里特殊说明一下：\n接口中使用UITextField作为入参而不是使用NSString作为入参，是因为如果只用NSString值，那么策略对象中的动作就是单向的。就是说，验证器只能检查，然后返回结果，而不能修改原始值。而使用UITextField型的输入参数，就可以两全其美。验证器可以选择修改文本框的原始值(比如删除无效的值),或者只检查而不修改。\n另一个问题是，如果输入值错误，为什么不引发一个NSException异常呢？这是因为在Cocoa Touch框架中，引发自己的异常然后再用try-catch语句块来捕捉，这非常耗资源，所以不推荐，返回NSError对象的开销相对较小。\n场景这里使用策略的场景是UITextField，在UITextField的子类InputValidateTextField中，声明一个遵循策略协议的对象属性。\n1234567891011@interface ACIInputValidateTextField : UITextField@property (nonatomic, strong) id&lt;ACITextFieldInputValidator&gt; inputValidator;- (BOOL)validateCharactersInRange:(NSRange)range                replacementString:(NSString *)string                            error:(NSError **)error;- (BOOL)validateEndEditingWithError:(NSError **)error;@end\n\n同时，场景对象中会声明方法来处理调用策略对象的接口方法。具体示例如下：\n12345678910111213141516@implementation ACIInputValidateTextField- (BOOL)validateCharactersInRange:(NSRange)range                replacementString:(NSString *)string                            error:(NSError **)error &#123;        BOOL shouldChange = [self.inputValidator validateInput:self charactersInRange:range replacementString:string error:error];    return shouldChange;&#125;- (BOOL)validateEndEditingWithError:(NSError **)error &#123;    BOOL isValid = [self.inputValidator validateEndEditingInput:self error:error];    return isValid;&#125;@end\n\n\n策略对象策略对象，这里是遵循了策略协议的TextFieldInputValidator的对象。每个对象会实现TextFieldInputValidator的方法，其中封装了具体的策略实现。\n具体代码示例详见github InputValidator\n\n如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^\n\n","dateCreated":"2018-09-18T22:51:41+08:00","dateModified":"2021-04-18T11:45:30+08:00","datePublished":"2018-09-18T22:51:41+08:00","description":"情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-else或switch-case语句。面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。","headline":"iOS策略设计模式实践","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2018/09/18/design-pattern-strategy/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2018/09/18/design-pattern-strategy/","keywords":"iOS, 设计模式"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-else或switch-case语句。\r\n面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。\r\n\r\n何为策略模式\r\n策略模式的使用可以粗暴的分为3个角色。\r\n\r\n策略类，或者定义为策略接口、策略协议，它为所有支持的或相关的算法声明了一个共同接口。\r\n策略对象：它会实现策略协议，策略对象通常存在多个，分别封装实现具体的算法。\r\n场景(context)类对象：配置有一个具体策略对象的示例，场景对象使用策略接口调用由具体策略类定义的算法。\r\n\r\n它们的静态关系如下图所示：\r\n\r\n策略模式类图静态关系\r\n一组算法，或者说算法的一个层次结构，以ConcreteStrategy(A、B和C)类的形式，共享相同的AlgorithmInterface接口，这样Context就能使用相同的接口访问算法的各种变体。\r\nContext的实例可以在运行时用不同的ConcreteStrategy对象进行配置，这可以理解成更换context对象的『内容』，因为变更是发生在对象的内部。\r\n何时使用策略模式\r\n在以下情形，考虑使用策略模式。\r\n\r\n一个类在其操作中使用多个条件语句来定义许多行为，我们可以把相关的条件分支移动到它们自己的策略类中。\r\n需要算法的各种变体。\r\n需要避免把复杂的、与算法相关的数据结构暴露给客户端。\r\n\r\n在UITextField中应用策略模式\r\n类图设计如下图所示：\r\n\r\n策略模式在输入验证中的应用\r\n策略接口\r\n这里策略类抽象了两个接口：\r\n12345678910@protocol ACITextFieldInputValidator &lt;NSObject&gt;- (BOOL)validateInput:(UITextField *)textField    charactersInRange:(NSRange)range    replacementString:(NSString *)string                error:(NSError **)error;- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;@end\r\n其中\r\n1234- (BOOL)validateInput:(UITextField *)textField    charactersInRange:(NSRange)range    replacementString:(NSString *)string                error:(NSError **)error;\r\n在UITextFieldDelegate的- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string方法中进行验证。\r\n- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;在UITextFieldDelegate的- (void)textFieldDidEndEditing:(UITextField *)textField方法中进行验证。\r\n这里特殊说明一下：\r\n接口中使用UITextField作为入参而不是使用NSString作为入参，是因为如果只用NSString值，那么策略对象中的动作就是单向的。就是说，验证器只能检查，然后返回结果，而不能修改原始值。而使用UITextField型的输入参数，就可以两全其美。验证器可以选择修改文本框的原始值(比如删除无效的值),或者只检查而不修改。\r\n另一个问题是，如果输入值错误，为什么不引发一个NSException异常呢？这是因为在Cocoa\r\nTouch框架中，引发自己的异常然后再用try-catch语句块来捕捉，这非常耗资源，所以不推荐，返回NSError对象的开销相对较小。\r\n场景\r\n这里使用策略的场景是UITextField，在UITextField的子类InputValidateTextField中，声明一个遵循策略协议的对象属性。\r\n1234567891011@interface ACIInputValidateTextField : UITextField@property (nonatomic, strong) id&lt;ACITextFieldInputValidator&gt; inputValidator;- (BOOL)validateCharactersInRange:(NSRange)range                replacementString:(NSString *)string                            error:(NSError **)error;- (BOOL)validateEndEditingWithError:(NSError **)error;@end\r\n同时，场景对象中会声明方法来处理调用策略对象的接口方法。具体示例如下：\r\n12345678910111213141516@implementation ACIInputValidateTextField- (BOOL)validateCharactersInRange:(NSRange)range                replacementString:(NSString *)string                            error:(NSError **)error &#123;        BOOL shouldChange = [self.inputValidator validateInput:self charactersInRange:range replacementString:string error:error];    return shouldChange;&#125;- (BOOL)validateEndEditingWithError:(NSError **)error &#123;    BOOL isValid = [self.inputValidator validateEndEditingInput:self error:error];    return isValid;&#125;@end\r\n策略对象\r\n策略对象，这里是遵循了策略协议的TextFieldInputValidator的对象。每个对象会实现TextFieldInputValidator的方法，其中封装了具体的策略实现。\r\n具体代码示例详见github\r\nInputValidator\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2018-09-18T22:51:41+08:00","dateModified":"2024-10-21T22:20:53+08:00","datePublished":"2018-09-18T22:51:41+08:00","description":"情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-else或switch-case语句。\r\n面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。","headline":"iOS策略设计模式实践","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2018/09/18/design-pattern-strategy/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2018/09/18/design-pattern-strategy/","keywords":"iOS, 设计模式"}</script>
     <meta name="description" content="情景：把一堆算法塞到同一段代码中，然后使用if-else或者switch-case条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆if-els">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS策略设计模式实践">
@@ -27,9 +27,8 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://liumh.com/img/design-pattern-strategy/overview-strategy-pattern.png">
 <meta property="og:image" content="http://liumh.com/img/design-pattern-strategy/inputvalidator-strategy-pattern.png">
-<meta property="og:image" content="http://liumh.com/img/wechat_appreciate_qrcode.jpeg">
 <meta property="article:published_time" content="2018-09-18T14:51:41.000Z">
-<meta property="article:modified_time" content="2021-04-18T03:45:30.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:20:53.208Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="设计模式">
@@ -115,7 +114,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -257,11 +257,12 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>情景：把一堆算法塞到同一段代码中，然后使用<code>if-else</code>或者<code>switch-case</code>条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆<code>if-else</code>或<code>switch-case</code>语句。<br>面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。</p>
+            <p>情景：把一堆算法塞到同一段代码中，然后使用<code>if-else</code>或者<code>switch-case</code>条件语句来决定要使用哪个算法？这些算法可能是一堆相似的类函数或方法，用以解决相关的问题。例如验证数据输入的情形，数据本身可以是任何数据类型(如CGFloat，NSString，NSInteger等)，每种数据类型需要不同的算法。如果把每一种算法封装成一个对象，那么就能消除根据数据类型决定使用什么算法的一堆<code>if-else</code>或<code>switch-case</code>语句。
+面向对象软件设计中，我们可以把相关算法分离为不同的类，成为策略，对应的设计模式称为策略模式。</p>
 <span id="more"></span>
-
-<h1 id="何为策略模式"><a href="#何为策略模式" class="headerlink" title="何为策略模式"></a>何为策略模式</h1><p>策略模式的使用可以粗暴的分为3个角色。</p>
-<ol>
+<h1 id="何为策略模式">何为策略模式</h1>
+<p>策略模式的使用可以粗暴的分为3个角色。</p>
+<ol type="1">
 <li>策略类，或者定义为策略接口、策略协议，它为所有支持的或相关的算法声明了一个共同接口。</li>
 <li>策略对象：它会实现策略协议，策略对象通常存在多个，分别封装实现具体的算法。</li>
 <li>场景(context)类对象：配置有一个具体策略对象的示例，场景对象使用策略接口调用由具体策略类定义的算法。</li>
@@ -269,43 +270,42 @@
 <p>它们的静态关系如下图所示：</p>
 <!--![](http://readus-org.qiniudn.com/img/design/overview-strategy-pattern.png)-->
 <div class="figure center" style="width:622;"><img class="fig-img" src="/img/design-pattern-strategy/overview-strategy-pattern.png" style="width:622;height:303;"alt="策略模式类图静态关系"><span class="caption">策略模式类图静态关系</span></div>
-
-
 <p>一组算法，或者说算法的一个层次结构，以ConcreteStrategy(A、B和C)类的形式，共享相同的AlgorithmInterface接口，这样Context就能使用相同的接口访问算法的各种变体。</p>
 <p>Context的实例可以在运行时用不同的ConcreteStrategy对象进行配置，这可以理解成更换context对象的『内容』，因为变更是发生在对象的内部。</p>
-<h1 id="何时使用策略模式"><a href="#何时使用策略模式" class="headerlink" title="何时使用策略模式"></a>何时使用策略模式</h1><p>在以下情形，考虑使用策略模式。</p>
+<h1 id="何时使用策略模式">何时使用策略模式</h1>
+<p>在以下情形，考虑使用策略模式。</p>
 <ul>
 <li>一个类在其操作中使用多个条件语句来定义许多行为，我们可以把相关的条件分支移动到它们自己的策略类中。</li>
 <li>需要算法的各种变体。</li>
 <li>需要避免把复杂的、与算法相关的数据结构暴露给客户端。</li>
 </ul>
-<h1 id="在UITextField中应用策略模式"><a href="#在UITextField中应用策略模式" class="headerlink" title="在UITextField中应用策略模式"></a>在UITextField中应用策略模式</h1><p>类图设计如下图所示：</p>
+<h1 id="在uitextfield中应用策略模式">在UITextField中应用策略模式</h1>
+<p>类图设计如下图所示：</p>
 <!--![](http://readus-org.qiniudn.com/img/design/inputvalidator-strategy-pattern.png)-->
 <div class="figure center" style="width:611;"><img class="fig-img" src="/img/design-pattern-strategy/inputvalidator-strategy-pattern.png" style="width:611;height:176;"alt="策略模式在输入验证中的应用"><span class="caption">策略模式在输入验证中的应用</span></div>
-
-<h2 id="策略接口"><a href="#策略接口" class="headerlink" title="策略接口"></a>策略接口</h2><p>这里策略类抽象了两个接口：</p>
+<h2 id="策略接口">策略接口</h2>
+<p>这里策略类抽象了两个接口：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@protocol ACITextFieldInputValidator &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">- (BOOL)validateInput:(UITextField *)textField</span><br><span class="line">    charactersInRange:(NSRange)range</span><br><span class="line">    replacementString:(NSString *)string</span><br><span class="line">                error:(NSError **)error;</span><br><span class="line"></span><br><span class="line">- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
 <p>其中</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)validateInput:(UITextField *)textField</span><br><span class="line">    charactersInRange:(NSRange)range</span><br><span class="line">    replacementString:(NSString *)string</span><br><span class="line">                error:(NSError **)error;</span><br></pre></td></tr></table></figure>
-
 <p>在UITextFieldDelegate的<code>- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string</code>方法中进行验证。</p>
 <p><code>- (BOOL)validateEndEditingInput:(UITextField *)textField error:(NSError **)error;</code>在UITextFieldDelegate的<code>- (void)textFieldDidEndEditing:(UITextField *)textField</code>方法中进行验证。</p>
 <p>这里特殊说明一下：</p>
 <p>接口中使用UITextField作为入参而不是使用NSString作为入参，是因为如果只用NSString值，那么策略对象中的动作就是单向的。就是说，验证器只能检查，然后返回结果，而不能修改原始值。而使用UITextField型的输入参数，就可以两全其美。验证器可以选择修改文本框的原始值(比如删除无效的值),或者只检查而不修改。</p>
-<p>另一个问题是，如果输入值错误，为什么不引发一个NSException异常呢？这是因为在Cocoa Touch框架中，引发自己的异常然后再用<code>try-catch</code>语句块来捕捉，这非常耗资源，所以不推荐，返回NSError对象的开销相对较小。</p>
-<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>这里使用策略的场景是UITextField，在UITextField的子类InputValidateTextField中，声明一个遵循策略协议的对象属性。</p>
+<p>另一个问题是，如果输入值错误，为什么不引发一个NSException异常呢？这是因为在Cocoa
+Touch框架中，引发自己的异常然后再用<code>try-catch</code>语句块来捕捉，这非常耗资源，所以不推荐，返回NSError对象的开销相对较小。</p>
+<h2 id="场景">场景</h2>
+<p>这里使用策略的场景是UITextField，在UITextField的子类InputValidateTextField中，声明一个遵循策略协议的对象属性。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@interface ACIInputValidateTextField : UITextField</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) id&lt;ACITextFieldInputValidator&gt; inputValidator;</span><br><span class="line"></span><br><span class="line">- (BOOL)validateCharactersInRange:(NSRange)range</span><br><span class="line">                replacementString:(NSString *)string</span><br><span class="line">                            error:(NSError **)error;</span><br><span class="line"></span><br><span class="line">- (BOOL)validateEndEditingWithError:(NSError **)error;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
 <p>同时，场景对象中会声明方法来处理调用策略对象的接口方法。具体示例如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@implementation ACIInputValidateTextField</span><br><span class="line"></span><br><span class="line">- (BOOL)validateCharactersInRange:(NSRange)range</span><br><span class="line">                replacementString:(NSString *)string</span><br><span class="line">                            error:(NSError **)error &#123;</span><br><span class="line">    </span><br><span class="line">    BOOL shouldChange = [self.inputValidator validateInput:self charactersInRange:range replacementString:string error:error];</span><br><span class="line">    return shouldChange;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)validateEndEditingWithError:(NSError **)error &#123;</span><br><span class="line">    BOOL isValid = [self.inputValidator validateEndEditingInput:self error:error];</span><br><span class="line">    return isValid;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="策略对象"><a href="#策略对象" class="headerlink" title="策略对象"></a>策略对象</h2><p>策略对象，这里是遵循了策略协议的<code>TextFieldInputValidator</code>的对象。每个对象会实现TextFieldInputValidator的方法，其中封装了具体的策略实现。</p>
-<p>具体代码示例详见<a target="_blank" rel="noopener" href="https://github.com/carya/InputValidator">github InputValidator</a></p>
-<hr>
-<p>如果觉得本文对你有帮助，就请用微信随意打赏我吧^_^</p>
-<div class="figure " style="width:174px;"><img class="fig-img" src="/img/wechat_appreciate_qrcode.jpeg" style="width:174px;height:174px;"alt=""></div>
+<h2 id="策略对象">策略对象</h2>
+<p>策略对象，这里是遵循了策略协议的<code>TextFieldInputValidator</code>的对象。每个对象会实现TextFieldInputValidator的方法，其中封装了具体的策略实现。</p>
+<p>具体代码示例详见<a
+target="_blank" rel="noopener" href="https://github.com/carya/InputValidator">github
+InputValidator</a></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -478,7 +478,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

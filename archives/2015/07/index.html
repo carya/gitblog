@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,10 +251,11 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p><code>+ initialize</code> 和 <code>+ load</code> 是 <code>NSObject</code> 类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。</p>
+                    <p><code>+ initialize</code> 和 <code>+ load</code> 是
+<code>NSObject</code>
+类的两个类方法，它们会在运行时自动调用，我们可以利用其特性做一些初始化操作。</p>
 <p>可以先思考如下示例控制台应该输出什么:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//父类</span><br><span class="line">@interface People : NSObject</span><br><span class="line">@end</span><br><span class="line">@implementation People</span><br><span class="line">+ (void)initialize &#123;</span><br><span class="line">    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//子类</span><br><span class="line">@interface Student : People</span><br><span class="line">@end</span><br><span class="line">@implementation Student</span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    NSLog(@&quot;%@ , %s&quot;, [self class], __FUNCTION__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
 <p>启动并运行程序，控制台应输出什么呢，见结尾处。</p>
                     
                         <a
@@ -356,7 +358,8 @@
             </div>
             
                 <div class="postShorten-excerpt">
-                    <p><a target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/tranquilpeak-hexo-theme">tranquilpeak</a>是Hexo的主题，目前版本是1.2.0，由于其自带的评论框架是Disqus，在国内的环境可能会加载较慢，可以修改为适应国情的多说。</p>
+                    <p><a
+target="_blank" rel="noopener" href="https://github.com/LouisBarranqueiro/tranquilpeak-hexo-theme">tranquilpeak</a>是Hexo的主题，目前版本是1.2.0，由于其自带的评论框架是Disqus，在国内的环境可能会加载较慢，可以修改为适应国情的多说。</p>
                     
                         <a
                             href="/2015/07/21/tranquilpeak-add-duoshuo/"
@@ -409,8 +412,15 @@
                 <div class="postShorten-excerpt">
                     <p>项目中经常会遇到限制UITextField中输入字符数的需求，并且会根据输入的英文还是中文给出不同的限定数，本文记录其解决方案。</p>
 <p>对于全英文的输入限定很简单，但是输入中文时，当输入拼音但未选择中文时，此时输入文本框的文字会包括输入的拼音，是选中的状态，比如这样:</p>
-<p><img src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png" alt="输入中文时包含选中状态的拼音"></p>
-<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据 UITextInput 协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
+<figure>
+<img
+src="http://7jpr4u.com1.z0.glb.clouddn.com/img/ios-limit-uitextfield-input/input-chinese-example.png"
+alt="输入中文时包含选中状态的拼音" />
+<figcaption aria-hidden="true">输入中文时包含选中状态的拼音</figcaption>
+</figure>
+<p>上面的情况如果打印UITextField的text属性会输出:<code>中国di zhi</code>。由于拼音是选中状态的，那么可以根据
+UITextInput
+协议判断UITextField中是否有选中状态的字符，从而决定是否对输入字符进行截断处理。</p>
                     
                         <a
                             href="/2015/07/12/ios-limit-uitextfield-input/"
@@ -516,7 +526,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

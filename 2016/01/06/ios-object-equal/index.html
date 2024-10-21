@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:\n123456789NSString *str = @&quot;origin1&quot;;NSString *strCopy = [str copy];NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA = (str == strCopy);BOOL equalB = (str == str1);BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */\n\n\n\nequalA 的值会是 YES, 而 equalB 的值会是 NO，虽然 str、str1、strCopy 指针所指的对象的值都是 origin1。\n比较对象时，我们应该使用 NSObject 协议中声明的 isEqual: 方法来判断两个对象的等同性。一般来说，两个类型不同的对象总是不相等的。\nNSObject 协议中有两个判断对象等同性的关键方法:\n12- (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;\n\nNSObject 对这两个类的默认实现是:当且仅当其 “指针值” 完全相等时，这两个对象才相等。若想在自定义对象中正确覆写这两个方法，那么就必须先理解其约定: 如果 isEqual: 方法判断两个对象相等，那么其 hash 方法必须返回同一个值，但是如果两个对象的 hash 方法返回同一个值，isEqual: 方法未必会认为二者相等。\n假如有如下类:\n1234567@interface ACLStudent : NSObject@property (nonatomic, assign, readonly) NSUInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;@end\n\n对于这样的自定义对象，可以像 NSString 的 - (BOOL)isEqualToString:(NSString *)aString 方法一样，创建一个属于该类的特定等同性方法。同时需要注意该类对象的使用场景，例如这里，我们在判定两个类对象是否相等时，不需要对象中的所有字段都判定相等，只需要其 studentId 相等就可判定两个对象表示的是同一个学生对象。方法实现像下面这样:\n12345678910- (BOOL)isEqualToStudent:(ACLStudent *)student &#123;    if (self == student) &#123;        return YES;    &#125;        if (self.studentId == student.studentId) &#123;        return YES;    &#125;    return NO;&#125;\n\n建议同时实现其 isEqual: 方法，像下面这样:\n1234567891011- (BOOL)isEqual:(id)object &#123;    if (self == object) &#123;        return YES;    &#125;        if ([self class] == [object class]) &#123;        return [self isEqualToStudent:object];    &#125; else &#123;        return [super isEqual:object];    &#125;&#125;\n\n首先比较其指针值，假如指针值相等，则对象相等，然后判断传入对象的类型，如果是类的类型，则调用类特定的等同性方法，否则交由父类来判断。\n同时不要忘记覆写 - (NSUInteger)hash 方法:\n123- (NSUInteger)hash &#123;    return self.studentId;&#125;\n\n在覆写类的 hash 方法时，要注意其有较高的执行效率，又能使生成的哈希码至少位于一定的范围内，不至于频繁的重复。编写 hash 方法时，可用当前的对象做实验，以便在减少哈希码碰撞频度与降低其运算复杂度之间取舍。\n\n假如类的 hash 方法计算值过于频繁的重复，在 collection 中使用这种对象将会产生性能问题，因为 collection 在检索哈希表时，会用对象的哈希码做索引。假如某个 collection 是用 set 实现的，那么 set 可能会根据哈希码把对象分装到不同的数组中。在向 set 中添加新对象时，要根据哈希码找到与之相关的那个数组，依次检查其中的各个元素，看数组中已有的对象是否和将要添加的对象相等。如果相等，那就说明要添加的对象已经在 set 中了。由此可知，如果令每个对象的都返回相同的哈希码，那么在 set 中已有 1000000 个对象的情况下，若是继续向其中添加对象，则需要将这 1000000 个对象全部扫描一遍。\n\n例如下面两种实现方法, 方法1：\n12345- (NSUInteger)hash &#123;    NSString *stringToHash = [NSString stringWithFormat:@&quot;%@:%@:%@&quot;, @(self.studentId), self.firstName, self.lastName];    return [stringToHash hash];&#125;\n\n方法2：\n12345- (NSUInteger)hash &#123;    NSUInteger firstNameHash = [self.firstName hash];    NSUInteger lastNameHash = [self.lastName hash];    return firstNameHash ^ lastNameHash ^ self.studentId;&#125;\n\n方法2 比 方法1 更好，减少了创建字符串的开销，同时其哈希值不至于频繁重复。\n注意，我们把对象放入 collection 之后，就不应再改变其哈希码了。前面讲过，collection 会把各个对象按照其哈希码分装到不同的”箱子数组”中。如果某个对象在放入”箱子”之后哈希码又变了，那么其现在所处的箱子对它来说是”错误”的。要解决这个问题，需要确保哈希码不是根据对象的“可变部分”(mutable portion)计算出来的，或者保证放入 collection 之后就不再改变对象的内容了。\n本文来自 &lt;&lt;Effective Objective-C 2.0 编写高质量iOS与OS X代码的52个有效方法&gt;&gt;\n\n","dateCreated":"2016-01-06T22:23:20+08:00","dateModified":"2016-01-14T22:37:57+08:00","datePublished":"2016-01-06T22:23:20+08:00","description":"使用 == 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:\n123456789NSString *str = @&quot;origin1&quot;;NSString *strCopy = [str copy];NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA = (str == strCopy);BOOL equalB = (str == str1);BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */","headline":"iOS中的对象等同性","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/01/06/ios-object-equal/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/01/06/ios-object-equal/","keywords":"iOS"}</script>
-    <meta name="description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equa">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"使用 == 比较 iOS\r\n中的对象时，比较的是对象的指针。例如有如下比较时:\r\n123456789NSString *str = @&quot;origin1&quot;;NSString *strCopy = [str copy];NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA = (str == strCopy);BOOL equalB = (str == str1);BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */\r\n\r\nequalA 的值会是 YES, 而 equalB\r\n的值会是 NO，虽然\r\nstr、str1、strCopy\r\n指针所指的对象的值都是 origin1。\r\n比较对象时，我们应该使用 NSObject 协议中声明的\r\nisEqual:\r\n方法来判断两个对象的等同性。一般来说，两个类型不同的对象总是不相等的。\r\nNSObject 协议中有两个判断对象等同性的关键方法:\r\n12- (BOOL)isEqual:(id)object;@property (readonly) NSUInteger hash;\r\nNSObject 对这两个类的默认实现是:当且仅当其 “指针值”\r\n完全相等时，这两个对象才相等。若想在自定义对象中正确覆写这两个方法，那么就必须先理解其约定:\r\n如果 isEqual: 方法判断两个对象相等，那么其\r\nhash 方法必须返回同一个值，但是如果两个对象的\r\nhash 方法返回同一个值，isEqual:\r\n方法未必会认为二者相等。\r\n假如有如下类:\r\n1234567@interface ACLStudent : NSObject@property (nonatomic, assign, readonly) NSUInteger studentId;@property (nonatomic, copy, readonly) NSString *firstName;@property (nonatomic, copy, readonly) NSString *lastName;@end\r\n对于这样的自定义对象，可以像 NSString 的\r\n- (BOOL)isEqualToString:(NSString *)aString\r\n方法一样，创建一个属于该类的特定等同性方法。同时需要注意该类对象的使用场景，例如这里，我们在判定两个类对象是否相等时，不需要对象中的所有字段都判定相等，只需要其\r\nstudentId\r\n相等就可判定两个对象表示的是同一个学生对象。方法实现像下面这样:\r\n12345678910- (BOOL)isEqualToStudent:(ACLStudent *)student &#123;    if (self == student) &#123;        return YES;    &#125;        if (self.studentId == student.studentId) &#123;        return YES;    &#125;    return NO;&#125;\r\n建议同时实现其 isEqual: 方法，像下面这样:\r\n1234567891011- (BOOL)isEqual:(id)object &#123;    if (self == object) &#123;        return YES;    &#125;        if ([self class] == [object class]) &#123;        return [self isEqualToStudent:object];    &#125; else &#123;        return [super isEqual:object];    &#125;&#125;\r\n首先比较其指针值，假如指针值相等，则对象相等，然后判断传入对象的类型，如果是类的类型，则调用类特定的等同性方法，否则交由父类来判断。\r\n同时不要忘记覆写 - (NSUInteger)hash 方法:\r\n123- (NSUInteger)hash &#123;    return self.studentId;&#125;\r\n在覆写类的 hash\r\n方法时，要注意其有较高的执行效率，又能使生成的哈希码至少位于一定的范围内，不至于频繁的重复。编写\r\nhash\r\n方法时，可用当前的对象做实验，以便在减少哈希码碰撞频度与降低其运算复杂度之间取舍。\r\n\r\n假如类的 hash 方法计算值过于频繁的重复，在\r\ncollection 中使用这种对象将会产生性能问题，因为\r\ncollection 在检索哈希表时，会用对象的哈希码做索引。假如某个\r\ncollection 是用 set 实现的，那么\r\nset 可能会根据哈希码把对象分装到不同的数组中。在向\r\nset\r\n中添加新对象时，要根据哈希码找到与之相关的那个数组，依次检查其中的各个元素，看数组中已有的对象是否和将要添加的对象相等。如果相等，那就说明要添加的对象已经在\r\nset\r\n中了。由此可知，如果令每个对象的都返回相同的哈希码，那么在\r\nset 中已有 1000000\r\n个对象的情况下，若是继续向其中添加对象，则需要将这 1000000\r\n个对象全部扫描一遍。\r\n\r\n例如下面两种实现方法, 方法1：\r\n12345- (NSUInteger)hash &#123;    NSString *stringToHash = [NSString stringWithFormat:@&quot;%@:%@:%@&quot;, @(self.studentId), self.firstName, self.lastName];    return [stringToHash hash];&#125;\r\n方法2：\r\n12345- (NSUInteger)hash &#123;    NSUInteger firstNameHash = [self.firstName hash];    NSUInteger lastNameHash = [self.lastName hash];    return firstNameHash ^ lastNameHash ^ self.studentId;&#125;\r\n方法2 比 方法1\r\n更好，减少了创建字符串的开销，同时其哈希值不至于频繁重复。\r\n注意，我们把对象放入 collection\r\n之后，就不应再改变其哈希码了。前面讲过，collection\r\n会把各个对象按照其哈希码分装到不同的\"箱子数组\"中。如果某个对象在放入\"箱子\"之后哈希码又变了，那么其现在所处的箱子对它来说是\"错误\"的。要解决这个问题，需要确保哈希码不是根据对象的“可变部分”(mutable\r\nportion)计算出来的，或者保证放入 collection\r\n之后就不再改变对象的内容了。\r\n本文来自\r\n&lt;&lt;Effective Objective-C 2.0 编写高质量iOS与OS X代码的52个有效方法&gt;&gt;\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2016-01-06T22:23:20+08:00","dateModified":"2024-10-21T22:42:31+08:00","datePublished":"2016-01-06T22:23:20+08:00","description":"使用 == 比较 iOS\r\n中的对象时，比较的是对象的指针。例如有如下比较时:\r\n123456789NSString *str = @&quot;origin1&quot;;NSString *strCopy = [str copy];NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equalA = (str == strCopy);BOOL equalB = (str == str1);BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */","headline":"iOS中的对象等同性","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2016/01/06/ios-object-equal/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2016/01/06/ios-object-equal/","keywords":"iOS"}</script>
+    <meta name="description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL eq">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS中的对象等同性">
 <meta property="og:url" content="http://liumh.com/2016/01/06/ios-object-equal/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL equa">
+<meta property="og:description" content="使用 &#x3D;&#x3D; 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时: 123456789NSString *str &#x3D; @&quot;origin1&quot;;NSString *strCopy &#x3D; [str copy];NSString *str1 &#x3D; [NSString stringWithFormat:@&quot;origin%@&quot;, @1];    BOOL eq">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2016-01-06T14:23:20.000Z">
-<meta property="article:modified_time" content="2016-01-14T14:37:57.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:42:31.495Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,44 +251,71 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>使用 <code>==</code> 比较 iOS 中的对象时，比较的是对象的指针。例如有如下比较时:</p>
+            <p>使用 <code>==</code> 比较 iOS
+中的对象时，比较的是对象的指针。例如有如下比较时:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSString *str = @&quot;origin1&quot;;</span><br><span class="line">NSString *strCopy = [str copy];</span><br><span class="line">NSString *str1 = [NSString stringWithFormat:@&quot;origin%@&quot;, @1];</span><br><span class="line">    </span><br><span class="line">BOOL equalA = (str == strCopy);</span><br><span class="line">BOOL equalB = (str == str1);</span><br><span class="line"></span><br><span class="line">BOOL equalC = [str isEqualToString:str1];  /**&lt; equalC is YES */</span><br><span class="line">BOOL equalD = [str isEqual:str1]; /**&lt; equalD is YES */</span><br></pre></td></tr></table></figure>
-
 <span id="more"></span>
-
-<p><code>equalA</code> 的值会是 <code>YES</code>, 而 <code>equalB</code> 的值会是 <code>NO</code>，虽然 <code>str</code>、<code>str1</code>、<code>strCopy</code> 指针所指的对象的值都是 <code>origin1</code>。</p>
-<p>比较对象时，我们应该使用 <code>NSObject</code> 协议中声明的 <code>isEqual:</code> 方法来判断两个对象的等同性。一般来说，两个类型不同的对象总是不相等的。</p>
+<p><code>equalA</code> 的值会是 <code>YES</code>, 而 <code>equalB</code>
+的值会是 <code>NO</code>，虽然
+<code>str</code>、<code>str1</code>、<code>strCopy</code>
+指针所指的对象的值都是 <code>origin1</code>。</p>
+<p>比较对象时，我们应该使用 <code>NSObject</code> 协议中声明的
+<code>isEqual:</code>
+方法来判断两个对象的等同性。一般来说，两个类型不同的对象总是不相等的。</p>
 <p><code>NSObject</code> 协议中有两个判断对象等同性的关键方法:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isEqual:(id)object;</span><br><span class="line">@property (readonly) NSUInteger hash;</span><br></pre></td></tr></table></figure>
-
-<p><code>NSObject</code> 对这两个类的默认实现是:当且仅当其 “指针值” 完全相等时，这两个对象才相等。若想在自定义对象中正确覆写这两个方法，那么就必须先理解其约定: 如果 <code>isEqual:</code> 方法判断两个对象相等，那么其 <code>hash</code> 方法必须返回同一个值，但是如果两个对象的 <code>hash</code> 方法返回同一个值，<code>isEqual:</code> 方法未必会认为二者相等。</p>
+<p><code>NSObject</code> 对这两个类的默认实现是:当且仅当其 “指针值”
+完全相等时，这两个对象才相等。若想在自定义对象中正确覆写这两个方法，那么就必须先理解其约定:
+如果 <code>isEqual:</code> 方法判断两个对象相等，那么其
+<code>hash</code> 方法必须返回同一个值，但是如果两个对象的
+<code>hash</code> 方法返回同一个值，<code>isEqual:</code>
+方法未必会认为二者相等。</p>
 <p>假如有如下类:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@interface ACLStudent : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, assign, readonly) NSUInteger studentId;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *firstName;</span><br><span class="line">@property (nonatomic, copy, readonly) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
-<p>对于这样的自定义对象，可以像 <code>NSString</code> 的 <code>- (BOOL)isEqualToString:(NSString *)aString</code> 方法一样，创建一个属于该类的特定等同性方法。同时需要注意该类对象的使用场景，例如这里，我们在判定两个类对象是否相等时，不需要对象中的所有字段都判定相等，只需要其 <code>studentId</code> 相等就可判定两个对象表示的是同一个学生对象。方法实现像下面这样:</p>
+<p>对于这样的自定义对象，可以像 <code>NSString</code> 的
+<code>- (BOOL)isEqualToString:(NSString *)aString</code>
+方法一样，创建一个属于该类的特定等同性方法。同时需要注意该类对象的使用场景，例如这里，我们在判定两个类对象是否相等时，不需要对象中的所有字段都判定相等，只需要其
+<code>studentId</code>
+相等就可判定两个对象表示的是同一个学生对象。方法实现像下面这样:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isEqualToStudent:(ACLStudent *)student &#123;</span><br><span class="line">    if (self == student) &#123;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if (self.studentId == student.studentId) &#123;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>建议同时实现其 <code>isEqual:</code> 方法，像下面这样:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isEqual:(id)object &#123;</span><br><span class="line">    if (self == object) &#123;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if ([self class] == [object class]) &#123;</span><br><span class="line">        return [self isEqualToStudent:object];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return [super isEqual:object];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>首先比较其指针值，假如指针值相等，则对象相等，然后判断传入对象的类型，如果是类的类型，则调用类特定的等同性方法，否则交由父类来判断。</p>
 <p>同时不要忘记覆写 <code>- (NSUInteger)hash</code> 方法:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line">    return self.studentId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在覆写类的 <code>hash</code> 方法时，要注意其有较高的执行效率，又能使生成的哈希码至少位于一定的范围内，不至于频繁的重复。编写 <code>hash</code> 方法时，可用当前的对象做实验，以便在减少哈希码碰撞频度与降低其运算复杂度之间取舍。</p>
+<p>在覆写类的 <code>hash</code>
+方法时，要注意其有较高的执行效率，又能使生成的哈希码至少位于一定的范围内，不至于频繁的重复。编写
+<code>hash</code>
+方法时，可用当前的对象做实验，以便在减少哈希码碰撞频度与降低其运算复杂度之间取舍。</p>
 <blockquote>
-<p>假如类的 <code>hash</code> 方法计算值过于频繁的重复，在 <code>collection</code> 中使用这种对象将会产生性能问题，因为 <code>collection</code> 在检索哈希表时，会用对象的哈希码做索引。假如某个 <code>collection</code> 是用 <code>set</code> 实现的，那么 <code>set</code> 可能会根据哈希码把对象分装到不同的数组中。在向 <code>set</code> 中添加新对象时，要根据哈希码找到与之相关的那个数组，依次检查其中的各个元素，看数组中已有的对象是否和将要添加的对象相等。如果相等，那就说明要添加的对象已经在 <code>set</code> 中了。由此可知，如果令每个对象的都返回相同的哈希码，那么在 <code>set</code> 中已有 1000000 个对象的情况下，若是继续向其中添加对象，则需要将这 1000000 个对象全部扫描一遍。</p>
+<p>假如类的 <code>hash</code> 方法计算值过于频繁的重复，在
+<code>collection</code> 中使用这种对象将会产生性能问题，因为
+<code>collection</code> 在检索哈希表时，会用对象的哈希码做索引。假如某个
+<code>collection</code> 是用 <code>set</code> 实现的，那么
+<code>set</code> 可能会根据哈希码把对象分装到不同的数组中。在向
+<code>set</code>
+中添加新对象时，要根据哈希码找到与之相关的那个数组，依次检查其中的各个元素，看数组中已有的对象是否和将要添加的对象相等。如果相等，那就说明要添加的对象已经在
+<code>set</code>
+中了。由此可知，如果令每个对象的都返回相同的哈希码，那么在
+<code>set</code> 中已有 1000000
+个对象的情况下，若是继续向其中添加对象，则需要将这 1000000
+个对象全部扫描一遍。</p>
 </blockquote>
 <p>例如下面两种实现方法, 方法1：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line">    NSString *stringToHash = [NSString stringWithFormat:@&quot;%@:%@:%@&quot;, @(self.studentId), self.firstName, self.lastName];</span><br><span class="line">    return [stringToHash hash];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
 <p>方法2：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line">    NSUInteger firstNameHash = [self.firstName hash];</span><br><span class="line">    NSUInteger lastNameHash = [self.lastName hash];</span><br><span class="line">    return firstNameHash ^ lastNameHash ^ self.studentId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>方法2 比 方法1 更好，减少了创建字符串的开销，同时其哈希值不至于频繁重复。</p>
-<p>注意，我们把对象放入 <code>collection</code> 之后，就不应再改变其哈希码了。前面讲过，<code>collection</code> 会把各个对象按照其哈希码分装到不同的”箱子数组”中。如果某个对象在放入”箱子”之后哈希码又变了，那么其现在所处的箱子对它来说是”错误”的。要解决这个问题，需要确保哈希码不是根据对象的“可变部分”(mutable portion)计算出来的，或者保证放入 <code>collection</code> 之后就不再改变对象的内容了。</p>
-<p>本文来自 <code>&lt;&lt;Effective Objective-C 2.0 编写高质量iOS与OS X代码的52个有效方法&gt;&gt;</code></p>
-<hr>
+<p>方法2 比 方法1
+更好，减少了创建字符串的开销，同时其哈希值不至于频繁重复。</p>
+<p>注意，我们把对象放入 <code>collection</code>
+之后，就不应再改变其哈希码了。前面讲过，<code>collection</code>
+会把各个对象按照其哈希码分装到不同的"箱子数组"中。如果某个对象在放入"箱子"之后哈希码又变了，那么其现在所处的箱子对它来说是"错误"的。要解决这个问题，需要确保哈希码不是根据对象的“可变部分”(mutable
+portion)计算出来的，或者保证放入 <code>collection</code>
+之后就不再改变对象的内容了。</p>
+<p>本文来自
+<code>&lt;&lt;Effective Objective-C 2.0 编写高质量iOS与OS X代码的52个有效方法&gt;&gt;</code></p>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -460,7 +488,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

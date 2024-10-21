@@ -15,16 +15,16 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式:\n [UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];\n上述UIColor的十六进制的表示为0x3CB4AE, 使用0xFF来表示alpha值，使用ARGB的形式拼合成0xFF3CB4AE, 那么可以使用如下方式创建UIColor:\n[UIColor colorWithHex:0xFF3CB4AE]\n实现方式如下:\n\n\n12345678910111213+ (UIColor *)colorWithHex:(uint)hex &#123;    int red, green, blue, alpha;        blue = hex &amp; 0x000000FF;    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);    alpha = ((hex &amp; 0xFF000000) &gt;&gt; 24);        return [UIColor colorWithRed:red/255.0f                           green:green/255.0f                            blue:blue/255.0f                           alpha:alpha/255.f];&#125;\n\n如果把alpha值独立出来, 实现方式如下:\n12345678910111213+ (UIColor *)colorWithHex:(uint)hex andAlpha:(CGFloat)alpha&#123;    int red, green, blue;        blue = hex &amp; 0x000000FF;    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);        return [UIColor colorWithRed:red/255.0f                           green:green/255.0f                            blue:blue/255.0f                           alpha:alpha];&#125;\n","dateCreated":"2015-06-13T21:02:44+08:00","dateModified":"2015-06-13T22:09:39+08:00","datePublished":"2015-06-13T21:02:44+08:00","description":"iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式:\n [UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];\n上述UIColor的十六进制的表示为0x3CB4AE, 使用0xFF来表示alpha值，使用ARGB的形式拼合成0xFF3CB4AE, 那么可以使用如下方式创建UIColor:\n[UIColor colorWithHex:0xFF3CB4AE]\n实现方式如下:","headline":"iOS从十六进制创建UIColor","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/06/13/ios-uicolor-util/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/06/13/ios-uicolor-util/","keywords":"iOS"}</script>
-    <meta name="description" content="iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式:  [UIColor colorWithRed:51&#x2F;255.0f green:167&#x2F;255.0f blue:158&#x2F;255.0f alpha:1]; 上述UIColor的十六进制的表示为0x3CB4AE, 使用0">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"iOS\r\nUI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为\r\nR:60 G:180 B:174\r\n的UIColor，使用UIColor的api可以使用如下的方式:\r\n[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];\r\n上述UIColor的十六进制的表示为0x3CB4AE,\r\n使用0xFF来表示alpha值，使用ARGB的形式拼合成0xFF3CB4AE,\r\n那么可以使用如下方式创建UIColor:\r\n[UIColor colorWithHex:0xFF3CB4AE]\r\n实现方式如下:\r\n\r\n12345678910111213+ (UIColor *)colorWithHex:(uint)hex &#123;    int red, green, blue, alpha;        blue = hex &amp; 0x000000FF;    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);    alpha = ((hex &amp; 0xFF000000) &gt;&gt; 24);        return [UIColor colorWithRed:red/255.0f                           green:green/255.0f                            blue:blue/255.0f                           alpha:alpha/255.f];&#125;\r\n如果把alpha值独立出来, 实现方式如下:\r\n12345678910111213+ (UIColor *)colorWithHex:(uint)hex andAlpha:(CGFloat)alpha&#123;    int red, green, blue;        blue = hex &amp; 0x000000FF;    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);        return [UIColor colorWithRed:red/255.0f                           green:green/255.0f                            blue:blue/255.0f                           alpha:alpha];&#125;\r\n\r\n目前已转行教育行业，欢迎加微信交流：CaryaLiu\r\n","dateCreated":"2015-06-13T21:02:44+08:00","dateModified":"2024-10-21T22:46:26+08:00","datePublished":"2015-06-13T21:02:44+08:00","description":"iOS\r\nUI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为\r\nR:60 G:180 B:174\r\n的UIColor，使用UIColor的api可以使用如下的方式:\r\n[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];\r\n上述UIColor的十六进制的表示为0x3CB4AE,\r\n使用0xFF来表示alpha值，使用ARGB的形式拼合成0xFF3CB4AE,\r\n那么可以使用如下方式创建UIColor:\r\n[UIColor colorWithHex:0xFF3CB4AE]\r\n实现方式如下:","headline":"iOS从十六进制创建UIColor","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2015/06/13/ios-uicolor-util/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2015/06/13/ios-uicolor-util/","keywords":"iOS"}</script>
+    <meta name="description" content="iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式: [UIColor colorWithRed:51&#x2F;255.0f green:167&#x2F;255.0f blue:158&#x2F;255.0f alpha:1]; 上述UIColor的十六进制的表示为0x3CB4AE,">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="iOS从十六进制创建UIColor">
 <meta property="og:url" content="http://liumh.com/2015/06/13/ios-uicolor-util/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式:  [UIColor colorWithRed:51&#x2F;255.0f green:167&#x2F;255.0f blue:158&#x2F;255.0f alpha:1]; 上述UIColor的十六进制的表示为0x3CB4AE, 使用0">
+<meta property="og:description" content="iOS UI开发的过程会遇到使用Hex Color创建UIColor，例如创建颜色为 R:60 G:180 B:174 的UIColor，使用UIColor的api可以使用如下的方式: [UIColor colorWithRed:51&#x2F;255.0f green:167&#x2F;255.0f blue:158&#x2F;255.0f alpha:1]; 上述UIColor的十六进制的表示为0x3CB4AE,">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-06-13T13:02:44.000Z">
-<meta property="article:modified_time" content="2015-06-13T14:09:39.000Z">
+<meta property="article:modified_time" content="2024-10-21T14:46:26.034Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
@@ -108,7 +108,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -250,17 +251,22 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p>iOS UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为 <code>R:60 G:180 B:174</code> 的UIColor，使用UIColor的api可以使用如下的方式:</p>
-<p><code> [UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
-<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>, 使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>, 那么可以使用如下方式创建UIColor:</p>
+            <p>iOS
+UI开发的过程会遇到使用<code>Hex Color</code>创建UIColor，例如创建颜色为
+<code>R:60 G:180 B:174</code>
+的UIColor，使用UIColor的api可以使用如下的方式:</p>
+<p><code>[UIColor colorWithRed:51/255.0f green:167/255.0f blue:158/255.0f alpha:1];</code></p>
+<p>上述UIColor的十六进制的表示为<code>0x3CB4AE</code>,
+使用<code>0xFF</code>来表示alpha值，使用<code>ARGB</code>的形式拼合成<code>0xFF3CB4AE</code>,
+那么可以使用如下方式创建UIColor:</p>
 <p><code>[UIColor colorWithHex:0xFF3CB4AE]</code></p>
 <p>实现方式如下:</p>
 <span id="more"></span>
-
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+ (UIColor *)colorWithHex:(uint)hex &#123;</span><br><span class="line">    int red, green, blue, alpha;</span><br><span class="line">    </span><br><span class="line">    blue = hex &amp; 0x000000FF;</span><br><span class="line">    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);</span><br><span class="line">    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);</span><br><span class="line">    alpha = ((hex &amp; 0xFF000000) &gt;&gt; 24);</span><br><span class="line">    </span><br><span class="line">    return [UIColor colorWithRed:red/255.0f</span><br><span class="line">                           green:green/255.0f</span><br><span class="line">                            blue:blue/255.0f</span><br><span class="line">                           alpha:alpha/255.f];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>如果把alpha值独立出来, 实现方式如下:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+ (UIColor *)colorWithHex:(uint)hex andAlpha:(CGFloat)alpha</span><br><span class="line">&#123;</span><br><span class="line">    int red, green, blue;</span><br><span class="line">    </span><br><span class="line">    blue = hex &amp; 0x000000FF;</span><br><span class="line">    green = ((hex &amp; 0x0000FF00) &gt;&gt; 8);</span><br><span class="line">    red = ((hex &amp; 0x00FF0000) &gt;&gt; 16);</span><br><span class="line">    </span><br><span class="line">    return [UIColor colorWithRed:red/255.0f</span><br><span class="line">                           green:green/255.0f</span><br><span class="line">                            blue:blue/255.0f</span><br><span class="line">                           alpha:alpha];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr />
+<p>目前已转行教育行业，欢迎加微信交流：CaryaLiu</p>
 
             
 
@@ -433,7 +439,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

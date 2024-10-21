@@ -17,31 +17,19 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\nUML属性的表示方式UML的属性有两种表示方式：属性文本和关联线.\n属性文本表示属性的完整格式是：\nvisibility name : type multiplicity = default &#123;property-string&#125;\n可见性      属性名: 属性类型              默认值     特性字符串\n\n\n\n其中属性的可见性常分为三种, 若没有标志可见性，则默认是私有的:\n\npublic: +\nprivate: -\nprotected: #\n\n\n\n\n\n如上图所示是关联线表示属性的例子，其格式详细描述如下:\n\n导航性箭头由源对象指向目标对象，表示源对象Store的一个属性是目标对象Address\n多重性放置在目标对象Address一端\n角色名放置在目标对象Address一端，用以表示属性名称address\n\n多重性可用*表示0或者更多，1..*表示1或者更多，1..40表示1-40，3,5,8精确地为3,5,8，等诸如此类的表示方式. 多重性的值表示的是特定时刻有效关联的实例数量，而不是一段时间内有效关联的实例数量.\n那么，在表示UML属性时，何时使用属性文本，何时使用关联线呢？通常情况下，对数据类型对象使用属性文本表示法，对其他自定义对象使用关联线. 其中，数据类型对象指的是其唯一标识不具有意义的对象，常见的数据类型都是原始类型，例如: 布尔型、日期、数字、字符、字符串(文本)、时间、地址、颜色、几何形状、电话号码、邮政编码、枚举类型等. 两种表示方法在语义上是等价的，但是在绘制UML类图时，图中展示与另一个类框的关联线能够在视觉上强调图中对象之间的链接. 在代码中，它们归结为同一事物，例如Java代码：\npublic class Store &#123;\n    private int id;\n    private String phoneNum;\n    private Address address;\n    private List&lt;SaleItem&gt; saleItems = new ArrayList&lt;SaleItem&gt;();\n    //TODO: operator\n&#125;\n\n在上面的代码中，我们看到类Store中还具有一个集合属性saleItems，那么，怎么使用属性文本和关联线表示集合属性呢？\n如下图所示，显示了UML类图中表示集合属性的两种方式.\n\n\nUML注解&#x2F;操作&#x2F;方法UML注解符号显示为摺角矩形，并使用虚线连接到要注解的元素上, 这从上面的图中可以看到.\nUML表示操作的语法形式为:\nvisibility name (parameter-list) : return-type &#123;property-string&#125;\n\n若没有标志其可见性，则默认该操作是公有的. 特性字符串可包含任何附件信息，例如可能产生的异常、操作是否抽象&#123;abstract&#125;，等等.\n操作不是方法. UML中操作是声明，其中包含名称、参数、返回类型、异常列表、可能的前置和后置条件约束等. 操作不是实现，方法是实现. 在UML类图中，使用构造性为&lt;&lt;method&gt;&gt;的UML注解符号表示方法实现. 如下图所示:\n\n\n在绘制UML类图的过程中，通常忽略访问属性的操作(getter&amp;setter)，在写构造函数的操作时，可在前加&lt;&lt;constructor&gt;&gt;标识.\n关键字UML关键字是对模型元素分类的文本修饰，常用的UML关键字有:\n\n&lt;&lt;actor&gt;&gt;, 类元为参与者，在类图中，置于类元名称之上\n&lt;&lt;interface&gt;&gt;, 类元为接口，在类图中，置于类元名称之上\n&#123;abstract&#125;, 抽象元素，不能实例化，在类图中，置于类元名称或者操作名称之后\n&#123;leaf&#125;, 标识终止类(final class)和不能够被子类复写的操作\n&#123;ordered&#125;, 具有强制顺序的一组对象，在类图中，置于关联的端点\n\n泛化、依赖、组合泛化，意为从超类到子类的OOPL继承，用由子类到超类的实线和空心三角箭头表示，如下图所示. 抽象类(abstract class)和操作既可以采用&#123;abstract&#125;标记表示，也可以采用斜体名称来表示. 与之相反，终止类(final class)和不能够被子类复写的操作以&#123;leaf&#125;标记表示. \n\n\n依赖，可以视为耦合的另一个版本，耦合意味着某元素(客户元素)耦合或依赖于另一个元素(提供者元素)，使用从客户到提供者的虚线箭头线表示.在类图中，使用依赖线描述对象之间的全局变量、参数变量、局部变量和静态方法(对其他类的静态方法加以调用)的依赖.对于如下Java代码:\npublic class Sale\n&#123;\n    public void updatePriceFor(Product product) &#123;\n        Money basePrice = product.getPrice();\n    &#125;\n&#125;\n\nupdatePriceFor方法接收参数Product对象作为参数，然后向其发送getPrice消息。由此可见，Sale对象对Product具有参数可见性，并且有发送消息的耦合，因此对Product有依赖，这种依赖在类图中表示为:\n\n\n为表示依赖的类型，可以给依赖线附加关键字或者构造型，如&lt;&lt;call&gt;&gt;, &lt;&lt;create&gt;&gt;等.\n组合，也称为组成聚合，是一种很强的整体-部分聚合关系，组合关系有以下含义:\n\n在某一时刻，部分的实例(如Finger)只属于一个组成实例(如Hand)\n部分必须总是属于组成\n组成要负责创建和删除其部分，既可以自己来创建&#x2F;删除部分，也可以与其他对象协作来创建&#x2F;删除部分.如果组成被销毁，其部分也必须被销毁.\n\nUML中，用带有实心菱形箭头的关联线来表示组合，箭头指向组成类，如下图所示:\n\n\n限定关联限定关联具有限定符，限定符用户从规模较大的相关对象集合中，依据限定符的键选择一个或者多个对象. 一般来说，限定关联暗示了基于键对事物进行查找，如HashMap中的对象.例如，如果ProductCatalog中含有许多Product，并且每个Product中都能够通过itemID来选择，那么使用UML的限定关联的示例如下图所示.\n\n\n对于限定关联，需要注意的是多重性的变化，限定关联减少了在关联目标端的多重性，通常由多变为一，因为限定关联通常暗示从较大集合中选择一个实例.\n关联类关联类允许将关联本身作为类，并且使用属性、操作和其他特性对齐建模. 例如，如果Company雇佣了许多Person，建模时使用了Employ关联，则可以将关联本身建模为Employment类，并拥有startDate这样的属性. UML中，用从关联到关联类的虚线表示关联类，如下图所示:\n\n\n单实例类面向对象设计的世界中，有一种极为常见的模式-单实例类(Singleton)模式，其含义是类实例化后只存在一个实例，永远不会有第二个，这就是”单实例类”的实例. 在UML类图中，可以在类框中名称分栏的右上角标记”1”来表示这种类, 如下图所示:\n\n\n主动类主动对象(active object)运行于自己控制的执行线程之上，主动对象的类即为主动类(active class). 在UML中，主动类使用左右两边为双竖线的类框来表示，如下图所示:\n\n\n","dateCreated":"2013-10-29T21:07:00+08:00","dateModified":"2018-05-26T17:20:53+08:00","datePublished":"2013-10-29T21:07:00+08:00","description":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\nUML属性的表示方式UML的属性有两种表示方式：属性文本和关联线.\n属性文本表示属性的完整格式是：\nvisibility name : type multiplicity = default &#123;property-string&#125;\n可见性      属性名: 属性类型              默认值     特性字符串\n","headline":"绘制UML类图","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/29/uml-class-diagram/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/29/uml-class-diagram/","keywords":"UML"}</script>
-    <meta name="description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &#123;property-string&#125; 可见性      属性名: 属性类">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"CaryaLiu","sameAs":[],"image":"header.png"},"articleBody":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\r\nUML属性的表示方式\r\nUML的属性有两种表示方式：属性文本和关联线.\r\n属性文本表示属性的完整格式是：\r\nvisibility name : type multiplicity = default &#123;property-string&#125;\r\n可见性      属性名: 属性类型              默认值     特性字符串\r\n\r\n其中属性的可见性常分为三种, 若没有标志可见性，则默认是私有的:\r\n\r\npublic: +\r\nprivate: -\r\nprotected: #\r\n\r\n ___\r\n ___\r\n如上图所示是关联线表示属性的例子，其格式详细描述如下:\r\n\r\n导航性箭头由源对象指向目标对象，表示源对象Store的一个属性是目标对象Address\r\n多重性放置在目标对象Address一端\r\n角色名放置在目标对象Address一端，用以表示属性名称address\r\n\r\n多重性可用*表示0或者更多，1..*表示1或者更多，1..40表示1-40，3,5,8精确地为3,5,8，等诸如此类的表示方式.\r\n多重性的值表示的是特定时刻有效关联的实例数量，而不是一段时间内有效关联的实例数量.\r\n那么，在表示UML属性时，何时使用属性文本，何时使用关联线呢？通常情况下，对数据类型对象使用属性文本表示法，对其他自定义对象使用关联线.\r\n其中，数据类型对象指的是其唯一标识不具有意义的对象，常见的数据类型都是原始类型，例如:\r\n布尔型、日期、数字、字符、字符串(文本)、时间、地址、颜色、几何形状、电话号码、邮政编码、枚举类型等.\r\n两种表示方法在语义上是等价的，但是在绘制UML类图时，图中展示与另一个类框的关联线能够在视觉上强调图中对象之间的链接.\r\n在代码中，它们归结为同一事物，例如Java代码：\r\npublic class Store &#123;\r\n    private int id;\r\n    private String phoneNum;\r\n    private Address address;\r\n    private List&lt;SaleItem&gt; saleItems = new ArrayList&lt;SaleItem&gt;();\r\n    //TODO: operator\r\n&#125;\r\n在上面的代码中，我们看到类Store中还具有一个集合属性saleItems，那么，怎么使用属性文本和关联线表示集合属性呢？\r\n如下图所示，显示了UML类图中表示集合属性的两种方式.\r\n ____\r\nUML注解/操作/方法\r\nUML注解符号显示为摺角矩形，并使用虚线连接到要注解的元素上,\r\n这从上面的图中可以看到.\r\nUML表示操作的语法形式为:\r\nvisibility name (parameter-list) : return-type &#123;property-string&#125;\r\n若没有标志其可见性，则默认该操作是公有的.\r\n特性字符串可包含任何附件信息，例如可能产生的异常、操作是否抽象&#123;abstract&#125;，等等.\r\n操作不是方法.\r\nUML中操作是声明，其中包含名称、参数、返回类型、异常列表、可能的前置和后置条件约束等.\r\n操作不是实现，方法是实现.\r\n在UML类图中，使用构造性为&lt;&lt;method&gt;&gt;的UML注解符号表示方法实现.\r\n如下图所示:\r\n ____\r\n在绘制UML类图的过程中，通常忽略访问属性的操作(getter&amp;setter)，在写构造函数的操作时，可在前加&lt;&lt;constructor&gt;&gt;标识.\r\n关键字\r\nUML关键字是对模型元素分类的文本修饰，常用的UML关键字有:\r\n\r\n&lt;&lt;actor&gt;&gt;,\r\n类元为参与者，在类图中，置于类元名称之上\r\n&lt;&lt;interface&gt;&gt;,\r\n类元为接口，在类图中，置于类元名称之上\r\n&#123;abstract&#125;,\r\n抽象元素，不能实例化，在类图中，置于类元名称或者操作名称之后\r\n&#123;leaf&#125;,\r\n标识终止类(final class)和不能够被子类复写的操作\r\n&#123;ordered&#125;,\r\n具有强制顺序的一组对象，在类图中，置于关联的端点\r\n\r\n泛化、依赖、组合\r\n泛化，意为从超类到子类的OOPL继承，用由子类到超类的实线和空心三角箭头表示，如下图所示.\r\n抽象类(abstract class)和操作既可以采用&#123;abstract&#125;标记表示，也可以采用斜体名称来表示.\r\n与之相反，终止类(final class)和不能够被子类复写的操作以&#123;leaf&#125;标记表示.\r\n ____\r\n依赖，可以视为耦合的另一个版本，耦合意味着某元素(客户元素)耦合或依赖于另一个元素(提供者元素)，使用从客户到提供者的虚线箭头线表示.在类图中，使用依赖线描述对象之间的全局变量、参数变量、局部变量和静态方法(对其他类的静态方法加以调用)的依赖.对于如下Java代码:\r\npublic class Sale\r\n&#123;\r\n    public void updatePriceFor(Product product) &#123;\r\n        Money basePrice = product.getPrice();\r\n    &#125;\r\n&#125;\r\nupdatePriceFor方法接收参数Product对象作为参数，然后向其发送getPrice消息。由此可见，Sale对象对Product具有参数可见性，并且有发送消息的耦合，因此对Product有依赖，这种依赖在类图中表示为:\r\n ___\r\n为表示依赖的类型，可以给依赖线附加关键字或者构造型，如&lt;&lt;call&gt;&gt;,\r\n&lt;&lt;create&gt;&gt;等.\r\n组合，也称为组成聚合，是一种很强的整体-部分聚合关系，组合关系有以下含义:\r\n1. 在某一时刻，部分的实例(如Finger)只属于一个组成实例(如Hand) 2.\r\n部分必须总是属于组成 3.\r\n组成要负责创建和删除其部分，既可以自己来创建/删除部分，也可以与其他对象协作来创建/删除部分.如果组成被销毁，其部分也必须被销毁.\r\nUML中，用带有实心菱形箭头的关联线来表示组合，箭头指向组成类，如下图所示:\r\n ___\r\n限定关联\r\n限定关联具有限定符，限定符用户从规模较大的相关对象集合中，依据限定符的键选择一个或者多个对象.\r\n一般来说，限定关联暗示了基于键对事物进行查找，如HashMap中的对象.例如，如果ProductCatalog中含有许多Product，并且每个Product中都能够通过itemID来选择，那么使用UML的限定关联的示例如下图所示.\r\n ___\r\n对于限定关联，需要注意的是多重性的变化，限定关联减少了在关联目标端的多重性，通常由多变为一，因为限定关联通常暗示从较大集合中选择一个实例.\r\n关联类\r\n关联类允许将关联本身作为类，并且使用属性、操作和其他特性对齐建模.\r\n例如，如果Company雇佣了许多Person，建模时使用了Employ关联，则可以将关联本身建模为Employment类，并拥有startDate这样的属性.\r\nUML中，用从关联到关联类的虚线表示关联类，如下图所示:\r\n ___\r\n单实例类\r\n面向对象设计的世界中，有一种极为常见的模式-单实例类(Singleton)模式，其含义是类实例化后只存在一个实例，永远不会有第二个，这就是\"单实例类\"的实例.\r\n在UML类图中，可以在类框中名称分栏的右上角标记\"1\"来表示这种类,\r\n如下图所示:\r\n ___\r\n主动类\r\n主动对象(active\r\nobject)运行于自己控制的执行线程之上，主动对象的类即为主动类(active\r\nclass). 在UML中，主动类使用左右两边为双竖线的类框来表示，如下图所示:\r\n ___\r\n","dateCreated":"2013-10-29T21:07:00+08:00","dateModified":"2018-05-26T17:20:53+08:00","datePublished":"2013-10-29T21:07:00+08:00","description":"类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.\r\nUML属性的表示方式\r\nUML的属性有两种表示方式：属性文本和关联线.\r\n属性文本表示属性的完整格式是：\r\nvisibility name : type multiplicity = default &#123;property-string&#125;\r\n可见性      属性名: 属性类型              默认值     特性字符串","headline":"绘制UML类图","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://liumh.com/2013/10/29/uml-class-diagram/"},"publisher":{"@type":"Organization","name":"CaryaLiu","sameAs":[],"image":"header.png","logo":{"@type":"ImageObject","url":"header.png"}},"url":"http://liumh.com/2013/10/29/uml-class-diagram/","keywords":"UML"}</script>
+    <meta name="description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式 UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &#123;property-string&#125; 可见性      属性">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="绘制UML类图">
 <meta property="og:url" content="http://liumh.com/2013/10/29/uml-class-diagram/index.html">
 <meta property="og:site_name" content="CaryaLiu&#39;s blog">
-<meta property="og:description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &#123;property-string&#125; 可见性      属性名: 属性类">
+<meta property="og:description" content="类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识. UML属性的表示方式 UML的属性有两种表示方式：属性文本和关联线. 属性文本表示属性的完整格式是： visibility name : type multiplicity &#x3D; default &#123;property-string&#125; 可见性      属性">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/association-lines.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/collection-attribute.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/show-methods.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/generalization.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/dependency.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/composition.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/qualified-association.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/association-classes.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/singleton-classes.png">
-<meta property="og:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/active-class.png">
 <meta property="article:published_time" content="2013-10-29T13:07:00.000Z">
 <meta property="article:modified_time" content="2018-05-26T09:20:53.000Z">
 <meta property="article:author" content="CaryaLiu">
 <meta property="article:tag" content="UML">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png">
     
     
         
@@ -122,7 +110,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -265,97 +254,135 @@
     <div class="post-content markdown">
         <div class="main-content-wrap">
             <p>类图用于静态对象建模，在软件开发的初期常用UML类图来表示类、接口及类之间的关联。这里介绍一下UML类图的基础知识.</p>
-<h3 id="UML属性的表示方式"><a href="#UML属性的表示方式" class="headerlink" title="UML属性的表示方式"></a>UML属性的表示方式</h3><p>UML的属性有两种表示方式：属性文本和关联线.</p>
+<h3 id="uml属性的表示方式">UML属性的表示方式</h3>
+<p>UML的属性有两种表示方式：属性文本和关联线.</p>
 <p>属性文本表示属性的完整格式是：</p>
 <pre><code>visibility name : type multiplicity = default &#123;property-string&#125;
-可见性      属性名: 属性类型              默认值     特性字符串
-</code></pre>
+可见性      属性名: 属性类型              默认值     特性字符串</code></pre>
 <span id="more"></span>
-
 <p>其中属性的可见性常分为三种, 若没有标志可见性，则默认是私有的:</p>
 <ul>
 <li>public: +</li>
 <li>private: -</li>
 <li>protected: #</li>
 </ul>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png" alt="属性文本表示属性的例子"></p>
-<hr>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/association-lines.png" alt="关联线表示属性的例子"></p>
-<hr>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/attribute-text.png"
+alt="属性文本表示属性的例子" /> ___</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/association-lines.png"
+alt="关联线表示属性的例子" /> ___</p>
 <p>如上图所示是关联线表示属性的例子，其格式详细描述如下:</p>
 <ul>
 <li>导航性箭头由源对象指向目标对象，表示源对象<code>Store</code>的一个属性是目标对象<code>Address</code></li>
 <li>多重性放置在目标对象<code>Address</code>一端</li>
 <li>角色名放置在目标对象<code>Address</code>一端，用以表示属性名称<code>address</code></li>
 </ul>
-<p>多重性可用<code>*</code>表示0或者更多，<code>1..*</code>表示1或者更多，<code>1..40</code>表示1-40，<code>3,5,8</code>精确地为3,5,8，等诸如此类的表示方式. 多重性的值表示的是特定时刻有效关联的实例数量，而不是一段时间内有效关联的实例数量.</p>
-<p>那么，在表示UML属性时，何时使用属性文本，何时使用关联线呢？通常情况下，对数据类型对象使用属性文本表示法，对其他自定义对象使用关联线. 其中，数据类型对象指的是其唯一标识不具有意义的对象，常见的数据类型都是原始类型，例如: 布尔型、日期、数字、字符、字符串(文本)、时间、地址、颜色、几何形状、电话号码、邮政编码、枚举类型等. 两种表示方法在语义上是等价的，但是在绘制UML类图时，图中展示与另一个类框的关联线能够在视觉上强调图中对象之间的链接. 在代码中，它们归结为同一事物，例如Java代码：</p>
+<p>多重性可用<code>*</code>表示0或者更多，<code>1..*</code>表示1或者更多，<code>1..40</code>表示1-40，<code>3,5,8</code>精确地为3,5,8，等诸如此类的表示方式.
+多重性的值表示的是特定时刻有效关联的实例数量，而不是一段时间内有效关联的实例数量.</p>
+<p>那么，在表示UML属性时，何时使用属性文本，何时使用关联线呢？通常情况下，对数据类型对象使用属性文本表示法，对其他自定义对象使用关联线.
+其中，数据类型对象指的是其唯一标识不具有意义的对象，常见的数据类型都是原始类型，例如:
+布尔型、日期、数字、字符、字符串(文本)、时间、地址、颜色、几何形状、电话号码、邮政编码、枚举类型等.
+两种表示方法在语义上是等价的，但是在绘制UML类图时，图中展示与另一个类框的关联线能够在视觉上强调图中对象之间的链接.
+在代码中，它们归结为同一事物，例如Java代码：</p>
 <pre><code>public class Store &#123;
     private int id;
     private String phoneNum;
     private Address address;
     private List&lt;SaleItem&gt; saleItems = new ArrayList&lt;SaleItem&gt;();
     //TODO: operator
-&#125;
-</code></pre>
+&#125;</code></pre>
 <p>在上面的代码中，我们看到类Store中还具有一个集合属性saleItems，那么，怎么使用属性文本和关联线表示集合属性呢？</p>
 <p>如下图所示，显示了UML类图中表示集合属性的两种方式.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/collection-attribute.png" alt="UML中表示集合属性的两种方式"></p>
-<hr>
-<h3 id="UML注解-操作-方法"><a href="#UML注解-操作-方法" class="headerlink" title="UML注解&#x2F;操作&#x2F;方法"></a>UML注解&#x2F;操作&#x2F;方法</h3><p>UML注解符号显示为摺角矩形，并使用虚线连接到要注解的元素上, 这从上面的图中可以看到.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/collection-attribute.png"
+alt="UML中表示集合属性的两种方式" /> ____</p>
+<h3 id="uml注解操作方法">UML注解/操作/方法</h3>
+<p>UML注解符号显示为摺角矩形，并使用虚线连接到要注解的元素上,
+这从上面的图中可以看到.</p>
 <p>UML表示操作的语法形式为:</p>
-<pre><code>visibility name (parameter-list) : return-type &#123;property-string&#125;
-</code></pre>
-<p>若没有标志其可见性，则默认该操作是公有的. 特性字符串可包含任何附件信息，例如可能产生的异常、操作是否抽象<code>&#123;abstract&#125;</code>，等等.</p>
-<p>操作不是方法. UML中操作是声明，其中包含名称、参数、返回类型、异常列表、可能的前置和后置条件约束等. 操作不是实现，方法是实现. 在UML类图中，使用构造性为<code>&lt;&lt;method&gt;&gt;</code>的UML注解符号表示方法实现. 如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/show-methods.png" alt="UML类图中表示方法"></p>
-<hr>
+<pre><code>visibility name (parameter-list) : return-type &#123;property-string&#125;</code></pre>
+<p>若没有标志其可见性，则默认该操作是公有的.
+特性字符串可包含任何附件信息，例如可能产生的异常、操作是否抽象<code>&#123;abstract&#125;</code>，等等.</p>
+<p>操作不是方法.
+UML中操作是声明，其中包含名称、参数、返回类型、异常列表、可能的前置和后置条件约束等.
+操作不是实现，方法是实现.
+在UML类图中，使用构造性为<code>&lt;&lt;method&gt;&gt;</code>的UML注解符号表示方法实现.
+如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/show-methods.png"
+alt="UML类图中表示方法" /> ____</p>
 <p>在绘制UML类图的过程中，通常忽略访问属性的操作<code>(getter&amp;setter)</code>，在写构造函数的操作时，可在前加<code>&lt;&lt;constructor&gt;&gt;</code>标识.</p>
-<h3 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h3><p>UML关键字是对模型元素分类的文本修饰，常用的UML关键字有:</p>
+<h3 id="关键字">关键字</h3>
+<p>UML关键字是对模型元素分类的文本修饰，常用的UML关键字有:</p>
 <ul>
-<li><code>&lt;&lt;actor&gt;&gt;</code>, 类元为参与者，在类图中，置于类元名称之上</li>
-<li><code>&lt;&lt;interface&gt;&gt;</code>, 类元为接口，在类图中，置于类元名称之上</li>
-<li><code>&#123;abstract&#125;</code>, 抽象元素，不能实例化，在类图中，置于类元名称或者操作名称之后</li>
-<li><code>&#123;leaf&#125;</code>, 标识终止类<code>(final class)</code>和不能够被子类复写的操作</li>
-<li><code>&#123;ordered&#125;</code>, 具有强制顺序的一组对象，在类图中，置于关联的端点</li>
+<li><code>&lt;&lt;actor&gt;&gt;</code>,
+类元为参与者，在类图中，置于类元名称之上</li>
+<li><code>&lt;&lt;interface&gt;&gt;</code>,
+类元为接口，在类图中，置于类元名称之上</li>
+<li><code>&#123;abstract&#125;</code>,
+抽象元素，不能实例化，在类图中，置于类元名称或者操作名称之后</li>
+<li><code>&#123;leaf&#125;</code>,
+标识终止类<code>(final class)</code>和不能够被子类复写的操作</li>
+<li><code>&#123;ordered&#125;</code>,
+具有强制顺序的一组对象，在类图中，置于关联的端点</li>
 </ul>
-<h3 id="泛化、依赖、组合"><a href="#泛化、依赖、组合" class="headerlink" title="泛化、依赖、组合"></a>泛化、依赖、组合</h3><p>泛化，意为从超类到子类的OOPL继承，用由子类到超类的实线和空心三角箭头表示，如下图所示. 抽象类<code>(abstract class)</code>和操作既可以采用<code>&#123;abstract&#125;</code>标记表示，也可以采用斜体名称来表示. 与之相反，终止类<code>(final class)</code>和不能够被子类复写的操作以<code>&#123;leaf&#125;</code>标记表示. </p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/generalization.png" alt="UML泛化示例"></p>
-<hr>
+<h3 id="泛化依赖组合">泛化、依赖、组合</h3>
+<p>泛化，意为从超类到子类的OOPL继承，用由子类到超类的实线和空心三角箭头表示，如下图所示.
+抽象类<code>(abstract class)</code>和操作既可以采用<code>&#123;abstract&#125;</code>标记表示，也可以采用斜体名称来表示.
+与之相反，终止类<code>(final class)</code>和不能够被子类复写的操作以<code>&#123;leaf&#125;</code>标记表示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/generalization.png"
+alt="UML泛化示例" /> ____</p>
 <p>依赖，可以视为耦合的另一个版本，耦合意味着某元素(客户元素)耦合或依赖于另一个元素(提供者元素)，使用从客户到提供者的虚线箭头线表示.在类图中，使用依赖线描述对象之间的全局变量、参数变量、局部变量和静态方法(对其他类的静态方法加以调用)的依赖.对于如下Java代码:</p>
 <pre><code>public class Sale
 &#123;
     public void updatePriceFor(Product product) &#123;
         Money basePrice = product.getPrice();
     &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
 <p>updatePriceFor方法接收参数Product对象作为参数，然后向其发送getPrice消息。由此可见，Sale对象对Product具有参数可见性，并且有发送消息的耦合，因此对Product有依赖，这种依赖在类图中表示为:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/dependency.png" alt="UML依赖关系示例"></p>
-<hr>
-<p>为表示依赖的类型，可以给依赖线附加关键字或者构造型，如<code>&lt;&lt;call&gt;&gt;</code>, <code>&lt;&lt;create&gt;&gt;</code>等.</p>
-<p>组合，也称为组成聚合，是一种很强的整体-部分聚合关系，组合关系有以下含义:</p>
-<ol>
-<li>在某一时刻，部分的实例(如Finger)只属于一个组成实例(如Hand)</li>
-<li>部分必须总是属于组成</li>
-<li>组成要负责创建和删除其部分，既可以自己来创建&#x2F;删除部分，也可以与其他对象协作来创建&#x2F;删除部分.如果组成被销毁，其部分也必须被销毁.</li>
-</ol>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/dependency.png"
+alt="UML依赖关系示例" /> ___</p>
+<p>为表示依赖的类型，可以给依赖线附加关键字或者构造型，如<code>&lt;&lt;call&gt;&gt;</code>,
+<code>&lt;&lt;create&gt;&gt;</code>等.</p>
+<p>组合，也称为组成聚合，是一种很强的整体-部分聚合关系，组合关系有以下含义:
+1. 在某一时刻，部分的实例(如Finger)只属于一个组成实例(如Hand) 2.
+部分必须总是属于组成 3.
+组成要负责创建和删除其部分，既可以自己来创建/删除部分，也可以与其他对象协作来创建/删除部分.如果组成被销毁，其部分也必须被销毁.</p>
 <p>UML中，用带有实心菱形箭头的关联线来表示组合，箭头指向组成类，如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/composition.png" alt="UML组合管理示例"></p>
-<hr>
-<h3 id="限定关联"><a href="#限定关联" class="headerlink" title="限定关联"></a>限定关联</h3><p>限定关联具有限定符，限定符用户从规模较大的相关对象集合中，依据限定符的键选择一个或者多个对象. 一般来说，限定关联暗示了基于键对事物进行查找，如HashMap中的对象.例如，如果ProductCatalog中含有许多Product，并且每个Product中都能够通过itemID来选择，那么使用UML的限定关联的示例如下图所示.</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/qualified-association.png" alt="UML限定关联示例"></p>
-<hr>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/composition.png"
+alt="UML组合管理示例" /> ___</p>
+<h3 id="限定关联">限定关联</h3>
+<p>限定关联具有限定符，限定符用户从规模较大的相关对象集合中，依据限定符的键选择一个或者多个对象.
+一般来说，限定关联暗示了基于键对事物进行查找，如HashMap中的对象.例如，如果ProductCatalog中含有许多Product，并且每个Product中都能够通过itemID来选择，那么使用UML的限定关联的示例如下图所示.</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/qualified-association.png"
+alt="UML限定关联示例" /> ___</p>
 <p>对于限定关联，需要注意的是多重性的变化，限定关联减少了在关联目标端的多重性，通常由多变为一，因为限定关联通常暗示从较大集合中选择一个实例.</p>
-<h3 id="关联类"><a href="#关联类" class="headerlink" title="关联类"></a>关联类</h3><p>关联类允许将关联本身作为类，并且使用属性、操作和其他特性对齐建模. 例如，如果Company雇佣了许多Person，建模时使用了Employ关联，则可以将关联本身建模为Employment类，并拥有startDate这样的属性. UML中，用从关联到关联类的虚线表示关联类，如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/association-classes.png" alt="UML中的关联类"></p>
-<hr>
-<h3 id="单实例类"><a href="#单实例类" class="headerlink" title="单实例类"></a>单实例类</h3><p>面向对象设计的世界中，有一种极为常见的模式-单实例类(Singleton)模式，其含义是类实例化后只存在一个实例，永远不会有第二个，这就是”单实例类”的实例. 在UML类图中，可以在类框中名称分栏的右上角标记”1”来表示这种类, 如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/singleton-classes.png" alt="UML单实例类示例"></p>
-<hr>
-<h3 id="主动类"><a href="#主动类" class="headerlink" title="主动类"></a>主动类</h3><p>主动对象(active object)运行于自己控制的执行线程之上，主动对象的类即为主动类(active class). 在UML中，主动类使用左右两边为双竖线的类框来表示，如下图所示:</p>
-<p><img src="http://readus-org.qiniudn.com/img/uml-class-diagram/active-class.png" alt="UML中的主动类"></p>
-<hr>
+<h3 id="关联类">关联类</h3>
+<p>关联类允许将关联本身作为类，并且使用属性、操作和其他特性对齐建模.
+例如，如果Company雇佣了许多Person，建模时使用了Employ关联，则可以将关联本身建模为Employment类，并拥有startDate这样的属性.
+UML中，用从关联到关联类的虚线表示关联类，如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/association-classes.png"
+alt="UML中的关联类" /> ___</p>
+<h3 id="单实例类">单实例类</h3>
+<p>面向对象设计的世界中，有一种极为常见的模式-单实例类(Singleton)模式，其含义是类实例化后只存在一个实例，永远不会有第二个，这就是"单实例类"的实例.
+在UML类图中，可以在类框中名称分栏的右上角标记"1"来表示这种类,
+如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/singleton-classes.png"
+alt="UML单实例类示例" /> ___</p>
+<h3 id="主动类">主动类</h3>
+<p>主动对象(active
+object)运行于自己控制的执行线程之上，主动对象的类即为主动类(active
+class). 在UML中，主动类使用左右两边为双竖线的类框来表示，如下图所示:</p>
+<p><img
+src="http://readus-org.qiniudn.com/img/uml-class-diagram/active-class.png"
+alt="UML中的主动类" /> ___</p>
 
             
 
@@ -528,7 +555,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         

@@ -103,7 +103,8 @@
                 </a>
                 <h4 class="sidebar-profile-name">CaryaLiu</h4>
                 
-                    <h5 class="sidebar-profile-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+                    <h5 class="sidebar-profile-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </h5>
                 
             </div>
@@ -253,12 +254,13 @@
                     <p>本文记录的是shell之printf格式化输出.</p>
 <p>首先看看其 man page 内容:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     printf -- formatted output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     printf format [arguments ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The printf utility formats and prints its arguments, after   </span><br><span class="line">the first, under control of the format.  The format is a character  string which contains three types of objects: plain characters,   </span><br><span class="line">which are simply copied to standard output, character escape   </span><br><span class="line">sequences which are converted and copied to the standard   </span><br><span class="line">output, and format specifications, each of which causes printing   </span><br><span class="line">of the next successive argument.</span><br><span class="line"></span><br><span class="line">     The arguments after the first are treated as strings if the   </span><br><span class="line">corresponding format is either c, b or s;otherwise it is evaluated   </span><br><span class="line">as a C constant, with the following extensions:</span><br><span class="line"></span><br><span class="line">o   A leading plus or minus sign is allowed.</span><br><span class="line">o   If the leading character is a single or double quote, the value is the ASCII code of the next character.</span><br></pre></td></tr></table></figure>
-
 <p>从上述 man page 内容可以看出:</p>
-<ol>
+<ol type="1">
 <li><code>printf</code>通过<code>format</code>字符串格式化输出其后的<code>arguments</code>；</li>
-<li><code>format</code>字符串包含三种类型对象: 普通字符串，该对象输出时会直接拷贝到标准输出<code>STDOUT</code>;字符转义序列，通过字符转义之后输出到标准输出;格式说明符，每一个格式说明符对应输出相应的<code>argument</code>；</li>
-<li>如果对应的格式指示符是<code>%c</code>&#x2F;<code>%b</code>&#x2F;<code>%s</code>时，相对应的参数都视为字符串，否则它们会被解释为C语言的数字常量: 在其开头可使用正负号标识;如果字符串开头是单引号<code>&#39;</code>或者双引号<code>&quot;</code>,那么打印输出的值是紧跟着单引号或者双引号后的那个字符的<code>ASCII</code>值</li>
+<li><code>format</code>字符串包含三种类型对象:
+普通字符串，该对象输出时会直接拷贝到标准输出<code>STDOUT</code>;字符转义序列，通过字符转义之后输出到标准输出;格式说明符，每一个格式说明符对应输出相应的<code>argument</code>；</li>
+<li>如果对应的格式指示符是<code>%c</code>/<code>%b</code>/<code>%s</code>时，相对应的参数都视为字符串，否则它们会被解释为C语言的数字常量:
+在其开头可使用正负号标识;如果字符串开头是单引号<code>'</code>或者双引号<code>"</code>,那么打印输出的值是紧跟着单引号或者双引号后的那个字符的<code>ASCII</code>值</li>
 </ol>
                     
                         <a
@@ -313,13 +315,12 @@
                     <p>本文记录的是关于shell之echo的知识。</p>
 <p>echo是linux中常用的终端命令(command line)，其包括:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command_name option argument</span><br></pre></td></tr></table></figure>
-
 <p>首先看看echo的 man page:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">     echo -- write arguments to the standard output</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">     echo [-n] [string ...]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">     The echo utility writes any specified operands, separated by single blank (&#x27; &#x27;) characters and followed</span><br><span class="line">     by a newline (`\n&#x27;) character, to the standard output.</span><br></pre></td></tr></table></figure>
 <p>从帮助文档可以看出:</p>
-<ol>
+<ol type="1">
 <li>echo是将其后的arguments输出到(STDOUT),通常就是bash界面.</li>
-<li>echo是将所有的操作对象，以单一的空格<code> </code>分开的字符串，最后紧跟着换行符(‘\n’)，输出到bash</li>
+<li>echo是将所有的操作对象，以单一的空格<code></code>分开的字符串，最后紧跟着换行符('')，输出到bash</li>
 </ol>
                     
                         <a
@@ -375,7 +376,8 @@
         
             <h4 id="about-card-name">CaryaLiu</h4>
         
-            <div id="about-card-bio"><p>@Chengdu，WeChat：CaryaLiu</p>
+            <div id="about-card-bio"><p><span class="citation"
+data-cites="Chengdu">@Chengdu</span>，WeChat：CaryaLiu</p>
 </div>
         
         
